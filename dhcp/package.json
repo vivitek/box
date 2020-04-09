@@ -1,0 +1,24 @@
+{
+  "name": "dhcp",
+  "version": "0.1.0",
+  "description": "DHCP server in TS",
+  "scripts": {
+    "beautify": "prettier --config ../prettier.json index.js --write",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "dhcp;",
+    "vivi;",
+    "server;",
+    "ip;",
+    "network"
+  ],
+  "author": "Vivi",
+  "private": true,
+  "main": "index.js",
+  "license": "MIT OR GLP-2.0",
+  "readme": "README.md",
+  "dependencies": {
+    "console-stamp": "^0.2.9"
+  }
+}

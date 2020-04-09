@@ -1,0 +1,12 @@
+{
+  "name": "agent",
+  "version": "0.1.0",
+  "description": "Agent that applies firewall rules",
+  "main": "index.js",
+  "scripts": {
+    "beautify": "prettier --config ../prettier.json index.js --write",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Vivi",
+  "license": "MIT"
+}
