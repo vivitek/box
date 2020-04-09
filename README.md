@@ -27,7 +27,7 @@ Install git: `sudo apt-get install git`
 
 Install git-flow: `sudo apt-get install git-flow`
 
-Do not forget to run `git-flow init` after cloning repository.
+Do not forget to run `git flow init` after cloning repository.
 
 > PivotalTracker
 
