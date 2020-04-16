@@ -3,7 +3,7 @@
 
 ## Project
 
-This project is part of [VIVI](https://https://vincipit.com/). This repository contains all the containers pushed on the routers.
+This project is part of [VIVI](https://vincipit.com/). This repository contains all the containers pushed on the routers.
 
 ## Documentation
 
