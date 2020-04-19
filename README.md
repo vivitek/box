@@ -3,7 +3,7 @@
 
 ## Project
 
-This project is part of [VIVI](https://https://vincipit.com/). This repository contains all the containers pushed on the routers.
+This project is part of [VIVI](https://vincipit.com/). This repository contains all the containers pushed on the routers.
 
 ## Documentation
 
@@ -11,7 +11,13 @@ Please read the [development](./docs/development.md) which will teach you how th
 
 Please also read the [Conventions](./docs/conventions.md) which will tell you how to give good, readable code, good branch naming (bad named branches will _NOT_ be merged, and PRs _will be refused_ ).
 
-## Tools
+## Internal Tools
+
+> Setup
+
+After cloning the repo, please run this. It will init gitflow, and install the prettier hook in your local repo
+
+## External Tools
 
 We don't have an install script yet so please install the following programs/plugins.
 
