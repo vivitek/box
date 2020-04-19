@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "DHCP server in TS",
   "scripts": {
-    "beautify": "prettier --config ../prettier.json index.js --write",
+    "beautify": "prettier --config ../.prettier.json ./**/*.js --write",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

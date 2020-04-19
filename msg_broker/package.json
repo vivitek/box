@@ -4,7 +4,7 @@
   "description": "Message Broken between router containers and server",
   "main": "index.js",
   "scripts": {
-    "beautify": "prettier --config ../prettier.json index.js --write",
+    "beautify": "prettier --config ../.prettier.json ./**/*.js --write",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Vivi",
