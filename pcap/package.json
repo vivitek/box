@@ -4,7 +4,7 @@
   "description": "Reads all packets to list services used on network",
   "main": "index.js",
   "scripts": {
-    "beautify": "prettier --config ../prettier.json index.js --write",
+    "beautify": "prettier --config ../.prettier.json ./**/*.js --write",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Vivi",

@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Vivitek router dev install script. This script installs
+# the tools you need to dev with the conventions
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+DIST=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
+
+if [ -z "$BASH" ]; then echo "This is not bash, for the moment your shell is not supported for this shell. Please run me with ./ or bash"; exit 1; fi
+
+trap ctrl_c INT
+function ctrl_c() {
+    exit 0;
+}
+
+function check_error() {
+    if [ $? -eq 0 ]; then
+        printf "${GREEN} ## SUCCESS: $1 ## ${NC}\n"
+    else
+        printf "${RED} An Error occured : $1${NC}\n"
+        exit 1
+    fi
+}
+
+printf "${YELLOW}this kind of printing show a warning. Please read carefully.${NC}\n"
+read
+
+printf "${YELLOW}Install git flow (required) ? (Y/n)${NC}\n"
+read gitflow
+
+if [[ $gitflow = "n" ]]; then
+  printf "${BLUE}Please read the coding conventions for branch names.${NC}\n"
+else
+    if [ $DIST == "Ubuntu"]; then
+        printf "${YELLOW}Installing git-flow${NC}\n"
+        sudo apt-get install git-flow
+        check_error "sudo apt-get install git-flow"
+    else
+        printf "${RED}Sorry this script does not support other distribs then Ubuntu${NC}\n"
+    fi
+fi
+
+printf "${YELLOW}Installing git hooks.${NC}\n"
+chmod +x ./tools/config/pre-commit
+cp ./tools/config/pre-commit .git/hooks
+check_error "installing git hooks"
+
+printf "${YELLOW}
+This script is finished.
+Please run ${BLUE}git flow init${YELLOW} to init git flow in repo.
+Enjoy dev for Vivi !
+Press Enter${NC}\n"
+read
