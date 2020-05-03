@@ -2,7 +2,7 @@
 
 /*
  * Example:
- * 
+ *
  * $ dhcp hostname dns --mac 12:34:55:67:88:99
  */
 
@@ -20,17 +20,16 @@ argv.features = argv._;
 
 var client = dhcp.createClient(argv);
 
-client.on('bound', function(state) {
+client.on('bound', function (state) {
+	var opt = state.options;
 
-  var opt = state.options;
+	// Print all requested options
+	for (var i in opt) {
+		console.log(i, ': ', opt[i] instanceof Array ? opt[i].join(', ') : opt[i]);
+	}
 
-  // Print all requested options
-  for (var i in opt) {
-    console.log(i, ": ", opt[i] instanceof Array ? opt[i].join(", ") : opt[i]);
-  }
-
-  // Exit when finished
-  process.exit();
+	// Exit when finished
+	process.exit();
 });
 
 client.listen();
