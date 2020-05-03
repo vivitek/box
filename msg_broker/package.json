@@ -4,9 +4,18 @@
   "description": "Message Broken between router containers and server",
   "main": "index.js",
   "scripts": {
+    "start": "node ./built/index.js",
+    "build": "tsc",
     "beautify": "prettier --config ../.prettier.json ./**/*.js --write",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Vivi",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/node": "^13.13.4",
+    "amqplib": "^0.5.5"
+  }
 }
