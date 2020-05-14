@@ -7,9 +7,9 @@ This project is part of [VIVI](https://vincipit.com/). This repository contains 
 
 ## Documentation
 
-Please read the [development](./docs/development.md) which will teach you how the tools we use, and how the repository is organised.
+Please read the [development](./holocron/routerDocs/development.md) which will teach you how the tools we use, and how the repository is organised.
 
-Please also read the [Conventions](./docs/conventions.md) which will tell you how to give good, readable code, good branch naming (bad named branches will _NOT_ be merged, and PRs _will be refused_ ).
+Please also read the [Conventions](./holocron/routerDocs/conventions.md) which will tell you how to give good, readable code, good branch naming (bad named branches will _NOT_ be merged, and PRs _will be refused_ ).
 
 ## Internal Tools
 
@@ -27,7 +27,7 @@ We use `docker-compose` to run everything in containers, because BalenaOS runs t
 
 > Git and git-flow
 
-We use git as versionning tool. To have clean branches, we use the [git-flow architecture](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow). Please read the [conventions](./docs/conventions.md) for branch naming.
+We use git as versionning tool. To have clean branches, we use the [git-flow architecture](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow). Please read the [conventions](./holocron/routerDocs/conventions.md) for branch naming.
 
 Install git: `sudo apt-get install git`
 
