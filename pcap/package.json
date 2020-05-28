@@ -12,6 +12,7 @@
   "author": "Vivi",
   "license": "MIT",
   "dependencies": {
+    "@types/amqplib": "^0.5.13",
     "@types/node": "^13.13.4",
     "amqplib": "^0.5.5"
   },
