@@ -1,12 +1,14 @@
 version: '3.7'
 services:
     dhcp:
+        container_name: dhcp
         build: ./dhcp
         ports:
             - '67:67'
         networks: 
             - 'test'
     rabbitmq:
+        container_name: rabbitmq
         image: rabbitmq:3.7-management
         environment: 
             RABBITMQ_ERLANG_COOKIE: 'secret'
@@ -18,6 +20,7 @@ services:
         networks:
             - 'test'
     sender:
+        container_name: sender
         build: ./pcap
         networks:
             - 'test'
@@ -26,6 +29,7 @@ services:
         environment: 
             RABBITMQ_URL: amqp://rabbitmq
     receiver:
+        container_name: receiver
         build: ./msg_broker
         networks:
             - 'test'

@@ -1,7 +1,12 @@
 {
     "compilerOptions": {
+        "allowJs": true,
+        "module": "commonjs",
+        "moduleResolution": "Node",
+        "lib": ["dom", "ES2017"],
+        "target": "ES6",
         "outDir": "./built",
-        "allowJs": true
     },
+    "exclude": ["node_modules"],
     "include": ["./src/**/*"]
 }

@@ -46,10 +46,10 @@ else
     fi
 fi
 
-printf "${YELLOW}Installing git hooks.${NC}\n"
-chmod +x ./tools/config/pre-commit
-cp ./tools/config/pre-commit .git/hooks
-check_error "installing git hooks"
+#printf "${YELLOW}Installing git hooks.${NC}\n"
+#chmod +x ./tools/config/pre-commit
+#cp ./tools/config/pre-commit .git/hooks
+#check_error "installing git hooks"
 
 printf "${YELLOW}
 This script is finished.

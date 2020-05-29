@@ -1,31 +1,19 @@
-import ampq = require('amqplib/callback_api');
+import MsgMgr from './msgMgr/MsgMgr';
 
+const main = async () => {
+    const url = process.env.RABBITMQ_URL;
+    console.log('[+] URL:', url);
 
-const main = () => {
-    console.log('[+] URL:', process.env.RABBITMQ_URL);
-    ampq.connect(process.env.RABBITMQ_URL, (error0, connection) => {
-        if (error0)
-            throw error0;
-            
-            connection.createChannel((err1, channel) => {
-                if (err1)
-                throw err1;
+    const msgMgr : MsgMgr = new MsgMgr(url, 'pcap');
+
+    try {
+        await msgMgr.connect();
+    } catch (e) {
+        console.error("ERROR:", e);
+    }
     
-            var queue = 'pcap';
-    
-            channel.assertQueue(queue, {
-                durable: false
-            });
-    
-            console.log('[*] Waiting for messages in queue.');
-    
-            channel.consume(queue, msg => {
-                console.log('[+] Received message: ', msg.content.toString());
-            }, {
-                noAck: true
-            });
-        });
-    });
+    let msg = msgMgr.readMsg();
+    console.log("Consumed msg:", msg);
 }
 
-setTimeout(main, 2500);
+main();
