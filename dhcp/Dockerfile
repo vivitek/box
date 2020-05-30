@@ -9,4 +9,4 @@ RUN npm i
 COPY . .
 
 EXPOSE 67
-CMD ["node", "server.js"]
+CMD ["node", "index.js"]

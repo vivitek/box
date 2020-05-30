@@ -32,6 +32,21 @@ export class MsgMgr implements MessageManager {
     }
 
     /**
+     * Check if queue has messages waiting
+     */
+    public async hasMsg(): Promise<boolean> {
+        if (!this.mainQueue)
+            return false;
+        let assert = await this.channel.assertQueue(this.mainQueue, {
+            durable: true
+        });
+
+        if (assert.messageCount > 0)
+            return true;
+        return false;
+    }
+
+    /**
      * Reads a message in a queue
      * 
      * @param queue
@@ -42,17 +57,12 @@ export class MsgMgr implements MessageManager {
 
         if (!queue)
             throw new Error("No Queue to consume");
-        console.log("queue:", queue);
-        let assert = await this.channel.assertQueue(queue, { durable: true });
-
-        console.log("Messages queued:", assert.messageCount);
+        await this.channel.assertQueue(queue, { durable: true });
 
         let message: string = '';
 
-        console.log(`Waiting for messages in queue.`);
-        this.channel.consume(queue, msg => {
+        await this.channel.consume(queue, msg => {
             message = msg.content.toString();
-            console.log("Consumed: ", message);
         }, { noAck: true });
 
         return message;

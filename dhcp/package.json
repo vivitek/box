@@ -4,7 +4,8 @@
   "description": "DHCP server in TS",
   "scripts": {
     "beautify": "prettier --config ../.prettier.json ./**/*.js --write",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test": "mocha"
   },
   "keywords": [
     "dhcp;",
@@ -19,9 +20,11 @@
   "license": "MIT OR GLP-2.0",
   "readme": "README.md",
   "dependencies": {
+    "amqplib": "^0.5.6",
     "console-stamp": "^0.2.9"
   },
   "devDependencies": {
+    "@types/node": "^14.0.6",
     "mocha": "^7.2.0",
     "should": "^13.2.3"
   }

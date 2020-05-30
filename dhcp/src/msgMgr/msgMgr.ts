@@ -1,43 +1,36 @@
-import ampq = require('amqplib/callback_api');
+import * as ampq from 'amqplib';
+import MessageManager from './msgMgr';
 
-class MsgMgr {
-
-    private connection;
-    private connectionString;
-    private channel;
+export default class MsgMgr implements MessageManager {
+    public connection : ampq.Connection;
+    private connectionString : string;
+    public channel: ampq.Channel;
 
     /* Queue name */
-    readonly mainQueue;
+    readonly mainQueue: string;
 
     /**
      * Constructor
      * 
-     * @param connectionString 
+     * @param connectionString
+     * @param queue 
      */
     constructor(connectionString: string, queue?: string) {
         this.connectionString = connectionString;
         this.mainQueue = queue;
-
-        ampq.connect(connectionString, (err, connection) => {
-            if (err)
-                throw err;
-            
-            this.connection = connection;
-        });
-        console.info(`[+] Connected to RabbitMQ`);
+        console.log("Constructor");
     }
 
     /**
-     * Creates a channel to push msgs
+     * Connects to RabbitMQ
      */
-    public createChannel(): void {
-        this.connection.createChannel((err, channel) => {
-            if (err)
-                throw err;
-            
-            this.channel = channel;
-        });
-        console.info(`[+] Created channel`);
+    public async connect() {
+        console.log("Connect");
+        if (!this.connectionString)
+            throw new Error("Not initialized");
+        this.connection = await ampq.connect(this.connectionString);
+        this.channel = await this.connection.createChannel();
+        console.info('[+] - Connected to RabbitMQ');
     }
 
     /**
@@ -47,18 +40,17 @@ class MsgMgr {
      * @param queue Queue name to send msg
      */
     public sendMsg(message: string, queue?: string): void {
-        if (this.mainQueue !== undefined)
+        if (this.mainQueue)
             queue = this.mainQueue;
         
-        if (queue === undefined)
+        if (!queue)
             throw new Error("No queue defined to push msgs...");
         
-        this.connection.assertQueue(queue, {
+        this.channel.assertQueue(queue, {
             durable: true
         });
 
         this.channel.sendToQueue(queue, Buffer.from(message));
-        console.log(`[=>] Sent msg to server`);
     }
 
     /**
@@ -78,4 +70,4 @@ class MsgMgr {
     }
 }
 
-export default MsgMgr;
+export { MsgMgr };

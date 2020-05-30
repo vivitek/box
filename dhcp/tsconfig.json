@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "lib": ["DOM", "ES2017"],
+        "target": "ES6",
+        "outDir": "./msgMgr",
+    },
+    "exclude": ["node_modules", "lib", "bin"],
+    "include": ["./src/**/*.ts"]
+}
