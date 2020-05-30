@@ -24,8 +24,11 @@ services:
         build: ./pcap
         depends_on: 
             - rabbitmq
+        ports:
+            - '5000:5000'
+        network_mode: 'host'
         environment: 
-            RABBITMQ_URL: amqp://rabbitmq
+            RABBITMQ_URL: amqp://127.0.0.1:5672
     msg_broker:
         container_name: msg_broker
         build: ./msg_broker

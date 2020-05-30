@@ -1,6 +1,9 @@
 FROM node:latest
 
-EXPOSE 4040
+RUN apt-get update -y
+RUN apt-get install -y libpcap-dev
+
+EXPOSE 5000
 WORKDIR /code
 
 # copy files
