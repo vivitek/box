@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/vivitek/deep-thought.svg?branch=develop)](https://travis-ci.com/vivitek/deep-thought)
+
 # Router - Version 0.1
 ========
 

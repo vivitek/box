@@ -20,5 +20,9 @@
   "readme": "README.md",
   "dependencies": {
     "console-stamp": "^0.2.9"
+  },
+  "devDependencies": {
+    "mocha": "^7.2.0",
+    "should": "^13.2.3"
   }
 }
