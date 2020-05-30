@@ -1,7 +1,7 @@
 # NAME
 ----
 
-> See [Pivotal Story](https://www.pivotaltracker.com/n/projects/2442773/stories/{storyId})
+> See [Jira Issue](https://vivitek.atlassian.net/jira/software/projects/ROUT/boards/1?selectedIssue=ROUT-1)
 
 ## Details
 
