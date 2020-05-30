@@ -15,7 +15,6 @@ export class MsgMgr implements MessageManager {
      * @param queue
      */
     constructor(connectionString: string, queue?: string) {
-        console.log("MainQueue:", queue);
         this.connectionString = connectionString;
         this.mainQueue = queue;
     }

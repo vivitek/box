@@ -18,14 +18,12 @@ export default class MsgMgr implements MessageManager {
     constructor(connectionString: string, queue?: string) {
         this.connectionString = connectionString;
         this.mainQueue = queue;
-        console.log("Constructor");
     }
 
     /**
      * Connects to RabbitMQ
      */
     public async connect() {
-        console.log("Connect");
         if (!this.connectionString)
             throw new Error("Not initialized");
         this.connection = await ampq.connect(this.connectionString);
@@ -66,7 +64,6 @@ export default class MsgMgr implements MessageManager {
         });
 
         this.channel.sendToQueue(queue, Buffer.from(error));
-        console.error(`[ERR] - Sent Error to server`);
     }
 }
 

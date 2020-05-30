@@ -2,7 +2,6 @@ import MsgMgr from './msgMgr/MsgMgr';
 
 const main = async () => {
     const url = process.env.RABBITMQ_URL;
-    console.log('[+] URL:', url);
 
     const pcap : MsgMgr = new MsgMgr(url, 'pcap');
     const dhcp: MsgMgr = new MsgMgr(url, 'dhcp');
