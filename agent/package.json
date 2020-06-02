@@ -1,0 +1,16 @@
+{
+  "name": "agent",
+  "version": "0.1.0",
+  "description": "Agent that applies firewall rules",
+  "main": "index.js",
+  "scripts": {
+    "beautify": "prettier --config ../.prettier.json ./**/*.js --write",
+    "test": "mocha"
+  },
+  "author": "Vivi",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^7.2.0",
+    "should": "^13.2.3"
+  }
+}

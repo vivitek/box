@@ -1,0 +1,25 @@
+{
+  "name": "vivipcap",
+  "version": "0.1.0",
+  "description": "Reads all packets to list services used on network",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./built/index.js",
+    "build": "tsc",
+    "beautify": "prettier --config ../.prettier.json ./**/*.js --write",
+    "test": "mocha"
+  },
+  "author": "Vivi",
+  "license": "MIT",
+  "dependencies": {
+    "@types/amqplib": "^0.5.13",
+    "@types/node": "^13.13.4",
+    "amqplib": "^0.5.5",
+    "pcap": "^3.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^7.2.0",
+    "should": "^13.2.3",
+    "typescript": "^3.8.3"
+  }
+}
