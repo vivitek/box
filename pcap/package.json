@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./built/index.js",
-    "build": "tsc",
+    "build": "tsc && ncc build built --minify -o prod",
     "beautify": "prettier --config ../.prettier.json ./**/*.js --write",
     "test": "mocha"
   },
@@ -13,11 +13,11 @@
   "license": "MIT",
   "dependencies": {
     "@types/amqplib": "^0.5.13",
-    "@types/node": "^13.13.4",
     "amqplib": "^0.5.5",
     "pcap": "^3.1.0"
   },
   "devDependencies": {
+    "@types/node": "^13.13.12",
     "mocha": "^7.2.0",
     "should": "^13.2.3",
     "typescript": "^3.8.3"
