@@ -2,7 +2,9 @@ version: '3.7'
 services:
     dhcp:
         container_name: dhcp
-        build: ./dhcp
+        build:
+            context: .
+            dockerfile: ./dhcp/Dockerfile
         ports:
             - '67:67'
         depends_on:
@@ -21,7 +23,9 @@ services:
             - '5672:5672'
     pcap:
         container_name: pcap
-        build: ./pcap
+        build:
+            context: .
+            dockerfile: ./pcap/Dockerfile
         depends_on: 
             - rabbitmq
         ports:
@@ -31,7 +35,9 @@ services:
             RABBITMQ_URL: amqp://127.0.0.1:5672
     msg_broker:
         container_name: msg_broker
-        build: ./msg_broker
+        build:
+            context: .
+            dockerfile: ./msg_broker/Dockerfile
         depends_on: 
             - rabbitmq
         environment: 

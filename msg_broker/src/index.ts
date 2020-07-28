@@ -1,5 +1,5 @@
-import MsgMgr from './msgMgr/MsgMgr';
-import {Logger} from './Logger/Logger';
+import MsgMgr from '../../utils/msgMgr/MsgMgr';
+import {Logger} from '../../utils/Logger/Logger'; 
 
 const logger = new Logger('./msgbroker.stdout', './msgbroker.stderr');
 

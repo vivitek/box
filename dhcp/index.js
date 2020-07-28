@@ -7,9 +7,9 @@
 
 require('console-stamp')(console, 'HH:MM:ss');
 const dhcpd = require('./lib/dhcp.js');
-const msgManager = require('./msgMgr/msgMgr').MsgMgr;
+// const msgManager = require('./built/utils/msgMgr/msgMgr').msgMgr;
 
-let msgMgr = new msgManager(process.env.RABBITMQ_URL, 'dhcp');
+// let msgMgr = new msgManager(process.env.RABBITMQ_URL, 'dhcp');
 
 let server = dhcpd.createServer({
 	range: ['192.168.1.2', '192.168.1.40'],
@@ -47,24 +47,24 @@ server.on('message', data => {
 server.on('listening', sock => {
 	let addr = sock.address();
 	console.info('Server listening: ' + addr.address + ':' + addr.port);
-	msgMgr.sendMsg('Listening' + addr.port);
+	// msgMgr.sendMsg('Listening' + addr.port);
 });
 
 server.on('bound', state => {
 	let addr = Object.keys(state)[0];
 	if (addr) {
 		console.log('Bounded ' + addr + '. Sending to server....');
-		msgMgr.sendMsg(addr);
+		// msgMgr.sendMsg(addr);
 	}
 });
 
 server.on('error', (err, data) => {
 	console.error('An error occured: ', err, data);
-	msgMgr.sendErr(err);
+	// msgMgr.sendErr(err);
 });
 
 const init = async () => {
-	await msgMgr.connect();
+	// await msgMgr.connect();
 	server.listen();
 }
 

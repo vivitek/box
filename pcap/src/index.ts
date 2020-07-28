@@ -1,9 +1,9 @@
-import MsgMgr from "./msgMgr/msgMgr";
+import MsgMgr from '../../utils/msgMgr/MsgMgr';
 import * as pcap from 'pcap';
-import * as os from 'os';
-import { Logger } from "./Logger/Logger";
+// import * as os from 'os';
+import { Logger } from '../../utils/Logger/Logger';
 
-const netinter = os.networkInterfaces();
+// const netinter = os.networkInterfaces();
 
 const msgMgr = new MsgMgr(process.env.RABBITMQ_URL, 'pcap');
 const logger = new Logger('./pcap.stdout', './pcap.stderr');

@@ -1,12 +1,17 @@
 {
-    "compilerOptions": {
-        "allowJs": true,
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "lib": ["DOM", "ES2017"],
-        "target": "ES6",
-        "outDir": "./msgMgr",
-    },
-    "exclude": ["node_modules", "lib", "bin"],
-    "include": ["./src/**/*.ts"]
+  "compilerOptions": {
+    "allowJs": true,
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "lib": ["dom", "ES2017"],
+    "target": "ES6",
+    "outDir": "./built",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["."],
+      "utils/*": ["../utils/*"]
+    }
+  },
+  "exclude": ["node_modules"],
+  "include": ["../utils"],
 }

@@ -1,12 +1,17 @@
 {
-    "compilerOptions": {
-      "allowJs": true,
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "lib": ["dom", "ES2017"],
-      "target": "es6",
-      "outDir": "./built",
-    },
-    "exclude": ["node_modules"],
-    "include": ["./src/**/*"]
+  "compilerOptions": {
+    "allowJs": true,
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "lib": ["dom", "ES2017"],
+    "target": "ES6",
+    "outDir": "./built",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["."],
+      "utils/*": ["../utils/*"]
+    }
+  },
+  "exclude": ["node_modules"],
+  "include": ["./src/*", "../utils"],
 }
