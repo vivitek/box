@@ -4,8 +4,8 @@
   "description": "Message Broken between router containers and server",
   "main": "index.js",
   "scripts": {
-    "start": "node ./built/index.js",
-    "build": "tsc && ncc build built --minify -o prod",
+    "start": "node ./built/msg_broker/src/index.js",
+    "build": "tsc",
     "beautify": "prettier --config ../.prettier.json ./**/*.js --write",
     "test": "mocha"
   },

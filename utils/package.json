@@ -1,0 +1,16 @@
+{
+  "name": "utils",
+  "version": "0.1.0",
+  "scripts": {
+  },
+  "author": "Vivi",
+  "license": "MIT",
+  "dependencies": {
+    "amqplib": "^0.5.5"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.5.13",
+    "@types/node": "^13.13.12",
+    "typescript": "^3.8.3"
+  }
+}

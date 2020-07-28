@@ -1,5 +1,5 @@
 import * as amqp from 'amqplib';
-import {MessageManager} from './msgMgr';
+import { MessageManager } from './msgMgr';
 
 export class MsgMgr implements MessageManager {
     public connection: amqp.Connection;
@@ -15,7 +15,6 @@ export class MsgMgr implements MessageManager {
      * @param queue
      */
     constructor(connectionString: string, queue?: string) {
-        console.log("MainQueue:", queue);
         this.connectionString = connectionString;
         this.mainQueue = queue;
     }
@@ -66,6 +65,40 @@ export class MsgMgr implements MessageManager {
         }, { noAck: true });
 
         return message;
+    }
+
+    /**
+     * Send a message in predefined queue or on specific queue
+     * 
+     * @param message message to send
+     * @param queue Queue name to send msg
+     */
+    public sendMsg(message: string, queue?: string): void {
+        if (this.mainQueue)
+            queue = this.mainQueue;
+        
+        if (!queue)
+            throw new Error("No queue defined to push msgs...");
+        
+        this.channel.assertQueue(queue, { durable: true });
+
+        this.channel.sendToQueue(queue, Buffer.from(message));
+    }
+
+    /**
+     * Sends an error to the server
+     * 
+     * @param error 
+     */
+    public sendErr(error: string): void {
+        const queue : string = 'error';
+
+        this.channel.assertQueue(queue, {
+            durable: true
+        });
+
+        this.channel.sendToQueue(queue, Buffer.from(error));
+        console.error(`[ERR] - Sent Error to server`);
     }
 }
 

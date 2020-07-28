@@ -1,16 +1,28 @@
 FROM node:latest
 
-WORKDIR /code
 
-# install ncc
-RUN npm i -g @zeit/ncc
+# Install ncc
+# RUN npm i -g @zeit/ncc
 
-# copy files
-COPY package.json .
-RUN npm i
+# Install yarn
+RUN npm i --force -g yarn
 
-COPY . .
-RUN npm run build
+# Copy package.json
+WORKDIR /app/msg_broker
+COPY ./msg_broker/package.json .
+RUN yarn install
+
+# Copy files
+COPY msg_broker .
+
+# Install utils
+WORKDIR /app/utils
+COPY utils .
+RUN yarn install
+WORKDIR /app/msg_broker
+
+# Build
+RUN yarn build
 
 EXPOSE 4000
-CMD ["npm", "start"]
+CMD ["yarn", "start"]

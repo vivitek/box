@@ -9,9 +9,9 @@
     "baseUrl": ".",
     "paths": {
       "*": ["."],
-      "utils/*": ["../utils/*"]
+      "utils/*": ["utils/*"]
     }
   },
   "exclude": ["node_modules"],
-  "include": ["./src/*", "../utils"],
+  "include": ["./**/src/*", "utils/msgMgr"],
 }

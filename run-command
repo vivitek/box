@@ -1,0 +1,10 @@
+#!/bin/bash
+
+find . -maxdepth 2 -name 'package.json' -exec dirname {} \; | while read line; do
+  if [ $line == "." ]; then
+    continue;
+  fi
+  cd $line
+  $1
+  cd ..
+done
