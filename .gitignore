@@ -1,5 +1,9 @@
-## Project specific
-prod
+#
+## GIT IGNORE
+## VINCIPIT
+#
+
+## Project Specific Ignored folder ##
 built
 
 ### Node ###
@@ -91,18 +95,6 @@ dist/
 # Storybook build outputs
 .out
 .storybook-out
-
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless/
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
 
 # Temporary folders
 tmp/
