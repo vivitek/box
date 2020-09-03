@@ -1,0 +1,11 @@
+version: '2'
+services:
+  container:
+    container_name: example_container
+    image: node:lts
+    environment:
+      - PORT=3000
+    ports:
+      - '3000:3000'
+    volumes:
+      - './container/built:/app'

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+#Run docker compose in dev mode
+docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml $@

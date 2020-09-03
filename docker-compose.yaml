@@ -1,44 +1,11 @@
-version: '3.7'
+version: '2'
 services:
-    dhcp:
-        container_name: dhcp
-        build:
-            context: .
-            dockerfile: ./dhcp/Dockerfile
-        ports:
-            - '67:67'
-        depends_on:
-            - 'rabbitmq'
-        environment:
-            RABBITMQ_URL: amqp://rabbitmq
-    rabbitmq:
-        container_name: rabbitmq
-        image: rabbitmq:3.7-management
-        environment: 
-            RABBITMQ_ERLANG_COOKIE: 'secret'
-            # RABBITMQ_DEFAULT_USER: vivi
-            # RABBITMQ_DEFAULT_PASS: 'vivitek'
-        ports:
-            - '15672:15672'
-            - '5672:5672'
-    pcap:
-        container_name: pcap
-        build:
-            context: .
-            dockerfile: ./pcap/Dockerfile
-        depends_on: 
-            - rabbitmq
-        ports:
-            - '5000:5000'
-        network_mode: 'host'
-        environment: 
-            RABBITMQ_URL: amqp://127.0.0.1:5672
-    msg_broker:
-        container_name: msg_broker
-        build:
-            context: .
-            dockerfile: ./msg_broker/Dockerfile
-        depends_on: 
-            - rabbitmq
-        environment: 
-            RABBITMQ_URL: amqp://rabbitmq
+  container:
+    container_name: example_container_prod
+    build:
+      context: .
+      dockerfile: container/Dockerfile
+    environment:
+      - PORT=3000
+    ports:
+      - '3000:3000'
