@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node built/container/src/index.js",
-    "build": "tsc",
+    "build": "npx tsc",
     "format": "prettier --write \"**/*.{js,ts}\"",
     "lint": "eslint . --ext ts",
     "type-check": "tsc --pretty --noEmit"

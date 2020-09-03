@@ -17,5 +17,5 @@
     }
   },
   "exclude": ["node_modules", "out", "prod", "built"],
-  "include": ["**/*.ts"]
+  "include": ["src/**/*.ts", "../utils/**/*.ts"]
 }
