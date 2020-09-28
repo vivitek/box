@@ -37,7 +37,7 @@ export class Logger {
    *
    * @returns void
    */
-  public info(data: string, ...args: []): void {
+  public info(data: string, ...args: any[]): void {
     const timestamp = `[${new Date().toUTCString()}] - INFO - `
     this.fileLog.info(timestamp, data, args)
     this.displayLog.info(`${timestamp}${data}`, args)
@@ -49,7 +49,7 @@ export class Logger {
    * @param data any
    * @param args any
    */
-  public warn(data: string, ...args: []): void {
+  public warn(data: string, ...args: any[]): void {
     const timestamp = `[${new Date().toUTCString()}] - WARN - `
     this.fileLog.warn(timestamp, data, args)
     this.displayLog.warn(`${timestamp}${data}`, args)

@@ -2,9 +2,9 @@ import * as amqp from 'amqplib'
 import MessageManager from './msgMgr'
 
 export class MsgMgr implements MessageManager {
-  public connection: amqp.Connection
+  public connection: amqp.Connection | undefined
   private connectionString: string
-  private channel: amqp.Channel
+  private channel: amqp.Channel | undefined
 
   private mainQueue: string
 
@@ -17,6 +17,8 @@ export class MsgMgr implements MessageManager {
   constructor(connectionString: string, queue?: string) {
     this.connectionString = connectionString
     this.mainQueue = queue || 'default'
+    this.channel = undefined
+    this.connection = undefined
   }
 
   /**
@@ -34,11 +36,11 @@ export class MsgMgr implements MessageManager {
    */
   public async hasMsg(): Promise<boolean> {
     if (!this.mainQueue) return false
-    const assert = await this.channel.assertQueue(this.mainQueue, {
+    const assert = await this.channel?.assertQueue(this.mainQueue, {
       durable: true,
     })
 
-    if (assert.messageCount > 0) return true
+    if (assert && assert.messageCount > 0) return true
     return false
   }
 
@@ -51,11 +53,11 @@ export class MsgMgr implements MessageManager {
     if (this.mainQueue) queue = this.mainQueue
 
     if (!queue) throw new Error('No Queue to consume')
-    await this.channel.assertQueue(queue, { durable: true })
+    await this.channel?.assertQueue(queue, { durable: true })
 
     let message = ''
 
-    await this.channel.consume(
+    await this.channel?.consume(
       queue,
       (msg) => {
         if (!msg) return
@@ -78,9 +80,9 @@ export class MsgMgr implements MessageManager {
 
     if (!queue) throw new Error('No queue defined to push msgs...')
 
-    this.channel.assertQueue(queue, { durable: true })
+    this.channel?.assertQueue(queue, { durable: true })
 
-    this.channel.sendToQueue(queue, Buffer.from(message))
+    this.channel?.sendToQueue(queue, Buffer.from(message))
   }
 
   /**
@@ -91,11 +93,11 @@ export class MsgMgr implements MessageManager {
   public sendErr(error: string): void {
     const queue = 'error'
 
-    this.channel.assertQueue(queue, {
+    this.channel?.assertQueue(queue, {
       durable: true,
     })
 
-    this.channel.sendToQueue(queue, Buffer.from(error))
+    this.channel?.sendToQueue(queue, Buffer.from(error))
     console.error('[ERR] - Sent Error to server')
   }
 }

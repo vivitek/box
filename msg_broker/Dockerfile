@@ -25,9 +25,9 @@ FROM balenalib/aarch64-alpine-node as run
 WORKDIR /app
 
 # Import project
-COPY container/built .
-COPY container/package.json .
+COPY msg_broker/built .
+COPY msg_broker/package.json .
 RUN ls -l
 RUN npm i
 
-CMD ["node", "container/src/index.js"]
+CMD ["node", "msg_broker/src/index.js"]
