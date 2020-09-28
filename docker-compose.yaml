@@ -9,3 +9,27 @@ services:
       - PORT=3000
     ports:
       - '3000:3000'
+  dns:
+    container_name: dns-lookup
+    build:
+      context: .
+      dockerfile: dns-lookup/Dockerfile
+    environment:
+      - PORT=5000
+    ports:
+      - '80:5000'
+  msg_broker:
+    container_name: msg_broker
+    build:
+      context: .
+      dockerfile: msg_broker/Dockerfile
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.7-management
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=secret
+    ports:
+      - '15672:15672'
+      - '5672'
