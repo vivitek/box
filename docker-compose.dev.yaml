@@ -18,3 +18,24 @@ services:
       - './dns-lookup:/app'
     working_dir: '/app'
     command: 'yarn dev'
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.7-management
+    environment:
+        RABBITMQ_ERLANG_COOKIE: 'secret'
+        # RABBITMQ_DEFAULT_USER: vivi
+        # RABBITMQ_DEFAULT_PASS: 'vivitek'
+    ports:
+        - '15672:15672'
+        - '5672:5672'
+  msg_broker:
+    container_name: msg_broker
+    image: node:lts
+    volumes: 
+      - './msg_broker:/app'
+    working_dir: '/app'
+    command: 'yarn start'
+    depends_on:
+      - rabbitmq
+    environment: 
+      RABBITMQ_URL: amqp://rabbitmq

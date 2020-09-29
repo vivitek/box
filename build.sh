@@ -13,11 +13,12 @@ NC='\033[0m'
 echo -e "${ORANGE}## BUILDING PROJECT FOR BALENA OS ${NC}##"
 
 # Building typescript containers
-containers="container"
-for container in containers; do
+containers="dns-lookup msg_broker"
+for container in $containers; do
   cd container
+  echo -e "${ORANGE} => ${container}${NC}"
   yarn build
-  if [ $? -eq 1 ]; then
+  if [ $? -ne 0 ]; then
     echo -e "${RED}XXX ERROR BUILDING TS IN ${ORANGE}${container}${RED} XXX${NC}"
     exit 1
   fi
@@ -29,7 +30,7 @@ echo -e "${GREEN}[][][] Done ! [][][]${NC}"
 echo -e "${ORANGE}Building containers on BalenaCloud${NC}"
 
 balena push VincipitRouter
-if [ $? -eq 1 ]; then
+if [ $? -ne 0 ]; then
   echo -e "${RED}XXX ERROR BUILDING CONTAINER ON BALENACLOUD XXX${NC}"
   exit 1
 fi
