@@ -5,6 +5,8 @@
 
 ## Project Specific Ignored folder ##
 built
+.stderr
+.stdout
 
 ### Node ###
 # Logs
