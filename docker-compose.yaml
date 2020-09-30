@@ -1,14 +1,5 @@
 version: '2'
 services:
-  container:
-    container_name: example_container_prod
-    build:
-      context: .
-      dockerfile: container/Dockerfile
-    environment:
-      - PORT=3000
-    ports:
-      - '3000:3000'
   dns:
     container_name: dns-lookup
     build:
@@ -25,6 +16,8 @@ services:
       dockerfile: msg_broker/Dockerfile
     environment:
       - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - rabbitmq
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.7-management
@@ -42,3 +35,13 @@ services:
       - RABBITMQ_URL=amqp://rabbitmq
     depends_on:
       - rabbitmq
+  pcap:
+    container_name: pcap
+    build:
+      context: .
+      dockerfile: pcap/Dockerfile
+    network_mode: 'host'
+    environment:
+      - RABBITMQ_URL=amqp://127.0.0.1:5672
+    depends_on:
+     - rabbitmq

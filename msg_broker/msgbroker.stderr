@@ -1,4 +1,4 @@
-[Fri, 11 Sep 2020 14:33:35 GMT] - WARN -  ERROR: [
+[Wed, 30 Sep 2020 07:59:43 GMT] - WARN -  ERROR: [
   OperationalError: connect ECONNREFUSED 172.26.0.2:5672
       at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16) {
     cause: Error: connect ECONNREFUSED 172.26.0.2:5672

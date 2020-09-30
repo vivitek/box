@@ -4,9 +4,10 @@ RUN npm i -g --force yarn
 
 WORKDIR /app
 
-COPY package.json .
+COPY dns-lookup/package.json .
 RUN yarn install
 
-COPY . .
+COPY dns-lookup .
+RUN ls -l
 
 CMD ["yarn", "dev"]
