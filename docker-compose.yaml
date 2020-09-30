@@ -31,7 +31,8 @@ services:
     build:
       context: .
       dockerfile: pcap/Dockerfile
+    network_mode: 'host'
     environment:
-      - RABBITMQ_URL=amqp://rabbitmq
+      - RABBITMQ_URL=amqp://127.0.0.1:5672
     depends_on:
      - rabbitmq

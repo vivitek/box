@@ -36,6 +36,7 @@ services:
     volumes:
       - './pcap:/app'
     command: 'yarn start'
+    working_dir: /app
     depends_on: 
       - rabbitmq
     environment:
