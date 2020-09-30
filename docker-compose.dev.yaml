@@ -39,3 +39,14 @@ services:
       - rabbitmq
     environment: 
       RABBITMQ_URL: amqp://rabbitmq
+  agent:
+    container_name: agent
+    image: node:lts
+    working_dir: /app
+    volumes:
+      - './agent:/app'
+    command: 'yarn start'
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ: amqp://rabbitmq
