@@ -26,6 +26,15 @@ services:
     ports:
       - '15672:15672'
       - '5672'
+  agent:
+    container_name: agent
+    build:
+      context: .
+      dockerfile: agent/Dockerfile
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - rabbitmq
   pcap:
     container_name: pcap
     build:
