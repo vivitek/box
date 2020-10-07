@@ -1,15 +1,33 @@
-FROM node:latest
+# Build project
+# FROM balenalib/aarch64-ubuntu-node as build
+# FROM node:lts as build
 
-RUN apt-get update -y
-RUN apt-get install -y libpcap-dev
+# # Install yarn
+# RUN npm i -g --force yarn
 
-EXPOSE 5000
-WORKDIR /code
+# WORKDIR /app/container
 
-# copy files
-COPY . .
+# # Install dependencies
+# COPY container/package.json .
+# RUN yarn install
 
+# # Import and build project
+# COPY container .
+# WORKDIR /app/utils
+# COPY utils .
+# WORKDIR /app/container
+# RUN yarn build
+
+# Run app in container
+# FROM node:lts as run
+FROM balenalib/aarch64-alpine-node as run
+
+WORKDIR /app
+
+# Import project
+COPY msg_broker/built .
+COPY msg_broker/package.json .
+RUN ls -l
 RUN npm i
-RUN npm run build
 
-CMD npm start
+CMD ["node", "msg_broker/src/index.js"]

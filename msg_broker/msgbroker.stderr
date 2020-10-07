@@ -1,0 +1,76 @@
+[Wed, 30 Sep 2020 07:59:43 GMT] - WARN -  ERROR: [
+  OperationalError: connect ECONNREFUSED 172.26.0.2:5672
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16) {
+    cause: Error: connect ECONNREFUSED 172.26.0.2:5672
+        at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16) {
+      errno: 'ECONNREFUSED',
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '172.26.0.2',
+      port: 5672
+    },
+    isOperational: true,
+    errno: 'ECONNREFUSED',
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '172.26.0.2',
+    port: 5672
+  }
+]
+[Wed, 30 Sep 2020 10:45:52 GMT] - WARN -  ERROR: [
+  OperationalError: connect ECONNREFUSED 172.26.0.3:5672
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16) {
+    cause: Error: connect ECONNREFUSED 172.26.0.3:5672
+        at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16) {
+      errno: 'ECONNREFUSED',
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '172.26.0.3',
+      port: 5672
+    },
+    isOperational: true,
+    errno: 'ECONNREFUSED',
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '172.26.0.3',
+    port: 5672
+  }
+]
+[Wed, 30 Sep 2020 10:46:50 GMT] - WARN -  ERROR: [
+  OperationalError: connect ECONNREFUSED 172.26.0.2:5672
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16) {
+    cause: Error: connect ECONNREFUSED 172.26.0.2:5672
+        at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16) {
+      errno: 'ECONNREFUSED',
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '172.26.0.2',
+      port: 5672
+    },
+    isOperational: true,
+    errno: 'ECONNREFUSED',
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '172.26.0.2',
+    port: 5672
+  }
+]
+[Wed, 30 Sep 2020 10:47:41 GMT] - WARN -  ERROR: [
+  OperationalError: connect ECONNREFUSED 172.26.0.3:5672
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16) {
+    cause: Error: connect ECONNREFUSED 172.26.0.3:5672
+        at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16) {
+      errno: 'ECONNREFUSED',
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '172.26.0.3',
+      port: 5672
+    },
+    isOperational: true,
+    errno: 'ECONNREFUSED',
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '172.26.0.3',
+    port: 5672
+  }
+]

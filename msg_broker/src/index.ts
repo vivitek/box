@@ -1,29 +1,34 @@
-import MsgMgr from './msgMgr/MsgMgr';
+import MsgMgr from '../../utils/msgMgr/msgMgr'
+import { Logger } from '../../utils/Logger/Logger'
 
-const main = async () => {
-    const url = process.env.RABBITMQ_URL;
+const logger = new Logger('./msgbroker.stdout', './msgbroker.stderr')
 
-    const pcap : MsgMgr = new MsgMgr(url, 'pcap');
-    const dhcp: MsgMgr = new MsgMgr(url, 'dhcp');
+const main = async (): Promise<void> => {
+  const url = process.env.RABBITMQ_URL
+  if (!url) throw new Error('Rabbit MQ Url')
+  logger.info('[+] URL:', url)
 
-    try {
-        await pcap.connect();
-        await dhcp.connect();
-    } catch (e) {
-        console.error("ERROR:", e);
-        return;
+  const pcap: MsgMgr = new MsgMgr(url, 'pcap')
+  const dhcp: MsgMgr = new MsgMgr(url, 'dhcp')
+
+  try {
+    await pcap.connect()
+    await dhcp.connect()
+  } catch (e) {
+    logger.warn('ERROR:', e)
+    return
+  }
+
+  setInterval(async () => {
+    if (await pcap.hasMsg()) {
+      const msg = await pcap.readMsg()
+      logger.info('[PCAP] -', msg)
     }
-    
-    setInterval(async () => {
-        if (await pcap.hasMsg()) {
-            let msg = await pcap.readMsg();
-            console.log("[PCAP] -", msg);
-        }
-        if (await dhcp.hasMsg()) {
-            let msg = await dhcp.readMsg();
-            console.log("[DHCP] -", msg);
-        }
-    }, 200);
+    if (await dhcp.hasMsg()) {
+      const msg = await dhcp.readMsg()
+      logger.info('[DHCP] -', msg)
+    }
+  }, 200)
 }
 
-main();
+main()

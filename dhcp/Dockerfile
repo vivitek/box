@@ -1,12 +1,14 @@
-# FROM balenalib/raspberrypi3-alpine-node:latest
-FROM node:latest
+FROM balenalib/aarch64-alpine-node as run
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package*.json ./
-RUN npm i
-
-COPY . .
+# Import project
+COPY dhcp .
+RUN ls -l
+RUN rm -rf node_modules
+RUN yarn install
 
 EXPOSE 67
-CMD ["node", "index.js"]
+EXPOSE 4000
+
+CMD ["node", "src/index.js"]

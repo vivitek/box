@@ -1,0 +1,32 @@
+#!/bin/sh
+
+#Run docker compose in dev mode
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+NC='\033[0m'
+
+# Checking if args are passed
+if [ $# -eq 0 ]; then
+    echo "${RED}No arguments provided${NC}"
+    exit 1
+fi
+
+echo "${ORANGE}Building Projects${NC}"
+
+# Building ts to js in containers
+containers="container msg_broker dns-lookup"
+for container in containers; do
+  cd container
+  yarn build
+  if [ $? -eq 1 ]; then
+    echo "${RED}XXX ERROR BUILDING TS IN ${ORANGE}${container}${RED} XXX${NC}"
+    exit 1
+  fi
+  cd ..
+done
+echo "${GREEN}Done !${NC}"
+
+echo "${ORANGE}Launching docker-compose${NC}"
+
+docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml $@

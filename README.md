@@ -1,46 +1,23 @@
-[![Build Status](https://travis-ci.com/vivitek/deep-thought.svg?branch=develop)](https://travis-ci.com/vivitek/deep-thought)
+# Vincipit Router - Deep Thought
 
-# Router - Version 0.1
-========
 
-## Project
+### Description
 
-This project is part of [VIVI](https://vincipit.com/). This repository contains all the containers pushed on the routers.
+This project is developped by @vivitek as the router part. It contains the multiple containers needed for the router and firewall functionnalities.
 
-## Documentation
+Used technologies:
+- docker
+- typescript/javascript
 
-Please read the [development](./holocron/routerDocs/development.md) which will teach you how the tools we use, and how the repository is organised.
+### Developping
 
-Please also read the [Conventions](./holocron/routerDocs/conventions.md) which will tell you how to give good, readable code, good branch naming (bad named branches will _NOT_ be merged, and PRs _will be refused_ ).
+See [contributing guidelines](./holocron/router/contributing.md)
+In local, project can be developped in a container using VSCode Dev Container functionnality.
 
-## Internal Tools
+Required for container dev: Docker CE/CC, VSCode, Docker VSCode Extension, Remote - Containers Extension
 
-> Setup
+### Building
 
-After cloning the repo, please run this. It will init gitflow, and install the prettier hook in your local repo
+As the project need to be built for an arm architecture (aarch64), the TS files will be built locally, then sent and built on BalenaCloud platform, and pushed to devices. The devices will automatically be updated if the build succeeds.
 
-## External Tools
-
-We don't have an install script yet so please install the following programs/plugins.
-
-> Docker
-
-We use `docker-compose` to run everything in containers, because BalenaOS runs the conainers the same way.
-
-> Git and git-flow
-
-We use git as versionning tool. To have clean branches, we use the [git-flow architecture](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow). Please read the [conventions](./holocron/routerDocs/conventions.md) for branch naming.
-
-Install git: `sudo apt-get install git`
-
-Install git-flow: `sudo apt-get install git-flow`
-
-Do not forget to run `git flow init` after cloning repository.
-
-> PivotalTracker
-
-Used to create stories. Ask the project responsible to add you to the board.
-
-## Tests
-
-We do not have testing yet. See in future releases.
+Use `./build.sh` to build and publish project

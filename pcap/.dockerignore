@@ -1,2 +1,7 @@
 node_modules
-built
+.eslintrc
+.eslintignore
+.prettierignore
+.prettierrc
+yarn-error.log
+./built
