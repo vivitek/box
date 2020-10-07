@@ -13,10 +13,11 @@ NC='\033[0m'
 echo -e "${ORANGE}## BUILDING PROJECT FOR BALENA OS ${NC}##"
 
 # Building typescript containers
-containers="dns-lookup msg_broker"
+containers="msg_broker dhcp pcap"
 for container in $containers; do
-  cd container
+  cd $container
   echo -e "${ORANGE} => ${container}${NC}"
+  rm -rf built
   yarn build
   if [ $? -ne 0 ]; then
     echo -e "${RED}XXX ERROR BUILDING TS IN ${ORANGE}${container}${RED} XXX${NC}"
