@@ -16,7 +16,7 @@
     }
   },
   "lint-staged": {
-    "*.@(ts|js)": [
+    "*.@(ts)": [
       "yarn format",
       "yarn lint"
     ]

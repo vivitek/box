@@ -52,3 +52,13 @@ services:
       - rabbitmq
     environment:
       RABBITMQ_URL: amqp://rabbitmq
+  dhcp:
+    container_name: dhcp
+    image: node:lts
+    volumes:
+      - './dhcp:/app/dhcp'
+      - './dhcp:/app/utils'
+    working_dir: '/app/dhcp'
+    command: 'node src/index.js'
+    depends_on:
+     - rabbitmq
