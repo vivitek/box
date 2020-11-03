@@ -1,0 +1,11 @@
+#!/bin/sh 
+
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+echo -e "${YELLOW}Beautifying your code${NC}"
+npm run --prefix ./dhcp beautify
+npm run --prefix ./msg_broker beautify
+npm run --prefix ./agent beautify
+npm run --prefix ./pcap beautify
+echo "Done."
