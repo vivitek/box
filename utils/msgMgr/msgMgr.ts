@@ -1,5 +1,10 @@
 import * as amqp from 'amqplib'
 import MessageManager from './msgMgr'
+import {
+  ErrQueueNotDefined,
+  ErrInvalidConnectionString,
+  ErrConnectionFailed
+} from '../Error/MsgMgrError'
 
 export class MsgMgr implements MessageManager {
   public connection: amqp.Connection | undefined
@@ -7,6 +12,7 @@ export class MsgMgr implements MessageManager {
   private channel: amqp.Channel | undefined
 
   private mainQueue: string
+  private errorQueue: string[]
 
   /**
    * Contructor
@@ -19,16 +25,22 @@ export class MsgMgr implements MessageManager {
     this.mainQueue = queue || 'default'
     this.channel = undefined
     this.connection = undefined
+    this.errorQueue = []
   }
 
   /**
    * Connects to rabbitmq
    */
   public async connect(): Promise<void> {
-    if (!this.connectionString) throw new Error('not initialized')
-    this.connection = await amqp.connect(this.connectionString)
-    this.channel = await this.connection.createChannel()
-    console.info('[+] - Connected to RabbitMQ')
+    if (!this.connectionString) throw new ErrInvalidConnectionString()
+    try {
+      this.connection = await amqp.connect(this.connectionString)
+      this.channel = await this.connection.createChannel()
+      console.info('[+] - Connected to RabbitMQ')
+    } catch (e) {
+      console.error(e.message)
+      throw new ErrConnectionFailed()
+    }
   }
 
   /**
@@ -36,9 +48,15 @@ export class MsgMgr implements MessageManager {
    */
   public async hasMsg(): Promise<boolean> {
     if (!this.mainQueue) return false
-    const assert = await this.channel?.assertQueue(this.mainQueue, {
-      durable: true,
-    })
+    let assert: amqp.Replies.AssertQueue | undefined
+    try {
+      assert = await this.channel?.assertQueue(this.mainQueue, {
+        durable: true,
+      })
+    } catch (e) {
+      console.error()
+      return false
+    }
 
     if (assert && assert.messageCount > 0) return true
     return false
@@ -52,7 +70,7 @@ export class MsgMgr implements MessageManager {
   public async readMsg(queue?: string): Promise<string> {
     if (this.mainQueue) queue = this.mainQueue
 
-    if (!queue) throw new Error('No Queue to consume')
+    if (!queue) throw new ErrQueueNotDefined()
     await this.channel?.assertQueue(queue, { durable: true })
 
     let message = ''
@@ -78,7 +96,7 @@ export class MsgMgr implements MessageManager {
   public sendMsg(message: string, queue?: string): void {
     if (this.mainQueue) queue = this.mainQueue
 
-    if (!queue) throw new Error('No queue defined to push msgs...')
+    if (!queue) throw new ErrQueueNotDefined()
 
     this.channel?.assertQueue(queue, { durable: true })
 
@@ -93,12 +111,16 @@ export class MsgMgr implements MessageManager {
   public sendErr(error: string): void {
     const queue = 'error'
 
+    this.errorQueue.push(error)
     this.channel?.assertQueue(queue, {
       durable: true,
     })
 
-    this.channel?.sendToQueue(queue, Buffer.from(error))
-    console.error('[ERR] - Sent Error to server')
+    let err: string | undefined
+    while (err = this.errorQueue.pop()) {
+      this.channel?.sendToQueue(queue, Buffer.from(err))
+      console.error('[ERR] - Sent Error to server')
+    }
   }
 }
 

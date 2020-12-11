@@ -74,3 +74,27 @@
     port: 5672
   }
 ]
+[Mon, 09 Nov 2020 09:30:42 GMT] - WARN -  ERROR: [
+  OperationalError: connect ECONNREFUSED 172.19.0.3:5672
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16) {
+    cause: Error: connect ECONNREFUSED 172.19.0.3:5672
+        at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16) {
+      errno: 'ECONNREFUSED',
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '172.19.0.3',
+      port: 5672
+    },
+    isOperational: true,
+    errno: 'ECONNREFUSED',
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '172.19.0.3',
+    port: 5672
+  }
+]
+[Mon, 09 Nov 2020 11:12:36 GMT] - WARN -  ERROR: [ 'Invalid Connection String' ]
+[Mon, 09 Nov 2020 11:14:11 GMT] - WARN -  ERROR: [ 'Invalid Connection String' ]
+[Mon, 09 Nov 2020 12:24:00 GMT] - WARN -  ERROR: [ 'Invalid Connection String' ]
+[Mon, 09 Nov 2020 12:40:51 GMT] - WARN -  ERROR: [ 'Invalid Connection String' ]
+[Mon, 09 Nov 2020 13:22:24 GMT] - WARN -  ERROR: [ 'Invalid Connection String' ]

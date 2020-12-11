@@ -8,14 +8,18 @@ const main = async (): Promise<void> => {
   if (!url) throw new Error('Rabbit MQ Url')
   logger.info('[+] URL:', url)
 
-  const pcap: MsgMgr = new MsgMgr(url, 'pcap')
+  const error: MsgMgr = new MsgMgr(url, 'error')
+  await error.connect()
+
+  const pcap: MsgMgr = new MsgMgr('', 'pcap')
   const dhcp: MsgMgr = new MsgMgr(url, 'dhcp')
 
   try {
     await pcap.connect()
     await dhcp.connect()
   } catch (e) {
-    logger.warn('ERROR:', e)
+    error.sendErr(e.message)
+    logger.warn('ERROR:', e.message)
     return
   }
 

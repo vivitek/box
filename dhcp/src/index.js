@@ -1,24 +1,13 @@
-const Logger = require('../built/utils/Logger/Logger').Logger
-const express = require('express')
-
-const bindedAdresses = []
-
-const app = express()
-app.use(express.json())
-
-app.get('/block', (_req, res) => {
-  console.log('Receive blocking order')
-  res.json({ message: 'Success' })
-})
-app.get('/addresses', (_req, res) => {
-  res.json({ bindedAdresses })
-})
-app.listen(4000, () => console.log('Endpoint available on port 4000'))
-
-const logger = new Logger('./dhcp.stdout', './dhcp.stderr')
 const dhcpd = require('dhcp')
+const { exit } = require('process')
 
-let server = dhcpd.createServer({
+// Logging
+// const Logger = require('../built/utils/Logger/Logger').Logger
+// const logger = new Logger('./dhcp.stdout', './dhcp.stderr')
+
+// Server Config & Launch
+let server
+const config = {
   range: ['192.168.1.2', '192.168.1.40'],
   forceOptions: ['hostname'],
   randomIP: false,
@@ -44,8 +33,15 @@ let server = dhcpd.createServer({
     } else {
       return 'x64linux.0';
     }
-  },
-});
+  }
+}
+
+try {
+  server = dhcpd.createServer(config);
+} catch (e) {
+  logger.err('Failed to create DHCP Server -', e.message)
+  exit
+}
 
 server.on('message', data => {
   logger.info('Connection request from ' + data.chaddr);
@@ -71,6 +67,7 @@ server.on('error', (err, data) => {
   // msgMgr.sendErr(err);
 });
 
+// Init and Launch
 const init = async () => {
   // await msgMgr.connect();
   server.listen();

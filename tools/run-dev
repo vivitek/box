@@ -15,9 +15,9 @@ fi
 echo "${ORANGE}Building Projects${NC}"
 
 # Building ts to js in containers
-containers="container msg_broker dns-lookup"
-for container in containers; do
-  cd container
+containers="msg_broker pcap dhcp"
+for container in msg_broker pcap dhcp; do
+  cd $container
   yarn build
   if [ $? -eq 1 ]; then
     echo "${RED}XXX ERROR BUILDING TS IN ${ORANGE}${container}${RED} XXX${NC}"
