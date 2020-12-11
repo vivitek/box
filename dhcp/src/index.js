@@ -1,5 +1,6 @@
 const Logger = require('../built/utils/Logger/Logger').Logger
 const express = require('express')
+const exampleGet = require('../built/utils/api/api_server').exampleGet
 
 const bindedAdresses = []
 

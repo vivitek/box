@@ -11,6 +11,7 @@
     "outDir": "built",
     "module": "commonjs",
     "baseUrl": ".",
+    "resolveJsonModule": true,
     "paths": {
       "*": ["."],
       "utils/*": ["../utils/*", "../utils/*"]
