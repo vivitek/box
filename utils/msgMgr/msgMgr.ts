@@ -3,7 +3,7 @@ import MessageManager from './msgMgr'
 import {
   ErrQueueNotDefined,
   ErrInvalidConnectionString,
-  ErrConnectionFailed
+  ErrConnectionFailed,
 } from '../Error/MsgMgrError'
 
 export class MsgMgr implements MessageManager {
@@ -117,7 +117,7 @@ export class MsgMgr implements MessageManager {
     })
 
     let err: string | undefined
-    while (err = this.errorQueue.pop()) {
+    while ((err = this.errorQueue.pop())) {
       this.channel?.sendToQueue(queue, Buffer.from(err))
       console.error('[ERR] - Sent Error to server')
     }
