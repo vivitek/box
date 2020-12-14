@@ -6,8 +6,9 @@
   "author": "Vincipit",
   "license": "MIT",
   "scripts": {
-    "start": "node built/msg_broker/src/index.js",
-    "build": "npx tsc"
+    "start": "node built/dhcp/src/index.js",
+    "build": "npx tsc",
+    "prebuild": "rm -rf built/"
   },
   "devDependencies": {
     "@types/express": "^4.17.8",

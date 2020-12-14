@@ -2,8 +2,15 @@ const dhcpd = require('dhcp')
 const { exit } = require('process')
 
 // Logging
-// const Logger = require('../built/utils/Logger/Logger').Logger
-// const logger = new Logger('./dhcp.stdout', './dhcp.stderr')
+const Logger = require('../../utils/Logger/Logger').Logger
+const logger = new Logger('./dhcp.stdout', './dhcp.stderr')
+
+const url = process.env.RABBITMQ_URL
+if (!url) throw new Error('No RabbitMQ url')
+
+// MsgMgr
+const MsgMgr = require('../../utils/msgMgr/msgMgr').MsgMgr
+const msgMgr = new MsgMgr(url, 'dhcp')
 
 // Server Config & Launch
 let server
@@ -50,7 +57,7 @@ server.on('message', data => {
 server.on('listening', sock => {
   let addr = sock.address();
   logger.info('Server listening: ' + addr.address + ':' + addr.port);
-  // msgMgr.sendMsg('Listening' + addr.port);
+  msgMgr.sendMsg('Listening' + addr.port);
 });
 
 server.on('bound', state => {
@@ -58,7 +65,7 @@ server.on('bound', state => {
   if (addr) {
     logger.info('Bounded ' + addr + '. Sending to server....');
     bindedAdresses.push(addr)
-    // msgMgr.sendMsg(addr);
+    msgMgr.sendMsg(addr);
   }
 });
 
@@ -69,8 +76,12 @@ server.on('error', (err, data) => {
 
 // Init and Launch
 const init = async () => {
-  // await msgMgr.connect();
+  await msgMgr.connect();
   server.listen();
 }
 
-init();
+try {
+  init();
+} catch(e) {
+  msgMgr.sendErr('Error:', e.message)
+}
