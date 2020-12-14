@@ -47,9 +47,9 @@ services:
     container_name: dhcp
     image: node:lts
     volumes:
-      - './dhcp:/app/dhcp'
-      - './dhcp:/app/utils'
+      - './dhcp/built:/app/dhcp'
+      - './dhcp/node_modules:/app/dhcp/node_modules'
     working_dir: '/app/dhcp'
-    command: 'node src/index.js'
+    command: 'node dhcp/src/index.js'
     depends_on:
      - rabbitmq

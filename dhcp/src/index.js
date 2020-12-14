@@ -5,6 +5,7 @@ const { exit } = require('process')
 const Logger = require('../../utils/Logger/Logger').Logger
 const logger = new Logger('./dhcp.stdout', './dhcp.stderr')
 
+console.log('URL=', process.env.RABBITMQ_URL)
 const url = process.env.RABBITMQ_URL
 if (!url) throw new Error('No RabbitMQ url')
 
@@ -57,7 +58,7 @@ server.on('message', data => {
 server.on('listening', sock => {
   let addr = sock.address();
   logger.info('Server listening: ' + addr.address + ':' + addr.port);
-  msgMgr.sendMsg('Listening' + addr.port);
+  msgMgr.sendMsg('Listening:' + addr.port);
 });
 
 server.on('bound', state => {
@@ -71,7 +72,7 @@ server.on('bound', state => {
 
 server.on('error', (err, data) => {
   logger.error('An error occured: ', err, data);
-  // msgMgr.sendErr(err);
+  msgMgr.sendErr(err);
 });
 
 // Init and Launch

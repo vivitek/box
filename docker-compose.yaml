@@ -42,7 +42,7 @@ services:
       context: .
       dockerfile: dhcp/Dockerfile
     environment:
-      - RABBITMQ_URL=amqp://rabbitmq
+      - RABBITMQ_URL=amqp://127.0.0.1:5672
     network_mode: 'host'
     ports:
       - '67:67'
