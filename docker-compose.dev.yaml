@@ -1,14 +1,5 @@
 version: '2'
 services:
-  dns:
-    container_name: dns-lookup
-    image: node:lts
-    ports:
-      - '4000:3000'
-    volumes:
-      - './dns-lookup:/app'
-    working_dir: '/app'
-    command: 'yarn dev'
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.7-management
@@ -56,9 +47,9 @@ services:
     container_name: dhcp
     image: node:lts
     volumes:
-      - './dhcp:/app/dhcp'
-      - './dhcp:/app/utils'
+      - './dhcp/built:/app/dhcp'
+      - './dhcp/node_modules:/app/dhcp/node_modules'
     working_dir: '/app/dhcp'
-    command: 'node src/index.js'
+    command: 'node dhcp/src/index.js'
     depends_on:
      - rabbitmq

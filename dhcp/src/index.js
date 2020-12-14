@@ -1,25 +1,21 @@
-const Logger = require('../built/utils/Logger/Logger').Logger
-const express = require('express')
-const exampleGet = require('../built/utils/api/api_server').exampleGet
-
-const bindedAdresses = []
-
-const app = express()
-app.use(express.json())
-
-app.get('/block', (_req, res) => {
-  console.log('Receive blocking order')
-  res.json({ message: 'Success' })
-})
-app.get('/addresses', (_req, res) => {
-  res.json({ bindedAdresses })
-})
-app.listen(4000, () => console.log('Endpoint available on port 4000'))
-
-const logger = new Logger('./dhcp.stdout', './dhcp.stderr')
 const dhcpd = require('dhcp')
+const { exit } = require('process')
 
-let server = dhcpd.createServer({
+// Logging
+const Logger = require('../../utils/Logger/Logger').Logger
+const logger = new Logger('./dhcp.stdout', './dhcp.stderr')
+
+console.log('URL=', process.env.RABBITMQ_URL)
+const url = process.env.RABBITMQ_URL
+if (!url) throw new Error('No RabbitMQ url')
+
+// MsgMgr
+const MsgMgr = require('../../utils/msgMgr/msgMgr').MsgMgr
+const msgMgr = new MsgMgr(url, 'dhcp')
+
+// Server Config & Launch
+let server
+const config = {
   range: ['192.168.1.2', '192.168.1.40'],
   forceOptions: ['hostname'],
   randomIP: false,
@@ -45,8 +41,15 @@ let server = dhcpd.createServer({
     } else {
       return 'x64linux.0';
     }
-  },
-});
+  }
+}
+
+try {
+  server = dhcpd.createServer(config);
+} catch (e) {
+  logger.err('Failed to create DHCP Server -', e.message)
+  exit
+}
 
 server.on('message', data => {
   logger.info('Connection request from ' + data.chaddr);
@@ -55,7 +58,7 @@ server.on('message', data => {
 server.on('listening', sock => {
   let addr = sock.address();
   logger.info('Server listening: ' + addr.address + ':' + addr.port);
-  // msgMgr.sendMsg('Listening' + addr.port);
+  msgMgr.sendMsg('Listening:' + addr.port);
 });
 
 server.on('bound', state => {
@@ -63,18 +66,23 @@ server.on('bound', state => {
   if (addr) {
     logger.info('Bounded ' + addr + '. Sending to server....');
     bindedAdresses.push(addr)
-    // msgMgr.sendMsg(addr);
+    msgMgr.sendMsg(addr);
   }
 });
 
 server.on('error', (err, data) => {
   logger.error('An error occured: ', err, data);
-  // msgMgr.sendErr(err);
+  msgMgr.sendErr(err);
 });
 
+// Init and Launch
 const init = async () => {
-  // await msgMgr.connect();
+  await msgMgr.connect();
   server.listen();
 }
 
-init();
+try {
+  init();
+} catch(e) {
+  msgMgr.sendErr('Error:', e.message)
+}
