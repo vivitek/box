@@ -1,24 +1,18 @@
-sudo: false
 language: node_js
-node_js: 
-    - '13'
+os:
+  - 'linux'
+node_js:
+  - '12'
 branches:
-    only:
-        - develop
-        - master
-        - ROUT-44-continuous-integration
-git:
-    submodules: false
+  only:
+  - '/.*/'
+services:
+    - docker
 cache:
-    directories:
-        - node_modules
-jobs:
-    include:
-        - stage: agent
-          script: ./agent/test.sh
-        - stage: dhcp
-          script: ./dhcp/test.sh
-        - stage: msg_broker
-          script: ./msg_broker/test.sh
-        - stage: pcap
-          script: ./pcap/test.sh
+  directories:
+  - node_modules
+before_install:
+  - sudo apt -y install libpcap-dev
+script:
+  - npm run test
+  - bash <(curl -s https://codecov.io/bash)
