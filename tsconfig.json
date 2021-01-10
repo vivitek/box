@@ -14,9 +14,9 @@
     "resolveJsonModule": true,
     "paths": {
       "*": ["."],
-      "utils/*": ["../utils/*"]
+      "utils/*": ["utils/*"]
     }
   },
   "exclude": ["node_modules", "out", "prod", "built"],
-  "include": ["src/**/*.ts", "../utils/**/*.ts"]
+  "include": ["*/src/**/*.ts", "utils/**/*.ts"]
 }
