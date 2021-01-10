@@ -1,5 +1,5 @@
-import { Logger } from "../../utils/Logger/Logger";
-import { init } from ".";
+import { Logger } from '../../utils/Logger/Logger'
+import { init } from '.'
 
 jest.mock('pcap', () => ({
   __esModule: true,
@@ -16,7 +16,7 @@ jest.mock('pcap', () => ({
         on: jest.fn().mockImplementation((a, b) => {
           b()
         }),
-      });
+      })
     });
 
     track_packet = jest.fn();
@@ -29,24 +29,24 @@ jest.mock('pcap', () => ({
         on: jest.fn().mockImplementation((a, b) => {
           b()
         }),
-      });
+      })
     }),
   }),
-}), { virtual: true });
+}), { virtual: true })
 
-const mock = {} as Logger;
+const mock = {} as Logger
 
 jest.mock('../../utils/Logger/Logger', () => ({
   __esModule: true,
   Logger: class LoggerMock {
     info = mock.info;
   },
-}));
+}))
 
 test('should log all the things', () => {
-  mock.info = jest.fn();
+  mock.info = jest.fn()
 
-  init();
+  init()
 
-  expect(mock.info).toHaveBeenCalledWith('[-] - End of session');
-});
+  expect(mock.info).toHaveBeenCalledWith('[-] - End of session')
+})

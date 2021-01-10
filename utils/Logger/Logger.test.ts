@@ -1,12 +1,12 @@
-import * as fs from 'fs';
-import { Logger } from "./Logger";
+import * as fs from 'fs'
+import { Logger } from './Logger'
 
-jest.mock('fs');
+jest.mock('fs')
 
 const logger = {
   info: jest.fn(),
   warn: jest.fn(),
-} as Record<keyof Console, jest.Mock>;
+} as Record<keyof Console, jest.Mock>
 
 jest.mock('console', () => ({
   __esModule: true,
@@ -16,26 +16,26 @@ jest.mock('console', () => ({
     warn = logger.warn;
     info = logger.info;
   }
-}));
+}))
 
 test('should init without error', () => {
-  const log = new Logger();
+  const log = new Logger()
 
-  expect(fs.createWriteStream).toHaveBeenCalled();
-});
+  expect(fs.createWriteStream).toHaveBeenCalled()
+})
 
 test('`info` should work without error', () => {
-  const log = new Logger();
+  const log = new Logger()
 
-  log.info('foo');
+  log.info('foo')
 
-  expect(logger.info).toHaveBeenCalled();
-});
+  expect(logger.info).toHaveBeenCalled()
+})
 
 test('`warn` should work without error', () => {
-  const log = new Logger();
+  const log = new Logger()
 
-  log.warn('baz');
+  log.warn('baz')
 
-  expect(logger.warn).toHaveBeenCalled();
-});
+  expect(logger.warn).toHaveBeenCalled()
+})
