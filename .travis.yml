@@ -11,6 +11,8 @@ services:
 cache:
   directories:
   - node_modules
+before_install:
+  - sudo apt -y install pcap
 script:
   - npm run test
   - bash <(curl -s https://codecov.io/bash)
