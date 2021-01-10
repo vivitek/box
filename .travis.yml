@@ -12,7 +12,7 @@ cache:
   directories:
   - node_modules
 before_install:
-  - sudo apt -y install pcap
+  - sudo apt -y install libpcap-dev
 script:
   - npm run test
   - bash <(curl -s https://codecov.io/bash)
