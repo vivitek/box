@@ -8,7 +8,7 @@ module.exports = {
   coverageReporters: ["json", "lcov", "text", "clover", "text-summary"],
   globals: {
     'ts-jest': {
-      tsconfig: 'tsconfig.json'
+      tsconfig: '../tsconfig.json'
     }
   },
   transform: {
