@@ -3,7 +3,7 @@ import { Logger } from '../../utils/Logger/Logger'
 
 const logger = new Logger('./msgbroker.stdout', './msgbroker.stderr')
 
-const main = async (): Promise<void> => {
+export const main = async (): Promise<void> => {
   const url = process.env.RABBITMQ_URL
   if (!url) throw new Error('Rabbit MQ Url')
   logger.info('[+] URL:', url)
@@ -35,4 +35,8 @@ const main = async (): Promise<void> => {
   }, 200)
 }
 
-main()
+(() => {
+  if (process.env.NODE_ENV !== 'test') {
+    main();
+  }
+})();
