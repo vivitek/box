@@ -9,14 +9,15 @@ export const get = async <T>(url: string, token?: string): Promise<T | undefined
   const res = await fetch(URL.API + url, {
     headers
   })
-  if (res.status !== 200) return
+  if (res.status !== 201) return
   const data = await res.json()
   return data as T
 }
 
 export const post = async <T>(url: string, token?: string, body?: any): Promise<T | undefined> => {
   const headers: { [key: string]: string } = {
-    'Accept': 'application/json'
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
   }
   if (token) headers.Authorization = token
   const res = await fetch(URL.API + url, {
@@ -24,7 +25,22 @@ export const post = async <T>(url: string, token?: string, body?: any): Promise<
     headers,
     body: JSON.stringify(body)
   })
-  if (res.status !== 200) return
+  if (res.status !== 201) return
+  const data = await res.json()
+  return data as T
+}
+
+export const patch = async <T>(url: string, token?: string, body?: any): Promise<T | undefined> => {
+  const headers: { [key: string]: string } = {
+    'Accept': 'application/json'
+  }
+  if (token) headers.Authorization = token
+  const res = await fetch(URL.API + url, {
+    method: 'PATCH',
+    headers,
+    body: JSON.stringify(body)
+  })
+  if (res.status !== 201) return
   const data = await res.json()
   return data as T
 }

@@ -13,3 +13,11 @@ export interface RouterDTO {
   name: string
   url: string
 }
+
+export type TRouterResponse = {
+  error?: string
+} & RouterDTO
+
+export type TRoutersResponse = {
+  error?: string
+} & RouterDTO[]
