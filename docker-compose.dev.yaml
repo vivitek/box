@@ -20,6 +20,7 @@ services:
     depends_on:
       - rabbitmq
     environment: 
+      BALENA_DEVICE_UUID: d8b8d93ada292a53d3c659a944ef4106
       RABBITMQ_URL: amqp://rabbitmq
   agent:
     container_name: agent

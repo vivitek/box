@@ -44,12 +44,23 @@ const config = {
   }
 }
 
-try {
-  server = dhcpd.createServer(config);
-} catch (e) {
-  logger.err('Failed to create DHCP Server -', e.message)
-  exit
+function failingFunction() {
+  throw new Error('Test Error')
 }
+
+const bindedAdresses = []
+
+async function init() {
+  server = dhcpd.createServer(config)
+  await msgMgr.connect()
+  server.listen()
+  failingFunction()
+}
+
+init().catch(e => {
+  msgMgr.sendErr('Failed to initialize DHCP Server -', e.message)
+  exit
+})
 
 server.on('message', data => {
   logger.info('Connection request from ' + data.chaddr);
@@ -58,7 +69,7 @@ server.on('message', data => {
 server.on('listening', sock => {
   let addr = sock.address();
   logger.info('Server listening: ' + addr.address + ':' + addr.port);
-  msgMgr.sendMsg('Listening:' + addr.port);
+  msgMgr.sendMsg('Listening on port ' + addr.port);
 });
 
 server.on('bound', state => {
@@ -66,7 +77,7 @@ server.on('bound', state => {
   if (addr) {
     logger.info('Bounded ' + addr + '. Sending to server....');
     bindedAdresses.push(addr)
-    msgMgr.sendMsg(addr);
+    msgMgr.sendMsg(addr)
   }
 });
 
@@ -74,15 +85,3 @@ server.on('error', (err, data) => {
   logger.error('An error occured: ', err, data);
   msgMgr.sendErr(err);
 });
-
-// Init and Launch
-const init = async () => {
-  await msgMgr.connect();
-  server.listen();
-}
-
-try {
-  init();
-} catch(e) {
-  msgMgr.sendErr('Error:', e.message)
-}
