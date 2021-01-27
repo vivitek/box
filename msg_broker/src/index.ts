@@ -1,9 +1,7 @@
 import MsgMgr from '../../utils/msgMgr/msgMgr'
 import { Logger } from '../../utils/Logger/Logger'
-import Vivi from '../../utils/viviSDK'
 
 const logger = new Logger('./msgbroker.stdout', './msgbroker.stderr')
-const api = new Vivi()
 
 export const main = async (): Promise<void> => {
   const url = process.env.RABBITMQ_URL
@@ -19,9 +17,6 @@ export const main = async (): Promise<void> => {
   try {
     await pcap.connect()
     await dhcp.connect()
-    await api.pushRouter(process.env.BALENA_DEVICE_UUID || 'Failed to get UUID',
-    'https://d8b8d93ada292a53d3c659a944ef4106.balena-devices.com/')
-    console.log('RouterId=', api.getRouterId())
   } catch (e) {
     error.sendErr(e.message)
     logger.warn('ERROR:', e.message)
@@ -39,8 +34,7 @@ export const main = async (): Promise<void> => {
     }
   }, 200)
 }
-
-(() => {
+;((): void => {
   if (process.env.NODE_ENV !== 'test') {
     main()
   }

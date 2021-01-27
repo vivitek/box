@@ -14,7 +14,7 @@ jest.mock('amqplib', () => {
           b({
             content: 'msg',
           })
-        })
+        }),
       }),
     }),
   }

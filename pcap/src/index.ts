@@ -2,7 +2,7 @@
 import { Logger } from '../../utils/Logger/Logger'
 import * as pcap from 'pcap'
 
-export function init() {
+export function init(): void {
   const logger = new Logger('./msgbroker.stdout', './msgbroker.stderr')
   const tcpTracker = new pcap.TCPTracker()
   const pcapSession = pcap.createSession('wlan0')
@@ -12,8 +12,8 @@ export function init() {
     const dst = String(session.dst)
     const src_ip = src.substring(0, src.indexOf(':'))
     const dst_ip = dst.substring(0, dst.indexOf(':'))
-    logger.info(`from ${src_ip} to ${dst_ip}`)    
-    
+    logger.info(`from ${src_ip} to ${dst_ip}`)
+
     // msgMgr.sendMsg(`from ${src_ip} to ${dst_ip}`);
     session.on('end', (_s: any) => {
       logger.info('[-] - End of session')
@@ -36,7 +36,7 @@ export function init() {
   })
 }
 
-(() => {
+;((): void => {
   if (process.env.NODE_ENV !== 'test') {
     init()
   }
