@@ -21,8 +21,9 @@ jest.mock('console', () => ({
 /* eslint-enable @typescript-eslint/no-empty-function */
 
 test('should init without error', () => {
-  // const log = new Logger()
+  const log = new Logger()
 
+  expect(log).toBeDefined()
   expect(fs.createWriteStream).toHaveBeenCalled()
 })
 
