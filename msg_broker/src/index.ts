@@ -34,7 +34,6 @@ export const main = async (): Promise<void> => {
     }
   }, 200)
 }
-
 ;((): void => {
   if (process.env.NODE_ENV !== 'test') {
     main()
