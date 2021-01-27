@@ -3,13 +3,13 @@ const mock = { info: jest.fn() } as Record<keyof Logger, jest.Mock>
 jest.mock('../../utils/Logger/Logger', () => ({
   __esModule: true,
   Logger: class LoggerMock {
-    info = mock.info;
+    info = mock.info
   },
 }))
 
-
 import { main } from './index'
 
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 jest.mock('../../utils/msgMgr/msgMgr', () => {
   return function () {
     return {
@@ -21,7 +21,7 @@ jest.mock('../../utils/msgMgr/msgMgr', () => {
       },
       readMsg() {
         return Promise.resolve('Message-01')
-      }
+      },
     }
   }
 })
@@ -45,3 +45,4 @@ test('should read message from queue successful', async () => {
   expect(mock.info).toHaveBeenCalledWith('[PCAP] -', 'Message-01')
   expect(mock.info).toHaveBeenCalledWith('[DHCP] -', 'Message-01')
 })
+/* eslint-enable @typescript-eslint/explicit-function-return-type */

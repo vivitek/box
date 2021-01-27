@@ -8,18 +8,20 @@ const logger = {
   warn: jest.fn(),
 } as Record<keyof Console, jest.Mock>
 
+/* eslint-disable @typescript-eslint/no-empty-function */
 jest.mock('console', () => ({
   __esModule: true,
   Console: class ConsoleMock {
     constructor() {}
 
-    warn = logger.warn;
-    info = logger.info;
-  }
+    warn = logger.warn
+    info = logger.info
+  },
 }))
+/* eslint-enable @typescript-eslint/no-empty-function */
 
 test('should init without error', () => {
-  const log = new Logger()
+  // const log = new Logger()
 
   expect(fs.createWriteStream).toHaveBeenCalled()
 })
