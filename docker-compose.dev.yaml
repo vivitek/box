@@ -22,28 +22,13 @@ services:
     environment: 
       BALENA_DEVICE_UUID: d8b8d93ada292a53d3c659a944ef4106
       RABBITMQ_URL: amqp://rabbitmq
-  agent:
-    container_name: agent
-    image: node:lts
-    working_dir: /app
-    volumes:
-      - './agent:/app'
-    command: 'yarn start'
-    depends_on:
-      - rabbitmq
-    environment:
-      RABBITMQ: amqp://rabbitmq
   pcap:
     container_name: pcap
-    image: node:lts
-    volumes:
-      - './pcap:/app'
-    command: 'yarn start'
-    working_dir: /app
-    depends_on: 
+    build:
+      context: .
+      dockerfile: pcap/DockerfileDev
+    depends_on:
       - rabbitmq
-    environment:
-      RABBITMQ_URL: amqp://rabbitmq
   dhcp:
     container_name: dhcp
     image: node:lts
