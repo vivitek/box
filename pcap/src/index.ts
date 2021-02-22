@@ -1,8 +1,12 @@
 import MsgMgr from '../../utils/msgMgr/msgMgr'
 import { Logger } from '../../utils/Logger/Logger'
-import * as pcap from 'pcap'
+import pcap from 'pcap'
 import { networkInterfaces } from 'os'
+import dns from 'dns'
 
+import { PCAPTYPE, PcapPacket } from './types/packet'
+
+const logger = new Logger('./msgbroker.stdout', './msgbroker.stderr')
 const msgMgr = new MsgMgr(process.env.RABBITMQ_URL || '', 'pcap_push')
 msgMgr.connect()
 
@@ -12,41 +16,33 @@ function selectNetworkInterface(): string {
   return netInterfaces[1]
 }
 
-enum PCAPTYPE {
-  REQUEST,
-  RESPONSE,
-  PUSH,
-}
-
-type PcapPacket = {
-  source: string
-  destination: string
-  requestIsis: boolean
-  service: string | undefined
-  type: PCAPTYPE
+function getServiceAndPush(packet: PcapPacket, port: number): void {
+  dns.lookupService(packet.destination, port, (err, hostname, _service) => {
+    if (err) return
+    packet.service = hostname
+    logger.info('PACKET -', packet)
+    msgMgr.sendMsg(JSON.stringify(packet))
+  })
 }
 
 export function init(): void {
-  const logger = new Logger('./msgbroker.stdout', './msgbroker.stderr')
   const tcpTracker = new pcap.TCPTracker()
   const pcapSession = pcap.createSession(selectNetworkInterface())
 
   tcpTracker.on('session', (session: any) => {
-    const src = String(session.src)
-    const dst = String(session.dst)
-    const src_ip = src.substring(0, src.indexOf(':'))
-    const dst_ip = dst.substring(0, dst.indexOf(':'))
+    const src = String(session.src).split(':')
+    const dst = String(session.dst).split(':')
+    const src_ip = src[0]
+    const dst_ip = dst[0]
+    const dst_port = +dst[1]
 
     const packet: PcapPacket = {
       source: src_ip,
       destination: dst_ip,
-      requestIsis: true,
       service: undefined,
       type: PCAPTYPE.REQUEST,
     }
-    console.info('PACKET -', packet)
-
-    msgMgr.sendMsg(JSON.stringify(packet))
+    getServiceAndPush(packet, dst_port)
 
     session.on('end', (_s: any) => {
       logger.info('[-] - End of session')
@@ -55,17 +51,7 @@ export function init(): void {
 
   pcapSession.on('packet', (raw: any) => {
     const packet = pcap.decode.packet(raw)
-    if (
-      process.argv[2] &&
-      (process.argv[2] == '--details' || process.argv[2] == '-d')
-    ) {
-      logger.info('Received packet:', packet)
-      logger.info(`saddr: ${packet.payload.payload.saddr}`)
-      logger.info(`daddr: ${packet.payload.payload.daddr}`)
-      process.exit(0)
-    } else {
-      tcpTracker.track_packet(packet)
-    }
+    tcpTracker.track_packet(packet)
   })
 }
 
