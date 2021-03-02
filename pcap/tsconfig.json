@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES5",
     "lib": ["ESNext"],
-    "allowJs": false,
+    "allowJs": true,
     "strict": true,
     "moduleResolution": "node",
     "isolatedModules": true,

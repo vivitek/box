@@ -6,7 +6,7 @@
   "author": "Vincipit",
   "license": "MIT",
   "scripts": {
-    "start": "node built/pcap/src/index.js",
+    "start": "node pcap/src/index.js",
     "build": "npx tsc",
     "test": "jest --config jest.config.js --collectCoverage",
     "test:watch": "jest --config jest.config.js --watch",

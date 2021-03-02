@@ -1,33 +1,15 @@
-# Build project
-# FROM balenalib/aarch64-ubuntu-node as build
-# FROM node:lts as build
-
-# # Install yarn
-# RUN npm i -g --force yarn
-
-# WORKDIR /app/container
-
-# # Install dependencies
-# COPY container/package.json .
-# RUN yarn install
-
-# # Import and build project
-# COPY container .
-# WORKDIR /app/utils
-# COPY utils .
-# WORKDIR /app/container
-# RUN yarn build
-
-# Run app in container
-# FROM node:lts as run
-FROM balenalib/aarch64-alpine-node as run
-
+FROM balenalib/raspberrypi4-64-ubuntu-node as run
+  
 WORKDIR /app
 
-# Import project
-COPY msg_broker/built .
-COPY msg_broker/package.json .
-RUN ls -l
-RUN npm i
+# Install libpcap
+RUN install_packages libpcap-dev
+RUN install_packages build-essential python3 python3-pip python3-setuptools
 
-CMD ["node", "msg_broker/src/index.js"]
+# Import project
+COPY pcap/built .
+COPY pcap/package.json .
+RUN ls -l
+RUN yarn
+
+CMD ["yarn", "start"]

@@ -19,7 +19,7 @@ Otherwise, launch with `./tools/run-dev` and pass your docker-compose args to th
 
 As the project need to be built for an arm architecture (aarch64), the TS files will be built locally, then sent and built on BalenaCloud platform, and pushed to devices. The devices will automatically be updated if the build succeeds.
 
-Use `./build.sh` to build and publish project, *for balena cloud* ! To launch project in dev env, see above
+Use `./tools/build` to build and publish project, *for balena cloud* ! To launch project in dev env, see above
 
 ### For Further Informations and List of features, see the notions page:
 

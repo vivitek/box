@@ -15,8 +15,8 @@ fi
 echo "${ORANGE}Building Projects${NC}"
 
 # Building ts to js in containers
-containers="msg_broker pcap dhcp"
-for container in msg_broker pcap dhcp; do
+containers="dhcp pcap"
+for container in $containers; do
   cd $container
   yarn build
   if [ $? -eq 1 ]; then
