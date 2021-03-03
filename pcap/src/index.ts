@@ -2,7 +2,7 @@ import MsgMgr from '../../utils/msgMgr/msgMgr'
 import { Logger } from '../../utils/Logger/Logger'
 import pcap from 'pcap'
 import { networkInterfaces } from 'os'
-import dns from 'dns'
+import { promises as dns } from 'dns'
 
 import { PCAPTYPE, PcapPacket } from './types/packet'
 
@@ -10,19 +10,22 @@ const logger = new Logger('./msgbroker.stdout', './msgbroker.stderr')
 const msgMgr = new MsgMgr(process.env.RABBITMQ_URL || '', 'pcap_push')
 msgMgr.connect()
 
-function selectNetworkInterface(): string {
+export function selectNetworkInterface(): string {
   const netInterfaces = Object.keys(networkInterfaces())
   if (netInterfaces[0] !== 'lo') return netInterfaces[0]
   return netInterfaces[1]
 }
 
-function getServiceAndPush(packet: PcapPacket, port: number): void {
-  dns.lookupService(packet.destination, port, (err, hostname, _service) => {
-    if (err) return
-    packet.service = hostname
-    logger.info('PACKET -', packet)
-    msgMgr.sendMsg(JSON.stringify(packet))
-  })
+export async function getServiceAndPush(
+  packet: PcapPacket,
+  port: number
+): Promise<string | undefined> {
+  const res = await dns.lookupService(packet.destination, port)
+  packet.service = res.hostname
+  packet.type = PCAPTYPE.PUSH
+  logger.info('PACKET - ', packet)
+  msgMgr.sendMsg(JSON.stringify(packet))
+  return res.hostname
 }
 
 export function init(): void {
