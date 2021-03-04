@@ -5,8 +5,10 @@
 
 ## Project Specific Ignored folder ##
 built
-.stderr
-.stdout
+*.stderr
+*.stdout
+stderr
+stdout
 .devcontainer/
 
 ### Node ###

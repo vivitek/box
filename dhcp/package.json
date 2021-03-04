@@ -6,7 +6,7 @@
   "author": "Vincipit",
   "license": "MIT",
   "scripts": {
-    "start": "node built/dhcp/src/index.js",
+    "start": "node dhcp/src/index.js",
     "build": "npx tsc",
     "prebuild": "rm -rf built/"
   },

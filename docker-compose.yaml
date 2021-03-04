@@ -18,16 +18,17 @@ services:
       - RABBITMQ_URL=amqp://127.0.0.1:5672
     depends_on:
      - rabbitmq
-  # dhcp:
-  #   container_name: dhcp
-  #   build:
-  #     context: .
-  #     dockerfile: dhcp/Dockerfile
-  #   environment:
-  #     - RABBITMQ_URL=amqp://127.0.0.1:5672
-  #   network_mode: 'host'
-  #   ports:
-  #     - '67:67'
-  #     - '4000:4000'
-    # depends_on:
-    #  - rabbitmq
+  dhcp:
+    container_name: dhcp
+    restart: always
+    build:
+      context: .
+      dockerfile: dhcp/Dockerfile
+    environment:
+      - RABBITMQ_URL=amqp://127.0.0.1:5672
+    network_mode: 'host'
+    ports:
+      - '67:67'
+      - '4000:4000'
+    depends_on:
+     - rabbitmq

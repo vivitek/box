@@ -1,4 +1,5 @@
 const dhcpd = require('dhcp')
+const os = require('os')
 const { exit } = require('process')
 
 // Logging
@@ -13,24 +14,38 @@ if (!url) throw new Error('No RabbitMQ url')
 const MsgMgr = require('../../utils/msgMgr/msgMgr').MsgMgr
 const msgMgr = new MsgMgr(url, 'dhcp')
 
+const getLocalMacIP = () => {
+  const interfaces = os.networkInterfaces()
+  let names = Object.keys(interfaces)
+  names = names.filter(name => name[0] === 'e' || name[0] === 'w')
+  const firstInterfaceAddress = interfaces[names[0]].find(i => i.family === 'IPv4')
+  return {
+    mac: firstInterfaceAddress.mac,
+    address: firstInterfaceAddress.address
+  } 
+}
+
+const myNetAddress = getLocalMacIP().address
+const myNetMac = getLocalMacIP().mac
+
 // Server Config & Launch
 let server
 const config = {
-  range: ['192.168.1.2', '192.168.1.40'],
+  range: ['192.168.1.2', '192.168.1.250'],
   forceOptions: ['hostname'],
   randomIP: false,
   static: {
-    // admin pc
+    myNetMac: myNetAddress
   },
   netmask: '255.255.255.0',
-  router: ['192.168.1.1'],
+  router: [myNetAddress],
   timeServer: null,
   nameServer: null,
-  dns: ['8.8.8.8'],
+  dns: ['8.8.8.8', '8.8.4.4'],
   hostname: 'vivi',
   domainName: 'vincipit.com',
   broadcast: '192.168.1.255',
-  server: '192.168.1.1',
+  server: myNetAddress,
   maxMessageSize: 1500,
   leaseTime: 50400, // approx 14h
   renewalTime: 60,
@@ -42,10 +57,6 @@ const config = {
       return 'x64linux.0';
     }
   }
-}
-
-function failingFunction() {
-  throw new Error('Test Error')
 }
 
 const bindedAdresses = []

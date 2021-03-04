@@ -1,14 +1,13 @@
-FROM balenalib/aarch64-alpine-node as run
+FROM balenalib/raspberrypi4-64-ubuntu-node as run
 
 WORKDIR /app
 
 # Import project
-COPY dhcp .
-RUN ls -l
-RUN rm -rf node_modules
+COPY dhcp/built .
+COPY dhcp/package.json .
 RUN yarn install
 
 EXPOSE 67
 EXPOSE 4000
 
-CMD ["node", "src/index.js"]
+CMD ["yarn", "start"]

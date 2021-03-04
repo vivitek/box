@@ -9,7 +9,6 @@ RUN install_packages build-essential python3 python3-pip python3-setuptools
 # Import project
 COPY pcap/built .
 COPY pcap/package.json .
-RUN ls -l
 RUN yarn
 
 CMD ["yarn", "start"]
