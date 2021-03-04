@@ -32,13 +32,13 @@ const myNetMac = getLocalMacIP().mac
 let server
 const config = {
   range: ['192.168.1.2', '192.168.1.250'],
-  forceOptions: ['hostname'],
-  randomIP: false,
+  forceOptions: [''],
+  randomIP: true,
   static: {
     myNetMac: myNetAddress
   },
   netmask: '255.255.255.0',
-  router: [myNetAddress],
+  router: ['19'],
   timeServer: null,
   nameServer: null,
   dns: ['8.8.8.8', '8.8.4.4'],
