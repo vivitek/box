@@ -3,5 +3,7 @@ WORKDIR /app
 RUN install_packages libpcap-dev python3 build-essential
 COPY package.json .
 RUN npm install
+RUN npm install typescript -g 
 COPY . .
-CMD ["npm", "start"]
+RUN tsc
+CMD ["node", "dist/server.js"]
