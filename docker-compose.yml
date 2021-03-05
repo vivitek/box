@@ -1,0 +1,47 @@
+version: "2"
+
+services:
+  test:
+    build: ./test
+    ports:
+      - 80:4000
+  hotspot:
+    restart: "no"
+    build: ./hotspot
+    network_mode: "host"
+    privileged: true
+    labels:
+      io.balena.features.dbus: "1"
+  dhcp:
+    build: ./dhcp
+    network_mode: "host"
+    privileged: true
+    expose:
+      - 67
+      - 68
+    depends_on:
+      - rabbitmq
+  pcap:
+    build: ./pcap
+    privileged: true
+    network_mode: "host"
+    depends_on:
+      - rabbitmq
+  rabbitmq:
+    image: rabbitmq:3.7-management
+    restart: "always"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "secret"
+      RABBITMQ_DEFAULT_USER: vivi
+      RABBITMQ_DEFAULT_PASS: vivitek
+    ports:
+      - 5672:5672
+      - 15672:15672
+  firewall:
+    build: ./firewall
+    privileged: true
+    network_mode: "host"
+    depends_on:
+      - rabbitmq
+    labels:
+      - io.balena.features.kernel-modules: 1
