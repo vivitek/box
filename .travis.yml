@@ -1,24 +1,19 @@
 sudo: false
 language: node_js
-node_js: 
-    - '13'
+node_js:
+  - "12"
 branches:
-    only:
-        - develop
-        - master
-        - ROUT-44-continuous-integration
+  only:
+    - develop
+    - master
+    - ROUT-44-continuous-integration
 git:
-    submodules: false
+  submodules: false
 cache:
-    directories:
-        - node_modules
+  directories:
+    - node_modules
 jobs:
-    include:
-        - stage: agent
-          script: ./agent/test.sh
-        - stage: dhcp
-          script: ./dhcp/test.sh
-        - stage: msg_broker
-          script: ./msg_broker/test.sh
-        - stage: pcap
-          script: ./pcap/test.sh
+  include:
+    - stage: "balena-cli"
+      name: "Balena-cli installation"
+      script: ./install.sh
