@@ -12,11 +12,10 @@ git:
 cache:
   directories:
     - node_modules
+before_script:
+  - ./install.sh
 jobs:
   include:
-    - stage: "balena-cli"
-      name: "Balena-cli installation"
-      script: ./install.sh
     - stage: "build"
       name: "Building services"
       script: ./build.sh
