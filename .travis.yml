@@ -17,3 +17,6 @@ jobs:
     - stage: "balena-cli"
       name: "Balena-cli installation"
       script: ./install.sh
+    - stage: "build"
+      name: "Building services"
+      script: ./build.sh
