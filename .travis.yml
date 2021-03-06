@@ -13,7 +13,7 @@ cache:
   directories:
     - node_modules
 before_script:
-  - ./install.sh
+  - npm i balena-cli
 jobs:
   include:
     - stage: "build rpi4"
