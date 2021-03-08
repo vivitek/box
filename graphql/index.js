@@ -37,7 +37,7 @@ const sendRequest = async (data) => {
     headers: {
       authorization: TOKEN
     },
-    data: data
+    data: data,
   })
 }
 
@@ -70,7 +70,8 @@ const getBans = async () => {
 }
 
 const createBan = async (address, banned) => {
-  await sendRequest ({
+  try {
+    await sendRequest ({
       query: print(CREATE_BAN),
       variables: {
         banCreationData: {
@@ -79,7 +80,11 @@ const createBan = async (address, banned) => {
           routerSet : id
         }
       }
-  })
+    })
+    return true
+  } catch (error) {
+    return false
+  }
 }
 
 const subscribeBan = async () => {
@@ -93,9 +98,6 @@ const subscribeBan = async () => {
   })
 }
 
-//client AMQP
-//connection channel rmq
-// RABBITMQ INIT
 const initRabbitMQ = async () => {
   try {
     const connection = await amqp.connect({
@@ -111,57 +113,25 @@ const initRabbitMQ = async () => {
   }
 };
 
-//consomer un element de la queue (dhcp)
 /**
  *
  * @param {amqp.ConsumeMessage} qMsg
  */
 const consumerDhcp = async (qMsg) => {
- // console.log("premier en STRING", qMsg.content.toString())
-  //dataString = qMsg.content.toString()
-  // console.log("CACACACA: ", JSON.stringify(dataString))
-  // console.log("QJZHDGYUZHD", dataString)
-  //const qMsgData = qMsg.content.toJSON()
-  // console.log("BUFFER SANS FILTRE: ", qMsgData)
-  // console.log("BUFFER AVEC FILTRE: ", qMsgData.toJSON)
-  // cacaprout = JSON.parse(qMsg.content)
-  //cacaprout = JSON.parse(qMsg.content.toString())
   msgData = JSON.parse(JSON.parse(qMsg.content.toString()))
-  createBan(msgData.mac, false)
-  //console.log("ICIIIIIIII: ", cacaprout)
-  //  !!!   LE TEST EST ICIIIIIIIIIIIII   !!!    console.log(cacaprout.mac)
-  //console.log(Object.values(cacaprout))
-  // const macAddress = qMsgData["mac"]
-  // console.log("tamerelapute", JSON.parse(qMsg.content.toString()).mac)
-  // console.log(Object.values(qMsgData))
-
-  //ack les messages reçu du routeur     channel.ack(qMsg)
-  channel.ack(qMsg)
+  if (await createBan(msgData.mac, false)) {
+    channel.ack(qMsg)
+  }
+  else {
+    channel.nack(qMsg)
+  }
 }
-
-//   "{\"mac\":\"aa:aa:aa:aa:aa:aa:aa\",\"ip\":\"232.234.343.232\"}"
-
-//je l'envois du serveur via la mutation create_ban
-
 
 const main = async () => {
   await initRabbitMQ()
-  console.log(`RabbitMQ is running`)
   await selfCreate(new Date(), new Date())
-  console.log(`Router ${id} have been created`)
-  await createBan("aze.com", true)
-  await createBan("eza.com", false)
   await getBans()
   await subscribeBan()
 }
 
 main()
-
-// device self creation                 ok
-// bans retrievement                    ok
-// ban subscription                     ok
-// fix authentication server side       ok
-// find a way to authenticate router    ko
-// refact & archi                       ko *
-// bind rabbitmq                        ko *
-// event emitter                        ko *
