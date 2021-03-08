@@ -1,0 +1,1 @@
+{"nftables": [{"metainfo": {"version": "0.9.3", "release_name": "Topsy", "json_schema_version": 1}}, {"table": {"family": "ip", "name": "too", "handle": 1}}]}
