@@ -1,15 +1,15 @@
-const { CREATE_ROUTER } = require("./src/routerQueries")
-const { execute } = require('apollo-link')
-const { WebSocketLink } = require('apollo-link-ws')
-const { SubscriptionClient } = require('subscriptions-transport-ws')
 const ws = require('ws')
 const axios = require('axios')
 const amqp = require('amqplib')
+const log = require('loglevel')
 const {print} = require('graphql')
+const { execute } = require('apollo-link')
+const { WebSocketLink } = require('apollo-link-ws')
+const { SubscriptionClient } = require('subscriptions-transport-ws')
+
+const { CREATE_ROUTER } = require("./src/routerQueries")
 const { GET_BANS, CREATE_BAN, SUBSCRIBE_BAN } = require("./src/banQueries")
-const { GRAPHQL_ENDPOINT, TOKEN } = require('./constant')
-const NAME_BALENA_DEVICE = process.env.BALENA_DEVICE_NAME_AT_INIT
-const UUID_BALENA = process.env.BALENA_DEVICE_UUID
+const { GRAPHQL_ENDPOINT, FIREWALL_ENDPOINT, TOKEN } = require('./constant')
 
 let id
 let channel
@@ -43,9 +43,13 @@ const sendRequest = async (data) => {
   })
 }
 
-const logUpdatedBan = (d) => {console.log(`Updade ban, id: ${d._id}, address: ${d.address}, isBanned: ${d.banned}`)}
-
-const logCreatedBan = (d) => {console.log(`New ban, id: ${d._id}, address: ${d.address}, isBanned: ${d.banned}`)}
+const requestFirewall = async (ban) => {
+  log.info(`New ${ban.banned ? "ban" : "unban"} for address ${ban.address}`)
+  await axios({
+    method: ban.banned ? 'post' : 'delete',
+    url: `${FIREWALL_ENDPOINT}/rule/${ban.banned ? "ban": "unban"}MAC?address=${ban.address}`
+  })
+}
 /* Utils End */
 
 const selfCreate = async (name, url) => {
@@ -68,7 +72,7 @@ const getBans = async () => {
         id
       }
   })
- .then(res => res.data.data.getBans.forEach(ban => logCreatedBan(ban)))
+ .then(res => res.data.data.getBans.forEach(ban => requestFirewall(ban)))
 }
 
 const createBan = async (address, banned) => {
@@ -96,7 +100,7 @@ const subscribeBan = async () => {
     {routerSet: id}
   )
   client.subscribe(eventData => {
-    logUpdatedBan(eventData.data.banUpdated)
+    requestFirewall(eventData.data.banUpdated)
   })
 }
 
@@ -131,7 +135,9 @@ const consumerDhcp = async (qMsg) => {
 
 const main = async () => {
   await initRabbitMQ()
-  await selfCreate(NAME_BALENA_DEVICE, UUID_BALENA + ".balena-devices.com")
+  log.info('RabbitMQ is running')
+  await selfCreate(process.env.NAME_BALENA_DEVICE, process.end.UUID_BALENA + ".balena-devices.com")
+  log.info(`Router ${id} have been created`)
   await getBans()
   await subscribeBan()
 }
