@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=rbouvard
+      - POSTGRES_PASSWORD=postgrespwd
+    ports:
+      - "5432:5432"
+
+  firewall_api:
+    image: firewall_flask
+    environment:
+      - DATABASE_URL=postgresql://rbouvard:postgrespwd@localhost:5432/firewallDB
+    depends_on:
+      - postgres
+    ports:
+      - "5000:5000"
+    labels:
+        io.balena.features.kernel-modules: '1'
