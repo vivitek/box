@@ -26,3 +26,11 @@ services:
     network_mode: "host"
     depends_on:
       - rabbitmq
+    labels:
+      - io.balena.features.kernel-modules: 1
+  graphql:
+    build: ./graphql
+    restart: "on-failure"
+    depends_on:
+      - rabbitmq
+    network_mode: "host"
