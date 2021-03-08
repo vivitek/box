@@ -8,6 +8,8 @@ const amqp = require('amqplib')
 const {print} = require('graphql')
 const { GET_BANS, CREATE_BAN, SUBSCRIBE_BAN } = require("./src/banQueries")
 const { GRAPHQL_ENDPOINT, TOKEN } = require('./constant')
+const NAME_BALENA_DEVICE = process.env.BALENA_DEVICE_NAME_AT_INIT
+const UUID_BALENA = process.env.BALENA_DEVICE_UUID
 
 let id
 let channel
@@ -129,7 +131,7 @@ const consumerDhcp = async (qMsg) => {
 
 const main = async () => {
   await initRabbitMQ()
-  await selfCreate(new Date(), new Date())
+  await selfCreate(NAME_BALENA_DEVICE, UUID_BALENA + ".balena-devices.com")
   await getBans()
   await subscribeBan()
 }

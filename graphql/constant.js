@@ -1,6 +1,6 @@
 const BASE_URL =
   !process.env.NODE_ENV || process.env.NODE_ENV === "development"
-  ? "localhost:3000"
+  ? "http://localhost:3000"
   : "https://api.server.vincipit.com"
 
   const GRAPHQL_ENDPOINT = `${BASE_URL}/graphql`
