@@ -1,6 +1,9 @@
 FROM balenalib/%%BALENA_MACHINE_NAME%%-node
 
+WORKDIR /app
 COPY package.json .
 RUN npm install
+RUN npm install typescript -g 
 COPY . .
-CMD ["npm", "start"]
+RUN tsc
+CMD ["node", "dist/server.js"]

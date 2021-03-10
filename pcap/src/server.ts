@@ -1,13 +1,9 @@
-const pcap = require("pcap");
-const util = require("util");
-const dns = require("dns");
-const amqplib = require("amqplib");
-const { exit } = require("process");
+import * as pcap from "pcap";
+import * as dns from "dns";
+import { exit } from "process";
+import * as amqplib from "amqplib";
 
-/**
- * @type {amqplib.Channel}
- */
-let channel;
+let channel: amqplib.Channel;
 
 // RABBITMQ INIT
 const initRabbitMQ = async () => {
@@ -31,7 +27,7 @@ const sendToQueue = async (data) => {
 // PCAP INIT
 
 const initPcap = async () => {
-  const pcap_session = pcap.createSession("", {
+  const pcap_session: pcap.PcapSession = pcap.createSession("", {
     filter: "ip proto \\tcp",
   });
   const tcpTracker = new pcap.TCPTracker();

@@ -1,24 +1,26 @@
-sudo: false
+sudo: true
 language: node_js
-node_js: 
-    - '13'
+node_js:
+  - "12"
 branches:
-    only:
-        - develop
-        - master
-        - ROUT-44-continuous-integration
+  only:
+    - develop
+    - master
+    - ROUT-44-continuous-integration
 git:
-    submodules: false
+  submodules: false
 cache:
-    directories:
-        - node_modules
+  directories:
+    - node_modules
+before_script:
+  - npm i -g balena-cli
+  - sudo mkdir -p /home/travis/.balena/bin
+  - sudo chmod -R 777 /home/travis/.balena
 jobs:
-    include:
-        - stage: agent
-          script: ./agent/test.sh
-        - stage: dhcp
-          script: ./dhcp/test.sh
-        - stage: msg_broker
-          script: ./msg_broker/test.sh
-        - stage: pcap
-          script: ./pcap/test.sh
+  include:
+    - stage: "build rpi4"
+      name: "Building on raspberry pi 4"
+      script: ./build_rpi4.sh
+    - stage: "build rpi3"
+      name: "Building on raspberry pi 3"
+      script: ./build_rpi3.sh
