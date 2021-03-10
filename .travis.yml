@@ -14,7 +14,7 @@ cache:
     - node_modules
 before_script:
   - npm i -g balena-cli
-  - mkdir -p /home/.travis/bin
+  - sudo mkdir -p /home/travis/.balena/bin
 jobs:
   include:
     - stage: "build rpi4"
