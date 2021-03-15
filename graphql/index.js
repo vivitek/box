@@ -63,6 +63,7 @@ const selfCreate = async (name, url) => {
     }
   })
   .then(res => id = res.data.data.createRouter._id)
+  .catch(console.log("Routeur already created"))
 }
 
 const getBans = async () => {
@@ -124,7 +125,7 @@ const initRabbitMQ = async () => {
  * @param {amqp.ConsumeMessage} qMsg
  */
 const consumerDhcp = async (qMsg) => {
-  msgData = JSON.parse(JSON.parse(qMsg.content.toString()))
+  msgData = JSON.parse(qMsg.content.toString())
   if (await createBan(msgData.mac, false)) {
     channel.ack(qMsg)
   }
@@ -136,8 +137,8 @@ const consumerDhcp = async (qMsg) => {
 const main = async () => {
   await initRabbitMQ()
   log.info('RabbitMQ is running')
-  await selfCreate(process.env.NAME_BALENA_DEVICE, process.end.UUID_BALENA + ".balena-devices.com")
-  log.info(`Router ${id} have been created`)
+  await selfCreate(process.env.BALENA_DEVICE_NAME_AT_INIT, process.env.BALENA_DEVICE_UUID + ".balena-devices.com")
+  console.log(`Router ${id} have been created`)
   await getBans()
   await subscribeBan()
 }
