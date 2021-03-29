@@ -1,4 +1,7 @@
+version: "2"
+
 services:
+
   postgres:
     image: postgres
     environment:
@@ -8,7 +11,7 @@ services:
       - "5432:5432"
 
   firewall_api:
-    image: firewall_flask
+    build: .
     environment:
       - DATABASE_URL=postgresql://rbouvard:postgrespwd@localhost:5432/firewallDB
     depends_on:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import json
-from pynft import Executor
+from pyIP import Executor
 
 # TESTS:
 

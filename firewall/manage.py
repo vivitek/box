@@ -13,7 +13,7 @@ from app.main.controllers import tableController as table
 from app.main.controllers import chainsController as chains
 from app.main.controllers import rulesController as rules
 
-from pynft import Executor
+from pyIP import Executor
 
 PyNFT = Executor()
 
@@ -55,9 +55,9 @@ def testAPI():
     return 1
 
 @manager.command
-def testPYNFT():
+def testPYIP():
     """Runs the unit tests."""
-    tests = unittest.TestLoader().discover('app/tests', pattern='test_pynft*.py')
+    tests = unittest.TestLoader().discover('app/tests', pattern='test_pyIP*.py')
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
         return 0
