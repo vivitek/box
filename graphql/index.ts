@@ -26,7 +26,7 @@ const getWsClient = function(wsurl: string): SubscriptionClient {
   return client
 }
 
-const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: variable) => {
+const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: Variable) => {
   const link = new WebSocketLink(getWsClient(wsurl))
   return execute(link, {query, variables})
 }
@@ -154,10 +154,8 @@ interface GraphqlRequestContext {
   };
 }
 
-interface variable {
-  variables: {
-    [key: string]: {
-      [key: string]: string | number | boolean
-    } | string | number | boolean
-  };
-}
+interface Variable {
+  [key: string]: {
+    [key: string]: string | number | boolean
+  } | string | number | boolean
+};
