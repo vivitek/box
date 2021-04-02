@@ -147,12 +147,8 @@ interface Ban {
 
 interface GraphqlRequestContext {
   query: string;
-  variables: {
-    [key: string]: {
-      [key: string]: string | number | boolean
-    } | string | number | boolean
+  variables: Variable
   };
-}
 
 interface Variable {
   [key: string]: {
