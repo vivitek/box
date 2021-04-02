@@ -26,8 +26,7 @@ const getWsClient = function(wsurl: string): SubscriptionClient {
   return client
 }
 
-const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: {[key: string]: string | number}
-  ) => {
+const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: variable) => {
   const link = new WebSocketLink(getWsClient(wsurl))
   return execute(link, {query, variables})
 }
@@ -131,13 +130,11 @@ const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
 }
 
 const main = async (): Promise<void> => {
-  console.log("OUIOUIOUI")
   await initRabbitMQ()
   console.log('RabbitMQ is running')
   await selfCreate(process.env.BALENA_DEVICE_NAME_AT_INIT, process.env.BALENA_DEVICE_UUID + ".balena-devices.com")
   console.log(`Router ${id} have been created`)
   await getBans()
-  console.log("NONNONNON")
   await subscribeBan()
 }
 
@@ -150,6 +147,14 @@ interface Ban {
 
 interface GraphqlRequestContext {
   query: string;
+  variables: {
+    [key: string]: {
+      [key: string]: string | number | boolean
+    } | string | number | boolean
+  };
+}
+
+interface variable {
   variables: {
     [key: string]: {
       [key: string]: string | number | boolean
