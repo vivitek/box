@@ -13,10 +13,6 @@ from app.main.controllers import tableController as table
 from app.main.controllers import chainsController as chains
 from app.main.controllers import rulesController as rules
 
-from pyIP import Executor
-
-PyNFT = Executor()
-
 app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
 
 app.register_blueprint(table.bp)
@@ -55,9 +51,9 @@ def testAPI():
     return 1
 
 @manager.command
-def testPYIP():
+def testPYNFT():
     """Runs the unit tests."""
-    tests = unittest.TestLoader().discover('app/tests', pattern='test_pyIP*.py')
+    tests = unittest.TestLoader().discover('app/tests', pattern='test_pyNFT*.py')
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
         return 0
