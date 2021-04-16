@@ -1,0 +1,31 @@
+# FROM balenalib/raspberrypi3-64-debian-python:3
+# replace "raspberrypi3-64" by "raspberrypi4-64" for rpi4 devices
+
+FROM balenalib/%%BALENA_MACHINE_NAME%%
+
+WORKDIR /app
+ADD . /app
+
+# RUN sudo apt-get upgrade
+RUN apt-get update -y
+RUN apt-get install -y build-essential
+RUN apt-get install -y wget
+
+# RUN apt-get install -y python3.4.10
+# RUN apt-get install -y python3-pip
+# RUN apt-get install -y python3-dev
+
+RUN wget https://www.python.org/ftp/python/3.4.10/Python-3.4.10.tgz
+RUN tar xvf Python-3.4.10.tgz
+
+WORKDIR /app/Python-3.4.10
+RUN ./configure --with-ensurepip=install
+RUN make -j 8
+RUN sudo make altinstall
+
+WORKDIR /app
+RUN apt-get install -y python3-pip
+RUN pip install -r requirements.txt
+RUN pip install --upgrade python-iptables
+
+CMD [ "python3", "manage.py", "testPYIP" ]

@@ -10,8 +10,9 @@ services:
     ports:
       - "5432:5432"
 
-  firewall_api:
+  firewall:
     build: .
+    privileged: true
     environment:
       - DATABASE_URL=postgresql://rbouvard:postgrespwd@localhost:5432/firewallDB
     depends_on:
