@@ -1,35 +1,41 @@
 import os
 import json
 import unittest
-from pyIP import Executor
+from pynft import Executor
+from pynft import Executor_v2_shell
 
-PyIP = Executor()
+PyNFT_shell = Executor_v2_shell()
+PyNFT = Executor()
 
-class TestShortcutRules(unittest.TestCase):
-	def test_BanIP(self):
-		print("\nTesting:  vincipit.com / 152.228.163.210")
-		response = os.system("ping -c 1 vincipit.com")
-		self.assertEqual(0, response)
-		print("Banning : 152.228.163.210")
-		output = PyIP.BanIpSaddr("152.228.163.210")
-		self.assertEqual(output, None)
+
+
+#
+#	PyNFT v2_shell tests
+#
+
+class TestIPv4Blacklist(unittest.TestCase):
+	def testBanUnban(self):
+		PyNFT_shell.BanIPv4Saddr("vincipit.com")
 		response = os.system("ping -c 1 vincipit.com")
 		self.assertNotEqual(0, response)
-
-	def test_UnbanIP(self):
-		print("\nUnbanning : 152.228.163.210")
-		output = PyIP.UnbanIpSaddr("152.228.163.210", 1)
-		self.assertEqual(output, None)
+		PyNFT_shell.UnbanIPv4Saddr("vincipit.com")
 		response = os.system("ping -c 1 vincipit.com")
 		self.assertEqual(0, response)
 
+# class TestIPv6Blacklist(unittest.TestCase):
+# 	def testBanUnban(self):
+# 		PyNFT_shell.BanIPv6Saddr("vincipit.com")			# vincipit.com does not auto resolve to IPv6 addr
+# 		response = os.system("ping -c 1 vincipit.com")
+# 		self.assertNotEqual(0, response)
+# 		PyNFT_shell.UnbanIPv6Saddr("vincipit.com")			# vincipit.com does not auto resolve to IPv6 addr
+# 		response = os.system("ping -c 1 vincipit.com")
+# 		self.assertEqual(0, response)
 
-	
-# NFT Tests :
 
-# from pynft import Executor
 
-# PyNFT = Executor()
+#
+#	PyNFT v2 tests
+#
 
 # class TestRulesetManipulation(unittest.TestCase):
 # 	def test_GetRuleset(self):
@@ -196,10 +202,10 @@ class TestShortcutRules(unittest.TestCase):
 # 		print() # for test output beauty only
 # 		nftRes, ruleInfo = PyNFT.BanIpSaddr("vincipit.com")
 # 		self.assertEqual(0, nftRes['rc'])
-# 		self.assertEqual("inet", ruleInfo[0]['family'])
-# 		self.assertEqual("BanTable", ruleInfo[0]['tableName'])
-# 		self.assertEqual("BanChain", ruleInfo[0]['chainName'])
-# 		self.assertEqual("vincipit.com", ruleInfo[0]['address'])
+# 		self.assertEqual("inet", ruleInfo['family'])
+# 		self.assertEqual("BanTable", ruleInfo['tableName'])
+# 		self.assertEqual("BanChain", ruleInfo['chainName'])
+# 		self.assertEqual("vincipit.com", ruleInfo['address'])
 # 		result = PyNFT.GetChain("inet", "BanTable", "BanChain")
 # 		self.assertEqual(0, result['rc'])
 # 		response = os.system("ping -c 1 vincipit.com")
@@ -207,15 +213,15 @@ class TestShortcutRules(unittest.TestCase):
 # 		# TEST 2 (UnbanIP)
 # 		nftRes, ruleInfo = PyNFT.UnbanIpSaddr("vincipit.com")
 # 		self.assertEqual(0, nftRes['rc'])
-# 		self.assertEqual("inet", ruleInfo[0]['family'])
-# 		self.assertEqual("BanTable", ruleInfo[0]['tableName'])
-# 		self.assertEqual("BanChain", ruleInfo[0]['chainName'])
-# 		self.assertEqual("vincipit.com", ruleInfo[0]['address'])
+# 		self.assertEqual("inet", ruleInfo['family'])
+# 		self.assertEqual("BanTable", ruleInfo['tableName'])
+# 		self.assertEqual("BanChain", ruleInfo['chainName'])
+# 		self.assertEqual("vincipit.com", ruleInfo['address'])
 # 		response = os.system("ping -c 1 vincipit.com")
 # 		self.assertEqual(0, response)
 
 
 
 
-# if __name__ == "__main__":
-#     unittest.main()
+if __name__ == "__main__":
+    unittest.main()
