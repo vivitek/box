@@ -26,7 +26,7 @@ const getWsClient = function(wsurl: string): SubscriptionClient {
   return client
 }
 
-const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: Variable) => {
+const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: queryContent) => {
   const link = new WebSocketLink(getWsClient(wsurl))
   return execute(link, {query, variables})
 }
@@ -52,32 +52,44 @@ const requestFirewall = async (ban: Ban): Promise<void> => {
 /* Utils End */
 
 const selfCreate = async (name: string, url: string): Promise<void> => {
-  await sendRequest ({
-    query: print(CREATE_ROUTER),
-    variables: {
-      createRouterData: {
-        name,
-        url
+  try {
+    const res = await sendRequest({
+      query: print(CREATE_ROUTER),
+      variables: {
+        createRouterData: {
+          name,
+          url
+        }
       }
-    }
-  })
-  .then(res => id = res.data.data.createRouter._id)
-  .catch(() => console.log("Routeur already created"))
+    })
+    id = res.data.data.createRouter._id
+  } catch(error) {
+    console.log("Routeur already created")
+  }
 }
 
 const getBans = async (): Promise<void> => {
-  await sendRequest ({
+  try {
+    const res = await sendRequest({
       query: print(GET_BANS),
       variables: {
         id
       }
-  })
- .then(res => res.data.data.getBans.forEach((ban: Ban) => requestFirewall(ban)))
+    })
+    res.data.data.getBans.forEach((ban: Ban) => requestFirewall(ban))
+  } catch (error) {
+    if (error.response) {
+      console.log('An error occured while retriving bans:')
+      console.log(`Status code: ${error.response.status}`)
+      console.log(error.response.data)
+    } else
+      console.log('A mystical error occured')
+  }
 }
 
 const createBan = async (address: string, banned: boolean): Promise<boolean> => {
   try {
-    await sendRequest ({
+    await sendRequest({
       query: print(CREATE_BAN),
       variables: {
         banCreationData: {
@@ -89,11 +101,17 @@ const createBan = async (address: string, banned: boolean): Promise<boolean> => 
     })
     return true
   } catch (error) {
+    if (error.response) {
+      console.log(`An error occured while creating ban on address ${address} (${banned}):`)
+      console.log(`Status code: ${error.response.status}`)
+      console.log(error.response.data)
+    } else
+      console.log('A mystical error occured')
     return false
   }
 }
 
-const subscribeBan = async (): Promise<void> => {
+const subscribeBan = (): void => {
   const client = createSubscriptionObservable(
     GRAPHQL_ENDPOINT,
     SUBSCRIBE_BAN,
@@ -107,9 +125,9 @@ const subscribeBan = async (): Promise<void> => {
 const initRabbitMQ = async (): Promise<void> => {
   try {
     const connection = await amqp.connect({
-      hostname: "0.0.0.0",
-      username: "vivi",
-      password: "vivitek",
+      hostname: process.env.AMQP_HOSTNAME,
+      username: process.env.AMQP_USERNAME,
+      password: process.env.AMQP_PASSWORD,
     });
     channel = await connection.createChannel();
     await channel.assertQueue("dhcp");
@@ -123,8 +141,7 @@ const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
   const msgData = JSON.parse(qMsg.content.toString())
   if (await createBan(msgData.mac, false)) {
     channel.ack(qMsg)
-  }
-  else {
+  } else {
     channel.nack(qMsg)
   }
 }
@@ -135,7 +152,7 @@ const main = async (): Promise<void> => {
   await selfCreate(process.env.BALENA_DEVICE_NAME_AT_INIT, process.env.BALENA_DEVICE_UUID + ".balena-devices.com")
   console.log(`Router ${id} have been created`)
   await getBans()
-  await subscribeBan()
+  subscribeBan()
 }
 
 main()
@@ -143,14 +160,14 @@ main()
 interface Ban {
   address: string;
   banned: boolean;
-}
+};
 
 interface GraphqlRequestContext {
   query: string;
-  variables: Variable
+  variables: queryContent
   };
 
-interface Variable {
+interface queryContent {
   [key: string]: {
     [key: string]: string | number | boolean
   } | string | number | boolean

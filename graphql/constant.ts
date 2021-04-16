@@ -1,4 +1,4 @@
-const BASE_URL =
+const BASE_URL = "URL_SERVER"
   !process.env.NODE_ENV || process.env.NODE_ENV === "development"
   ? "http://localhost:3000"
   : "https://api.server.vincipit.com"
@@ -6,7 +6,7 @@ const BASE_URL =
 const GRAPHQL_ENDPOINT = `${BASE_URL}/graphql`
 const FIREWALL_ENDPOINT = "http://localhost:5000"
 
-const TOKEN = "Bearer " //enter yout token
+const TOKEN = "TOKEN"
 
 export {
   BASE_URL,
