@@ -1,4 +1,4 @@
-const BASE_URL = "URL_SERVER"
+const BASE_URL =
   !process.env.NODE_ENV || process.env.NODE_ENV === "development"
   ? "http://localhost:3000"
   : "https://api.server.vincipit.com"
