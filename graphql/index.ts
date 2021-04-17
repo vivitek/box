@@ -26,7 +26,7 @@ const getWsClient = function(wsurl: string): SubscriptionClient {
   return client
 }
 
-const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: queryContent) => {
+const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: QueryContent) => {
   const link = new WebSocketLink(getWsClient(wsurl))
   return execute(link, {query, variables})
 }
@@ -64,7 +64,11 @@ const selfCreate = async (name: string, url: string): Promise<void> => {
     })
     id = res.data.data.createRouter._id
   } catch(error) {
-    console.log("Routeur already created")
+    if (error.response) {
+      console.log('An error occured while creating router')
+      console.log(`Status code: ${error.response.status}`)
+    } else
+      console.log('A mystical error occured')
   }
 }
 
@@ -133,6 +137,11 @@ const initRabbitMQ = async (): Promise<void> => {
     await channel.assertQueue("dhcp");
     channel.consume("dhcp", consumerDhcp)
   } catch (error) {
+    if (error.response) {
+      console.log('An error occured while connecting to RabbitMQ')
+      console.log(`Status code: ${error.response.status}`)
+    } else
+      console.log('A mystical error occured')
     process.exit(1);
   }
 };
@@ -164,10 +173,10 @@ interface Ban {
 
 interface GraphqlRequestContext {
   query: string;
-  variables: queryContent
+  variables: QueryContent
   };
 
-interface queryContent {
+interface QueryContent {
   [key: string]: {
     [key: string]: string | number | boolean
   } | string | number | boolean

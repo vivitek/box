@@ -2,7 +2,7 @@
   "name": "graphql",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js"
@@ -10,12 +10,12 @@
   "author": "Arthur LE BRETON",
   "license": "ISC",
   "dependencies": {
-    "@apollo/client": "^3.3.7",
     "amqplib": "^0.7.0",
     "apollo-link": "^1.2.14",
     "apollo-link-ws": "^1.0.20",
     "axios": "^0.21.1",
     "graphql": "^15.5.0",
+    "graphql-tag": "^2.11.0",
     "subscriptions-transport-ws": "^0.9.18",
     "ws": "^7.4.2"
   },
