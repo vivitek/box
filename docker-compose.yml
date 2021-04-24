@@ -31,9 +31,9 @@ services:
     environment:
       - POSTGRES_USER=rbouvard
       - POSTGRES_PASSWORD=postgrespwd
-      - DATABASE_URL=postgresql://rbouvard:postgrespwd@localhost:5432/firewallDB
     ports:
       - "5432:5432"
+    command: ["./firewall/init.sql"]
   firewall:
     build: ./firewall
     privileged: true
@@ -41,6 +41,7 @@ services:
       - DATABASE_URL=postgresql://rbouvard:postgrespwd@localhost:5432/firewallDB # idk guys
     depends_on:
       - postgres
+    command: ["./wait-for-postgres.sh", "rbouvard", "sudo", "python3", "manage", "run"]
     ports:
       - "5000:5000"
     labels:
