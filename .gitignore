@@ -113,3 +113,7 @@ temp/
 # Ignore all local history of files
 .history
 .vscode/
+
+# python tmp
+*__pycache__*
+*.pyc
