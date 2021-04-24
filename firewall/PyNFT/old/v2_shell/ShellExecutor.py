@@ -58,6 +58,17 @@ class Executor:
 
 	###############################
 	##                           ##
+	##       BASIC  ACTIONS      ##
+	##                           ##
+	###############################
+
+	def ListRuleset(self, cmd = None):
+		self.ExecuteNFTCommand("list ruleset")
+
+
+
+	###############################
+	##                           ##
 	##      SHORTCUT ACTIONS     ##
 	##                           ##
 	###############################

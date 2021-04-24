@@ -2,16 +2,19 @@ import os
 import json
 import unittest
 from pynft import Executor
-from pynft import Executor_v2_shell
 
-PyNFT_shell = Executor_v2_shell()
-PyNFT = Executor()
+PyNFT_shell = Executor()
 
 
 
 #
 #	PyNFT v2_shell tests
 #
+
+class TestBasicNFTCommands(unittest.TestCase):
+	def listRuleset(self):
+		PyNFT_shell.ListRuleset()
+		self.assertEqual(0, 0)
 
 class TestIPv4Blacklist(unittest.TestCase):
 	def testBanUnban(self):

@@ -1,6 +1,6 @@
 from flask import (Blueprint, request, abort)
 from flask_api import status
-from pyIP import Executor
+from pynft import Executor
 from app.main.model.rules import Rule, MacBan, IPBan
 
 from app.main import db

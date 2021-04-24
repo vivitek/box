@@ -53,7 +53,7 @@ def testAPI():
 @manager.command
 def testPYNFT():
     """Runs the unit tests."""
-    tests = unittest.TestLoader().discover('app/tests', pattern='test_pyNFT*.py')
+    tests = unittest.TestLoader().discover('app/tests', pattern='test_pynft*.py')
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
         return 0

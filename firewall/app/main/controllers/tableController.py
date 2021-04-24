@@ -1,6 +1,6 @@
 from flask import (Blueprint, request, abort, jsonify)
 from flask_api import status
-from pyIP import Executor
+from pynft import Executor
 
 from app.main.model.tables import Table
 from app.main import db

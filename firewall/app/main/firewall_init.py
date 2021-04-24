@@ -4,7 +4,7 @@ from app.main.controllers.tableController import Table
 from app.main.controllers.chainsController import Chain
 from app.main.controllers.rulesController import Rule, IPBan, MacBan
 
-from pyIP import Executor
+from pynft import Executor
 
 PyNFT = Executor()
 
