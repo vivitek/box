@@ -1,48 +1,52 @@
 version: "2"
 
 services:
-  # dhcp:
-  #   build: ./dhcp
-  #   network_mode: "host"
-  #   privileged: true
-  #   expose:
-  #     - 67
-  #     - 68
-  #   depends_on:
-  #     - rabbitmq
-  # rabbitmq:
-  #   image: rabbitmq:3.7-management
-  #   restart: "always"
-  #   environment:
-  #     RABBITMQ_ERLANG_COOKIE: "secret"
-  #     RABBITMQ_DEFAULT_USER: vivi
-  #     RABBITMQ_DEFAULT_PASS: vivitek
-  #   ports:
-  #     - 5672:5672
-  #     - 15672:15672
-  # pcap:
-  #   build: ./pcap
-  #   privileged: true
-  #   network_mode: "host"
-  #   depends_on:
-  #     - rabbitmq
+  dhcp:
+    build: ./dhcp
+    network_mode: "host"
+    privileged: true
+    expose:
+      - 67
+      - 68
+    depends_on:
+      - rabbitmq
+  rabbitmq:
+    image: rabbitmq:3.7-management
+    restart: "always"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "secret"
+      RABBITMQ_DEFAULT_USER: vivi
+      RABBITMQ_DEFAULT_PASS: vivitek
+    ports:
+      - 5672:5672
+      - 15672:15672
+  pcap:
+    build: ./pcap
+    privileged: true
+    network_mode: "host"
+    depends_on:
+      - rabbitmq
   postgres:
     image: postgres
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      - POSTGRES_USER=rbouvard
-      - POSTGRES_PASSWORD=postgrespwd
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: toor
     ports:
       - "5432:5432"
-    command: ["./firewall/init.sql"]
   firewall:
     build: ./firewall
-    privileged: true
-    environment:
-      - DATABASE_URL=postgresql://rbouvard:postgrespwd@localhost:5432/firewallDB # idk guys
     depends_on:
       - postgres
-    command: ["./wait-for-postgres.sh", "rbouvard", "sudo", "python3", "manage", "run"]
     ports:
       - "5000:5000"
     labels:
-        io.balena.features.kernel-modules: '1'
+      io.balena.features.kernel-modules: '1'
+  adminer:
+    image: adminer
+    depends_on:
+      - postgres
+    ports:
+      - 4000:8080
+    restart: always
