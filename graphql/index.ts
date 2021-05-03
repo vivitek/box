@@ -5,7 +5,7 @@ import axios from 'axios'
 import { DocumentNode, print } from 'graphql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import * as ws from 'ws'
-import { FIREWALL_ENDPOINT, GRAPHQL_ENDPOINT, TOKEN } from './constant'
+import { FIREWALL_ENDPOINT, GRAPHQL_ENDPOINT } from './constant'
 import { CREATE_BAN, GET_BANS, SUBSCRIBE_BAN } from './src/banQueries'
 import { CREATE_ROUTER } from './src/routerQueries'
 
@@ -36,7 +36,7 @@ const sendRequest = async (data: GraphqlRequestContext) => {
     url: GRAPHQL_ENDPOINT,
     method: 'post',
     headers: {
-      authorization: TOKEN
+      authorization: process.env.VINCIPIT_BEARER_TOKEN
     },
     data: data,
   })
