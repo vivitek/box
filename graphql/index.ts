@@ -19,7 +19,7 @@ const getWsClient = function(wsurl: string): SubscriptionClient {
     reconnect: true,
     connectionParams: {
       headers: {
-        authorization: TOKEN
+        authorization: process.env.VINCIPIT_BEARER_TOKEN
       }
     }
   }, ws)
