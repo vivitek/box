@@ -6,11 +6,8 @@ const BASE_URL =
 const GRAPHQL_ENDPOINT = `${BASE_URL}/graphql`
 const FIREWALL_ENDPOINT = "http://localhost:5000"
 
-const TOKEN = "TOKEN"
-
 export {
   BASE_URL,
   GRAPHQL_ENDPOINT,
-  FIREWALL_ENDPOINT,
-  TOKEN
+  FIREWALL_ENDPOINT
 }
