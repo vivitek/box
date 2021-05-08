@@ -63,8 +63,12 @@ def unbanIp():
 @bp.route('/banMAC', methods=['GET', 'POST'])
 def banMac():
     try:
+<<<<<<< HEAD
         response, rule = PyNFT.BanMacAddr(request.args.get('address'))
         print(rule)
+=======
+        response, rule = PyNFT.BanMacSaddr(request.args.get('address'))
+>>>>>>> 18687a45bbd425b5cd5dbb1a35abf9113a2ee683
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = MacBan (
@@ -80,8 +84,12 @@ def banMac():
 @bp.route('/unbanMAC', methods=['GET', 'DELETE'])
 def unbanMac():
     try:
+<<<<<<< HEAD
         response, rule = PyNFT.UnbanMacAddr(request.args.get('address'))
         print('aldnoizadnaond')
+=======
+        response, rule = PyNFT.UnbanMacSaddr(request.args.get('address'))
+>>>>>>> 18687a45bbd425b5cd5dbb1a35abf9113a2ee683
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = MacBan.query.filter_by(address=request.args.get('address')).delete()

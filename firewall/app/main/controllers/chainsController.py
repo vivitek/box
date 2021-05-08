@@ -36,7 +36,6 @@ def addChains():
             chain = PyNFT.AddChain(request.form.get('family'),
             request.form.get('tablename'),
             request.form.get('chainname'))
-        print(chain)
         if (chain['error'] != ''):
             return chain['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         chainDB = Chain(
