@@ -26,12 +26,28 @@ services:
     network_mode: "host"
     depends_on:
       - rabbitmq
+  postgres:
+    build: ./postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: toor
+    ports:
+      - "5432:5432"
   firewall:
     build: ./firewall
+    depends_on:
+      - postgres
     ports:
       - "5000:5000"
     labels:
       io.balena.features.kernel-modules: '1'
+  adminer:
+    image: adminer
+    depends_on:
+      - postgres
+    ports:
+      - 4000:8080
+    restart: always
   graphql:
     build: ./graphql
     restart: "on-failure"

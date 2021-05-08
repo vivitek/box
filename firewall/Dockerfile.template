@@ -9,8 +9,7 @@ RUN apt-get install -y build-essential
 RUN apt-get install -y libpq-dev
 
 RUN apt-get install -y nftables
-# RUN apt-get install -y python3-nftables
-# docker run cmd.cat/nft nft
+
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
