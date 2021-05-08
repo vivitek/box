@@ -1,5 +1,0 @@
-FROM postgres
-
-COPY . .
-
-CMD [ "sh", "init_db.sh" ]
