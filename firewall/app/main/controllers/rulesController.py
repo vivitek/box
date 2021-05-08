@@ -6,7 +6,7 @@ from app.main.model.rules import Rule, MacBan, IPBan
 from app.main import db
 
 bp = Blueprint('rule', __name__, url_prefix='/rule')
-PyNFT = Executor()
+PyNFT = Executor("", "")
 
 @bp.route('/', methods=['POST'])
 def addRule():
@@ -35,7 +35,7 @@ def addRule():
 @bp.route('/banIP', methods=['GET', 'POST'])
 def banIP():
     try:
-        response, rule = PyNFT.BanIpSaddr(request.args.get('address'))
+        response, rule = PyNFT.BanIpAddr(request.args.get('address'))
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = IPBan (
@@ -51,7 +51,7 @@ def banIP():
 @bp.route('/unbanIP', methods=['GET', 'DELETE'])
 def unbanIp():
     try:
-        response, rule = PyNFT.UnbanIpSaddr(request.args.get('address'))
+        response, rule = PyNFT.UnbanIpAddr(request.args.get('address'))
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = IPBan.query.filter_by(address=request.args.get('address')).delete()
@@ -63,7 +63,7 @@ def unbanIp():
 @bp.route('/banMAC', methods=['GET', 'POST'])
 def banMac():
     try:
-        response, rule = PyNFT.BanMacSaddr(request.args.get('address'))
+        response, rule = PyNFT.BanMacAddr(request.args.get('address'))
         print(rule)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -80,7 +80,7 @@ def banMac():
 @bp.route('/unbanMAC', methods=['GET', 'DELETE'])
 def unbanMac():
     try:
-        response, rule = PyNFT.UnbanMacSaddr(request.args.get('address'))
+        response, rule = PyNFT.UnbanMacAddr(request.args.get('address'))
         print('aldnoizadnaond')
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR

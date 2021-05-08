@@ -6,7 +6,7 @@ from app.main.controllers.rulesController import Rule, IPBan, MacBan
 
 from pynft import Executor
 
-PyNFT = Executor()
+PyNFT = Executor("", "")
 
 def init_tables():
     tablesArray = Table.query.all()
@@ -28,13 +28,13 @@ def init_chains():
 def init_rules():
     IPArray = IPBan.query.all()
     for ip in IPArray:
-        response, address = PyNFT.BanIpSaddr(IPBan.query.get(str(ip)).address)
+        response, address = PyNFT.BanIpAddr(IPBan.query.get(str(ip)).address)
         ip.handle = address['handle'][0]
         db.session.add(ip)
         db.session.commit()
     MACArray = MacBan.query.all()
     for mac in MACArray:
-        response, address = PyNFT.BanMacSaddr(MacBan.query.get(str(mac)).address)
+        response, address = PyNFT.BanMacAddr(MacBan.query.get(str(mac)).address)
         mac.handle = address['handle'][0]
         db.session.add(mac)
         db.session.commit()

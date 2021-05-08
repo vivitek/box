@@ -3,36 +3,127 @@ import json
 import unittest
 from pynft import Executor
 
-PyNFT_shell = Executor()
 
+interfaces = getnic.interfaces()
+detailed = getnic.ipaddr(interfaces)
+print("\nSETUP IP FORWARDING :\ninterfaces => " + interfaces + "\ndetailed => " + detailed)
+
+PyNFT_shell = Executor("192.168.0.32", "8080")
 
 
 #
 #	PyNFT v2_shell tests
 #
 
-class TestBasicNFTCommands(unittest.TestCase):
-	def listRuleset(self):
-		PyNFT_shell.ListRuleset()
-		self.assertEqual(0, 0)
+class TestPyNFT(unittest.TestCase):
+	
+	def testRulesetMethods(self):
+		output = PyNFT_shell.PrintRuleset()
+		self.assertEqual(output["rc"], 0)
+		# test
 
-class TestIPv4Blacklist(unittest.TestCase):
-	def testBanUnban(self):
-		PyNFT_shell.BanIPv4Saddr("vincipit.com")
+
+
+	def testTableMethods(self):
+		output = PyNFT_shell.FlushRuleset()
+
+		self.assertEqual(output["rc"], 0)
+		output = PyNFT_shell.AddTable(family="inet", tableName="TeStTaBlE")
+		self.assertEqual(output["rc"], 0)
+		output = PyNFT_shell.AddTable(family="ip", tableName="serious")
+		self.assertEqual(output["rc"], 0)
+		output = PyNFT_shell.DeleteTable(family="inet", identifier="TeStTaBlE")
+		self.assertEqual(output["rc"], 0)
+		
+		PyNFT_shell.FlushRuleset()
+	
+
+	def testChainMethods(self):
+		output = PyNFT_shell.FlushRuleset()
+		self.assertEqual(output["rc"], 0)
+
+		output = PyNFT_shell.AddTable(family="inet", tableName="test_table")
+		self.assertEqual(output["rc"], 0)
+		# output = PyNFT_shell.PrintRuleset()
+		# print("\nStep 1 / 4:\n" + output["output"])
+
+		output = PyNFT_shell.AddChain(family="inet", tableName="test_table", chainName="TeStChain")
+		self.assertEqual(output["rc"], 0)
+		# output = PyNFT_shell.PrintRuleset()
+		# print("Step 2 / 4:\n" + output["output"])
+
+		output = PyNFT_shell.AddChain(family="inet", tableName="test_table", chainName="serious")
+		self.assertEqual(output["rc"], 0)
+		# output = PyNFT_shell.PrintRuleset()
+		# print("Step 3 / 4:\n" + output["output"])
+
+		output = PyNFT_shell.DeleteChain(family="inet", tableName="test_table", identifier="TeStChain")
+		self.assertEqual(output["rc"], 0)
+		# output = PyNFT_shell.PrintRuleset()
+		# print("Step 4 / 4:\n" + output["output"])
+		
+		PyNFT_shell.FlushRuleset()
+
+
+	def testRuleMethods(self):
+		output = PyNFT_shell.FlushRuleset()
+		self.assertEqual(output["rc"], 0)
+		# output = PyNFT_shell.PrintRuleset()
+		# print("\nStep 0 / 5:\n" + output["output"])
+
+		PyNFT_shell.__init__()
+		# output = PyNFT_shell.PrintRuleset()
+		# print("\nStep 0.5 / 5:\n" + output["output"])
+
+		output = PyNFT_shell.BanIPv4Addr("vincipit.com")
+		self.assertEqual(output["rc"], 0)
+		# output = PyNFT_shell.PrintRuleset()
+		# print("\nStep 1 / 5:\n" + output["output"])
+
+		print()
 		response = os.system("ping -c 1 vincipit.com")
 		self.assertNotEqual(0, response)
-		PyNFT_shell.UnbanIPv4Saddr("vincipit.com")
+
+		output = PyNFT_shell.UnbanIPv4Addr("vincipit.com")
+		self.assertEqual(output["rc"], 0)
+		# output = PyNFT_shell.PrintRuleset()
+		# print("\nStep 2 / 5:\n" + output["output"])
+
 		response = os.system("ping -c 1 vincipit.com")
 		self.assertEqual(0, response)
 
-# class TestIPv6Blacklist(unittest.TestCase):
-# 	def testBanUnban(self):
-# 		PyNFT_shell.BanIPv6Saddr("vincipit.com")			# vincipit.com does not auto resolve to IPv6 addr
-# 		response = os.system("ping -c 1 vincipit.com")
-# 		self.assertNotEqual(0, response)
-# 		PyNFT_shell.UnbanIPv6Saddr("vincipit.com")			# vincipit.com does not auto resolve to IPv6 addr
-# 		response = os.system("ping -c 1 vincipit.com")
-# 		self.assertEqual(0, response)
+		output = PyNFT_shell.BanIPv6Addr("2001:0db8:3c4d:0015:0000:0000:1a2f:1a2b")
+		self.assertEqual(output["rc"], 0)
+		# output = PyNFT_shell.PrintRuleset()
+		# print("\nStep 3 / 5:\n" + output["output"])
+
+		output = PyNFT_shell.BanIPv6Addr("6666:6666:6666:6666:9999:4444:2222:0000")
+		self.assertEqual(output["rc"], 0)
+		# output = PyNFT_shell.PrintRuleset()
+		# print("\nStep 4 / 5:\n" + output["output"])
+
+		output = PyNFT_shell.FlushChain("inet", "BanTable", "BanChain")
+		self.assertEqual(output["rc"], 0)
+		# output = PyNFT_shell.PrintRuleset()
+		# print("\nStep 5 / 5:\n" + output["output"])
+
+		PyNFT_shell.FlushRuleset()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

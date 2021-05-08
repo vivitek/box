@@ -6,7 +6,7 @@ from app.main.model.tables import Table
 from app.main import db
 
 bp = Blueprint('table', __name__, url_prefix='/table')
-PyNFT = Executor()
+PyNFT = Executor("", "")
 
 
 @bp.route('/', methods=['GET'])
