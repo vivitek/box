@@ -9,16 +9,20 @@ RUN apt-get install -y build-essential
 RUN apt-get install -y libpq-dev
 RUN apt-get install -y procps
 RUN apt-get install -y systemd
-RUN apt-get install -y nftables
-# TODO: debug why the freak the next line won't run
+# TODO: debug why the f*** the next line won't run
 # RUN apt-get install -y python3-nftables
+RUN apt-get install -y nftables
 
-# check if ip_forwarding is active (defaults to 1/yes/active)
-# RUN sudo sysctl net.ipv4.ip_forward
+# RUN sudo systemctl
+
+#  what is this ?
+# docker run cmd.cat/nft nft
 
 # enable ip_forwarding on machine
 # RUN sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
 # RUN sudo sysctl -p
+# check if ip_forwarding is active
+# RUN sudo sysctl net.ipv4.ip_forward
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
