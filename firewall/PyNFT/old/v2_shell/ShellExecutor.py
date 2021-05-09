@@ -21,8 +21,9 @@ class Executor:
 		cmd_createBannedIPv6set = "add set inet BanTable BannedIPv6 { type ipv6_addr \; }"
 		cmd_banSourceIPv6rule = "add rule inet BanTable BanChain ip6 saddr @BannedIPv6 drop"
 		cmd_banDestinationIPv6rule = "add rule inet BanTable BanChain ip6 daddr @BannedIPv6 drop"
-		# cmd_createBannedMACset = "add set <idk> <depends_on_previous_param> BannedMAC { type <idk> \; }"
-		# cmd_createBannedMACrule = "add rule <idk> <depends_on_previous_param> BanChain <idk> @BannedMAC drop"
+		cmd_createBannedMACset = "add set inet BanTable BannedMAC"
+		cmd_banSourceMACrule = "add rule inet BanTable BanChain saddr @BannedMAC drop"
+		cmd_banDestinationMACrule = "add rule inet BanTable BanChain daddr @BannedMAC drop"
 
 		if (bannedIPv4 != ""):
 			cmd_banSourceIPv4rule.replace("}", "elements={" + bannedIPv4 + "} \; }")
@@ -30,8 +31,8 @@ class Executor:
 		if (bannedIPv6 != ""):
 			cmd_banSourceIPv6rule.replace("}", "elements={" + bannedIPv6 + "} \; }")
 			cmd_banDestinationIPv6rule.replace("}", "elements={" + bannedIPv6 + "} \; }")
-		# if (bannedMAC != ""):
-		# 	cmd_createBannedMACset.replace("}", "elements={" + bannedMAC + "} \; }")
+		if (bannedMAC != ""):
+			cmd_createBannedMACset.replace("}", "elements={" + bannedMAC + "} \; }")
 
 		self.ExecuteNFTCommand(cmd_addBanTable)
 		self.ExecuteNFTCommand(cmd_addBanChain)
@@ -41,8 +42,9 @@ class Executor:
 		self.ExecuteNFTCommand(cmd_createBannedIPv6set)
 		self.ExecuteNFTCommand(cmd_banSourceIPv6rule)
 		self.ExecuteNFTCommand(cmd_banDestinationIPv6rule)
-		# self.ExecuteNFTCommand(cmd_createBannedMACset)
-		# self.ExecuteNFTCommand(cmd_createBannedMACrule)
+		self.ExecuteNFTCommand(cmd_createBannedMACset)
+		self.ExecuteNFTCommand(cmd_banSourceMACrule)
+		self.ExecuteNFTCommand(cmd_banDestinationMACrule)
 
 	def setupIpForwarding(self, sNatAddr, sNatPort):
 		cmd_addNatTable = "add table ip nat"
@@ -201,8 +203,8 @@ class Executor:
 	def BanIPv6Addr(self, args, cmd=None):
 		return self.ExecuteNFTCommand("add element inet BanTable BannedIPv6 {" + args + "}")
 	
-	# def BanMACAddr(self, args, cmd=None):
-	# 	return self.ExecuteNFTCommand("add element <idk> <depends_on_previous_param> BannedMAC {" + args + "}")
+	def BanMACAddr(self, args, cmd=None):
+		return self.ExecuteNFTCommand("add element inet BannedMAC {" + args + "}")
 
 	def UnbanIPv4Addr(self, args, cmd=None):
 		return self.ExecuteNFTCommand("delete element inet BanTable BannedIPv4 {" + args + "}")
@@ -211,4 +213,4 @@ class Executor:
 		return self.ExecuteNFTCommand("delete element inet BanTable BannedIPv6 {" + args + "}")
 	
 	# def UnbanMACAddr(self, args, cmd=None):
-	# 	return self.ExecuteNFTCommand("delete element <idk> <depends_on_previous_param> BannedMAC {" + args + "}")
+		return self.ExecuteNFTCommand("delete element inet BanTable BannedMAC {" + args + "}")
