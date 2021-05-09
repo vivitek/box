@@ -36,7 +36,7 @@ const sendRequest = async (data: GraphqlRequestContext) => {
     url: GRAPHQL_ENDPOINT,
     method: 'post',
     headers: {
-      authorization: process.env.VINCIPIT_BEARER_TOKEN
+      authorization: process.env.VINCIPIT_BEARER_TOKEN || ""
     },
     data: data,
   })
@@ -68,7 +68,7 @@ const selfCreate = async (name: string, url: string): Promise<void> => {
       console.log('An error occured while creating router')
       console.log(`Status code: ${error.response.status}`)
     } else
-      console.log('A mystical error occured')
+      console.log('A mystical error occured during the router creation')
   }
 }
 
@@ -87,7 +87,7 @@ const getBans = async (): Promise<void> => {
       console.log(`Status code: ${error.response.status}`)
       console.log(error.response.data)
     } else
-      console.log('A mystical error occured')
+      console.log('A mystical error occured during the bans recovery')
   }
 }
 
@@ -110,7 +110,7 @@ const createBan = async (address: string, banned: boolean): Promise<boolean> => 
       console.log(`Status code: ${error.response.status}`)
       console.log(error.response.data)
     } else
-      console.log('A mystical error occured')
+      console.log('A mystical error occured during bans creation')
     return false
   }
 }
@@ -141,7 +141,7 @@ const initRabbitMQ = async (): Promise<void> => {
       console.log('An error occured while connecting to RabbitMQ')
       console.log(`Status code: ${error.response.status}`)
     } else
-      console.log('A mystical error occured')
+      console.log('A mystical error occured during the RabbitMQ initialization ')
     process.exit(1);
   }
 };
