@@ -69,7 +69,7 @@ const selfCreate = async (name: string, url: string): Promise<void> => {
       logger.error('An error occured while creating router')
       logger.error(`Status code: ${error.response.status}`)
     } else
-    logger.error('A mystical error occured during the router creation')
+      logger.error('A mystical error occured during the router creation')
   }
 }
 
@@ -88,7 +88,7 @@ const getBans = async (): Promise<void> => {
       logger.error(`Status code: ${error.response.status}`)
       logger.error(error.response.data)
     } else
-    logger.error('A mystical error occured during the bans recovery')
+      logger.error('A mystical error occured during the bans recovery')
   }
 }
 
@@ -111,7 +111,7 @@ const createBan = async (address: string, banned: boolean): Promise<boolean> => 
       logger.error(`Status code: ${error.response.status}`)
       logger.error(error.response.data)
     } else
-    logger.error('A mystical error occured during bans creation')
+      logger.error('A mystical error occured during bans creation')
     return false
   }
 }
