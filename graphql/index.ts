@@ -8,6 +8,7 @@ import * as ws from 'ws'
 import { FIREWALL_ENDPOINT, GRAPHQL_ENDPOINT } from './constant'
 import { CREATE_BAN, GET_BANS, SUBSCRIBE_BAN } from './src/banQueries'
 import { CREATE_ROUTER } from './src/routerQueries'
+import { logger } from './src/logger'
 
 
 let id: string
@@ -43,7 +44,7 @@ const sendRequest = async (data: GraphqlRequestContext) => {
 }
 
 const requestFirewall = async (ban: Ban): Promise<void> => {
-  console.log(`New ${ban.banned ? "ban" : "unban"} for address ${ban.address}`)
+  logger.info(`New ${ban.banned ? "ban" : "unban"} for address ${ban.address}`)
   await axios({
     method: ban.banned ? 'post' : 'delete',
     url: `${FIREWALL_ENDPOINT}/rule/${ban.banned ? "ban": "unban"}MAC?address=${ban.address}`
@@ -65,10 +66,10 @@ const selfCreate = async (name: string, url: string): Promise<void> => {
     id = res.data.data.createRouter._id
   } catch(error) {
     if (error.response) {
-      console.log('An error occured while creating router')
-      console.log(`Status code: ${error.response.status}`)
+      logger.error('An error occured while creating router')
+      logger.error(`Status code: ${error.response.status}`)
     } else
-      console.log('A mystical error occured during the router creation')
+    logger.error('A mystical error occured during the router creation')
   }
 }
 
@@ -83,11 +84,11 @@ const getBans = async (): Promise<void> => {
     res.data.data.getBans.forEach((ban: Ban) => requestFirewall(ban))
   } catch (error) {
     if (error.response) {
-      console.log('An error occured while retriving bans:')
-      console.log(`Status code: ${error.response.status}`)
-      console.log(error.response.data)
+      logger.error('An error occured while retriving bans:')
+      logger.error(`Status code: ${error.response.status}`)
+      logger.error(error.response.data)
     } else
-      console.log('A mystical error occured during the bans recovery')
+    logger.error('A mystical error occured during the bans recovery')
   }
 }
 
@@ -106,11 +107,11 @@ const createBan = async (address: string, banned: boolean): Promise<boolean> => 
     return true
   } catch (error) {
     if (error.response) {
-      console.log(`An error occured while creating ban on address ${address} (${banned}):`)
-      console.log(`Status code: ${error.response.status}`)
-      console.log(error.response.data)
+      logger.error(`An error occured while creating ban on address ${address} (${banned}):`)
+      logger.error(`Status code: ${error.response.status}`)
+      logger.error(error.response.data)
     } else
-      console.log('A mystical error occured during bans creation')
+    logger.error('A mystical error occured during bans creation')
     return false
   }
 }
@@ -128,6 +129,7 @@ const subscribeBan = (): void => {
 
 const initRabbitMQ = async (): Promise<void> => {
   try {
+    logger.info("Connecting to RabbitMQ...")
     const connection = await amqp.connect({
       hostname: process.env.AMQP_HOSTNAME,
       username: process.env.AMQP_USERNAME,
@@ -138,10 +140,10 @@ const initRabbitMQ = async (): Promise<void> => {
     channel.consume("dhcp", consumerDhcp)
   } catch (error) {
     if (error.response) {
-      console.log('An error occured while connecting to RabbitMQ')
-      console.log(`Status code: ${error.response.status}`)
+      logger.fatal('An error occured while connecting to RabbitMQ')
+      logger.fatal(`Status code: ${error.response.status}`)
     } else
-      console.log('A mystical error occured during the RabbitMQ initialization ')
+      logger.fatal('A mystical error occured during the RabbitMQ initialization ')
     process.exit(1);
   }
 };
@@ -156,10 +158,11 @@ const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
 }
 
 const main = async (): Promise<void> => {
+  logger.info("Service starting...")
   await initRabbitMQ()
-  console.log('RabbitMQ is running')
+  logger.info('RabbitMQ is running')
   await selfCreate(process.env.BALENA_DEVICE_NAME_AT_INIT, process.env.BALENA_DEVICE_UUID + ".balena-devices.com")
-  console.log(`Router ${id} have been created`)
+  logger.info(`Router ${id} have been created`)
   await getBans()
   subscribeBan()
 }
