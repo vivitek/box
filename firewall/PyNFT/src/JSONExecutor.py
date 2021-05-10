@@ -6,13 +6,10 @@ from enum import Enum
 from PyNFT.src.JSONGenerator import PreGenCmd
 
 class JSONExecutor:
-
 	nft = nftables.Nftables()
-
 
 	def __init__(self):
 		self.nft.set_json_output(True)
-
 
 	def ExecuteJSON(self, cmdOBJ, cmdName):
 		if (type(cmdOBJ) != dict):
@@ -38,7 +35,6 @@ class JSONExecutor:
 		if (output["rc"] != 0):
 			print("error :\t\t\t{}".format(output["error"]))
 		print()
-
 
 
 ###
@@ -121,7 +117,7 @@ class JSONExecutor:
 		toLoad = PreGenCmd['addChain'].replace("THE_FAMILY", family).replace("THE_TABLE_NAME", tableName).replace("THE_CHAIN_NAME", chainName).replace("THE_CHAIN_TYPE", chainType).replace("THE_CHAIN_HOOK", chainHook).replace("THE_CHAIN_PRIO", str(chainPrio)).replace("THE_CHAIN_POLICY", chainPolicy)
 		cmd_addChain = json.loads(toLoad)
 		return self.ExecuteJSON(cmd_addChain, "AddChain")
-	
+
 	def RenameChain(self, family : str, tableName : str, chainName : str, chainNewName):
 		"""Rename the specified Chain"""
 		toLoad = PreGenCmd['renameChain'].replace("THE_FAMILY", family).replace("THE_TABLE_NAME", tableName).replace("THE_CHAIN_NAME", chainName).replace("THE_CHAIN_NEWNAME", chainNewName)
@@ -163,7 +159,6 @@ class JSONExecutor:
 		return self.ExecuteJSON(cmd_delRule, "DeleteRule")
 
 
-
 ###
 ### Shortcut Methods
 ###
@@ -191,7 +186,7 @@ class JSONExecutor:
 			return (addRuleRes, ruleInfo)
 		else:
 			return (None, None)
-		
+
 
 	def UnbanMacSaddr(self, addr : str):
 		handles = []
@@ -249,8 +244,6 @@ class JSONExecutor:
 					delRuleRes = self.DeleteRule("inet", "BanTable", "BanChain", str(item[key]['handle']))
 					handles.append(item[key]['handle'])
 					print("Unbanned IP address: " + addr)
-
-
 		if len(handles) == 1:
 			ruleInfo = {
 			 	"family": "inet",
@@ -260,7 +253,6 @@ class JSONExecutor:
 		 		"handle": handles[0]
 			}
 			return (delRuleRes, ruleInfo)
-
 		elif len(handles) > 1:
 			ruleInfos = []
 			for handle in handles:
@@ -272,7 +264,5 @@ class JSONExecutor:
 		 			"handle": handle
 				})
 			return (delRuleRes, ruleInfos)
-
 		else:
 			return None
-			

@@ -5,7 +5,6 @@ from dataclasses import dataclass
 import PacketInformations as pif
 from Tools import find_between
 
-
 class Match(Enum):
     IP = pif.IP_PI
     IP6 = pif.IP6_PI
@@ -29,7 +28,6 @@ class Match(Enum):
     ARP = pif.ARP_PI
     CT = pif.CT_PI
     META = pif.META_PI
-
 
 class Statement(IntEnum):
     ACCEPT = 0
@@ -94,7 +92,6 @@ class Statement(IntEnum):
             result.replace(tag, statValue[x])
 
         return result
-
 
 @dataclass
 class Rule:

@@ -61,4 +61,3 @@ def init_firewall():
     init_tables()
     init_chains()
     init_rules()
-

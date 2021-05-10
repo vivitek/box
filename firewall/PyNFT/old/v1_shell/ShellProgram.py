@@ -118,9 +118,6 @@ def PrintLSOFence(args, pynft):
     pynft.PrintLSO()
 
 
-
-
-
 ###############################
 ##                           ##
 ##           MAIN            ##
@@ -162,18 +159,4 @@ def main():
         # Actions to Take
         ActionSwitcher(args, pynft)
 
-
 main()
-
-#   Note :
-#
-#       pynft is a python script executable in shell
-#       it should be integrated to the python hooks that Remy Bouvard created to allow router NetFilter modification inputs from Server
-#
-#   pynft syntax :
-#
-#       -   "sudo nft" is automatically added to the command
-#
-#       -   actions and objects are reversed
-#           normal nft table command example    =>     $> nft add table ip filter
-#           same command using pynft (in shell) =>     $> python3 pynft.py table add ip filter

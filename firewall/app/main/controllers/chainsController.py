@@ -23,7 +23,7 @@ def getChain():
 def addChains():
     try:
         if (request.form.get('type') and request.form.get('hook')
-        and request.form.get('priority') and request.form.get('policy')):        
+        and request.form.get('priority') and request.form.get('policy')):
             chain = PyNFT.AddChain(request.form.get('family'),
             request.form.get('tablename'),
             request.form.get('chainname'),
