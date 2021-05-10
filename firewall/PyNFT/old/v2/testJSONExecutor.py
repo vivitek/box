@@ -5,7 +5,7 @@ from pynft import Executor
 
 # TESTS:
 
-executor = Executor()
+executor = Executor("", "")
 
 # 1)
 output = executor.AddTable("ip", "foo")
