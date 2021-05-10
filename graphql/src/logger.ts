@@ -14,14 +14,6 @@ logger.appenders
             pattern: "%d %p %c %X{user} %m%n"
         }
     })
-    .set("all-log-file", {
-        type: "file",
-        filename: "../graphql.log",
-        layout:{
-            type: "json",
-            separator: ","
-        }
-    });
 
 export {
     logger
