@@ -6,7 +6,7 @@ from app.main.model.rules import Rule, MacBan, IPBan
 from app.main import db
 
 bp = Blueprint('rule', __name__, url_prefix='/rule')
-PyNFT = Executor()
+PyNFT = Executor("", "")
 
 @bp.route('/', methods=['POST'])
 def addRule():

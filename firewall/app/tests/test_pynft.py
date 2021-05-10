@@ -3,7 +3,7 @@ import json
 import unittest
 from pynft import Executor
 
-PyNFT_shell = Executor()
+PyNFT_shell = Executor("", "")
 
 
 

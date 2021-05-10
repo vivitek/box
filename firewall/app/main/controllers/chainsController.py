@@ -6,7 +6,7 @@ from app.main.model.chains import Chain
 from app.main import db
 
 bp = Blueprint('chains', __name__, url_prefix='/chains')
-PyNFT = Executor()
+PyNFT = Executor("", "")
 
 @bp.route('/', methods=['GET'])
 def getChain():

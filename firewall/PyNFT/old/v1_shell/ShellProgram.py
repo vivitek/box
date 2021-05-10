@@ -140,7 +140,7 @@ def InputErrorManagement(args):
 
 def main():
 
-    pynft = Executor()
+    pynft = Executor("", "")
 
     isRunning = True
     i = 0

@@ -29,7 +29,7 @@ class TestShortcutRules(unittest.TestCase):
 
 # from pynft import Executor
 
-# PyNFT = Executor()
+# PyNFT = Executor("", "")
 
 # class TestRulesetManipulation(unittest.TestCase):
 # 	def test_GetRuleset(self):
