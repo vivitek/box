@@ -7,7 +7,7 @@ class Executor:
 
 	output = bytearray()
 
-	def __init__(self, sNatAddr, sNatPort, bannedIPv4="", bannedIPv6="", bannedMAC=""):
+	def init_pynft(self, sNatAddr, sNatPort, bannedIPv4="", bannedIPv6="", bannedMAC=""):
 		self.ExecuteNFTCommand("flush ruleset")
 		self.createBannedSets(bannedIPv4, bannedIPv6, bannedMAC)
 		self.setupIpForwarding(sNatAddr, sNatPort)
@@ -21,9 +21,9 @@ class Executor:
 		cmd_createBannedIPv6set = "add set inet BanTable BannedIPv6 { type ipv6_addr \; }"
 		cmd_banSourceIPv6rule = "add rule inet BanTable BanChain ip6 saddr @BannedIPv6 drop"
 		cmd_banDestinationIPv6rule = "add rule inet BanTable BanChain ip6 daddr @BannedIPv6 drop"
-		cmd_createBannedMACset = "add set inet BanTable BannedMAC"
-		cmd_banSourceMACrule = "add rule inet BanTable BanChain saddr @BannedMAC drop"
-		cmd_banDestinationMACrule = "add rule inet BanTable BanChain daddr @BannedMAC drop"
+		cmd_createBannedMACset = "add set inet BanTable BannedMAC { type ether_addr \; }"
+		cmd_banSourceMACrule = "add rule inet BanTable BanChain ether saddr @BannedMAC drop"
+		cmd_banDestinationMACrule = "add rule inet BanTable BanChain ether daddr @BannedMAC drop"
 
 		if (bannedIPv4 != ""):
 			cmd_banSourceIPv4rule.replace("}", "elements={" + bannedIPv4 + "} \; }")
@@ -204,7 +204,7 @@ class Executor:
 		return self.ExecuteNFTCommand("add element inet BanTable BannedIPv6 {" + args + "}")
 	
 	def BanMACAddr(self, args, cmd=None):
-		return self.ExecuteNFTCommand("add element inet BannedMAC {" + args + "}")
+		return self.ExecuteNFTCommand("add element inet BanTable BannedMAC {" + args + "}")
 
 	def UnbanIPv4Addr(self, args, cmd=None):
 		return self.ExecuteNFTCommand("delete element inet BanTable BannedIPv4 {" + args + "}")
