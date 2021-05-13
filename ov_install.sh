@@ -17,10 +17,11 @@ echo "deb [arch=arm64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] 
 echo -e "${GREEN}Adding Docker repository${NC}"
 sudo apt update
 echo -e "${GREEN}Installing Docker${NC}"
-sudo apt install docker-ce docker-ce-cli containerd.io
+sudo apt install -y docker-ce docker-ce-cli containerd.io
 echo -e "${GREEN}Installing docker-compose and seeting permissions${NC}"
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+sudo apt-get install python3-pip
+sudo pip3 install docker-compose
+
 
 #Network hotspot configuration
 echo -e "${GREEN}Configuring Hotspot network${NC}"
