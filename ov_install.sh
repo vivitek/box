@@ -19,7 +19,7 @@ sudo apt update
 echo -e "${GREEN}Installing Docker${NC}"
 sudo apt install -y docker-ce docker-ce-cli containerd.io
 echo -e "${GREEN}Installing docker-compose and seeting permissions${NC}"
-sudo apt-get install python3-pip
+sudo apt install -y python3-pip
 sudo pip3 install docker-compose
 
 
