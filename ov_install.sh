@@ -13,8 +13,7 @@ sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
 echo -e "${GREEN}Adding Docker GPT key${NC}"
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo -e "${GREEN}Adding Docker repository${NC}"
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-echo -e "${GREEN}Adding Docker repository${NC}"
+echo "deb [arch=arm64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/nullecho -e "${GREEN}Adding Docker repository${NC}"
 sudo apt update
 echo -e "${GREEN}Installing Docker${NC}"
 sudo apt install docker-ce docker-ce-cli containerd.io
