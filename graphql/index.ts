@@ -10,7 +10,6 @@ import { CREATE_BAN, GET_BANS, SUBSCRIBE_BAN } from './src/banQueries'
 import { CREATE_ROUTER } from './src/routerQueries'
 import { logger } from './src/logger'
 
-
 let id: string
 let channel: amqp.Channel
 
@@ -37,18 +36,22 @@ const sendRequest = async (data: GraphqlRequestContext) => {
     url: GRAPHQL_ENDPOINT,
     method: 'post',
     headers: {
-      authorization: process.env.VINCIPIT_BEARER_TOKEN || ""
+      authorization: process.env.VINCIPIT_BEARER_TOKEN || ''
     },
     data: data,
   })
 }
 
 const requestFirewall = async (ban: Ban): Promise<void> => {
-  logger.info(`New ${ban.banned ? "ban" : "unban"} for address ${ban.address}`)
-  await axios({
-    method: ban.banned ? 'post' : 'delete',
-    url: `${FIREWALL_ENDPOINT}/rule/${ban.banned ? "ban": "unban"}MAC?address=${ban.address}`
-  })
+  logger.info(`New ${ban.banned ? 'ban' : 'unban'} for address ${ban.address}`)
+  try {
+    const resp = await axios({
+      method: ban.banned ? 'post' : 'delete',
+      url: `${FIREWALL_ENDPOINT}/rule/${ban.banned ? 'ban': 'unban'}MAC?address=${ban.address}`
+    })
+  } catch (error) {
+    logger.error(error)
+  }
 }
 /* Utils End */
 
@@ -64,12 +67,14 @@ const selfCreate = async (name: string, url: string): Promise<void> => {
       }
     })
     id = res.data.data.createRouter._id
+    if (id == undefined)
+      throw new Error('Router already created')
   } catch(error) {
     if (error.response) {
       logger.error('An error occured while creating router')
       logger.error(`Status code: ${error.response.status}`)
     } else
-      logger.error('A mystical error occured during the router creation')
+      logger.error(error)
   }
 }
 
@@ -129,7 +134,7 @@ const subscribeBan = (): void => {
 
 const initRabbitMQ = async (): Promise<void> => {
   try {
-    logger.info("Connecting to RabbitMQ...")
+    logger.info('Connecting to RabbitMQ...')
     const connection = await amqp.connect({
       hostname: process.env.AMQP_HOSTNAME,
       username: process.env.AMQP_USERNAME,
@@ -158,11 +163,16 @@ const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
 }
 
 const main = async (): Promise<void> => {
-  logger.info("Service starting...")
+  logger.info('Service starting...')
   await initRabbitMQ()
   logger.info('RabbitMQ is running')
-  await selfCreate(process.env.BALENA_DEVICE_NAME_AT_INIT, process.env.BALENA_DEVICE_UUID + ".balena-devices.com")
-  logger.info(`Router ${id} have been created`)
+  if (!process.env.VINCIPIT_DEVICE_ID) {
+    await selfCreate(process.env.BALENA_DEVICE_NAME_AT_INIT, process.env.BALENA_DEVICE_UUID + '.balena-devices.com')
+    logger.info(`Router ${id} have been created`)
+  } else {
+    id = process.env.VINCIPIT_DEVICE_ID
+    logger.info(`Router ${id} already created`)
+  }
   await getBans()
   subscribeBan()
 }

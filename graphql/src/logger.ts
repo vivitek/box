@@ -8,11 +8,7 @@ logger.appenders
     })
     .set("error-log", {
         type: "stderr",
-        levels: ["fatal", "error", "warn"],
-        layout: {
-            type: "pattern",
-            pattern: "%d %p %c %X{user} %m%n"
-        }
+        levels: ["fatal", "error", "warn"]
     })
 
 export {
