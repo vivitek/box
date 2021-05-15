@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tsed/logger": "^5.13.2",
     "amqplib": "^0.7.0",
     "dhcp": "^0.2.20",
+    "getmac": "^5.17.0",
     "typescript": "^4.2.3"
   },
   "devDependencies": {

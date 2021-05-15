@@ -13,10 +13,6 @@ from app.main.controllers import tableController as table
 from app.main.controllers import chainsController as chains
 from app.main.controllers import rulesController as rules
 
-from pynft import Executor
-
-PyNFT = Executor()
-
 app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
 
 app.register_blueprint(table.bp)

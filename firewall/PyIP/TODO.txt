@@ -1,0 +1,38 @@
+////////////////////////////////////////////////////////////////
+//                                                            //
+//                           todo                             //
+//                                                            //
+////////////////////////////////////////////////////////////////
+
+
+
+1) Define final architecture => ARCHITECTURE.txt
+.
+.	Remove Duplicate Names
+.
+.	Create definition for pluralled VALUES (LIST_OBJECT, line 69)
+.
+.	Done:
+.	commands, ruleset elements, statements, expressions
+.
+.	Left:
+.	DATA_FIELDS
+
+
+
+2) Create Enums covering every DATA_FIELD usable in NFT (ex: table families)
+.
+.	Correct the architecture (ARCHITECTURE.txt) with the correct DATA_FIELD types
+
+
+3) Create Parent classes for type safety while using Commands in PyNFT
+
+
+4) Create a NamedTuple class for every Command(9) / RulesetElement(12) / Statement(21) / Expression(21)
+.
+.	setup variables as fields requested in Objects
+.
+.	manage inheritance correctly
+
+
+3.1) Create Execute method for every CMD_OBJECT and every LIST_OBJECT

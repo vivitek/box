@@ -102,6 +102,30 @@ dist
 # https://nextjs.org/blog/next-9-1#public-directory-support
 # public
 
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.vscode/
+
+# python tmp
+*/__pycache__/
+*.pyc
+=======
 # Serverless directories
 .serverless/
 

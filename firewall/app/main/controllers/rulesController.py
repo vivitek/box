@@ -35,12 +35,12 @@ def addRule():
 @bp.route('/banIP', methods=['GET', 'POST'])
 def banIP():
     try:
-        response, rule = PyNFT.BanIpSaddr(request.args.get('address'))
+        response = PyNFT.BanIPv4Addr(request.args.get('address'))
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = IPBan (
             address = request.args.get('address'),
-            handle = rule['handle'][0]
+            handle = 0
         )
         db.session.add(ruleDB)
         db.session.commit()
@@ -51,7 +51,7 @@ def banIP():
 @bp.route('/unbanIP', methods=['GET', 'DELETE'])
 def unbanIp():
     try:
-        response, rule = PyNFT.UnbanIpSaddr(request.args.get('address'))
+        response = PyNFT.UnbanIPv4Addr(request.args.get('address'))
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = IPBan.query.filter_by(address=request.args.get('address')).delete()
@@ -63,12 +63,12 @@ def unbanIp():
 @bp.route('/banMAC', methods=['GET', 'POST'])
 def banMac():
     try:
-        response, rule = PyNFT.BanMacSaddr(request.args.get('address'))
+        response = PyNFT.BanMACAddr(request.args.get('address'), None)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = MacBan (
             address = request.args.get('address'),
-            handle = rule['handle'][0]
+            handle = 0
         )
         db.session.add(ruleDB)
         db.session.commit()
@@ -79,7 +79,7 @@ def banMac():
 @bp.route('/unbanMAC', methods=['GET', 'DELETE'])
 def unbanMac():
     try:
-        response, rule = PyNFT.UnbanMacSaddr(request.args.get('address'))
+        response = PyNFT.UnbanMACAddr(request.args.get('address'))
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = MacBan.query.filter_by(address=request.args.get('address')).delete()

@@ -28,14 +28,14 @@ def init_chains():
 def init_rules():
     IPArray = IPBan.query.all()
     for ip in IPArray:
-        response, address = PyNFT.BanIpSaddr(IPBan.query.get(str(ip)).address)
-        ip.handle = address['handle'][0]
+        response = PyNFT.BanIPv4Addr(IPBan.query.get(str(ip)).address)
+        ip.handle = 0
         db.session.add(ip)
         db.session.commit()
     MACArray = MacBan.query.all()
     for mac in MACArray:
-        response, address = PyNFT.BanMacSaddr(MacBan.query.get(str(mac)).address)
-        mac.handle = address['handle'][0]
+        response = PyNFT.BanMACAddr(MacBan.query.get(str(mac)).address)
+        mac.handle = 0
         db.session.add(mac)
         db.session.commit()
 
@@ -57,7 +57,7 @@ def init_firewall():
         db.session.add(tableDB)
         db.session.add(chainDB)
         db.session.commit()
-    PyNFT.FlushRuleset()
+    PyNFT.init_pynft("", "")
     init_tables()
     init_chains()
     init_rules()

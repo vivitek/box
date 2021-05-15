@@ -12,6 +12,7 @@
 
 # Look into NAMED_TUPLES for JSONExecutor function parameters
 
-from PyNFT.old.v1.ShellExecutor import Executor as old_Executor
+# from PyNFT.old.v1_shell.ShellExecutor import Executor as Executor_v1_shell
+from PyNFT.old.v2_shell.ShellExecutor import Executor as Executor
 
-from PyNFT.src.JSONExecutor import JSONExecutor as Executor
+# from PyNFT.src.JSONExecutor import JSONExecutor as Executor # (== v2)
