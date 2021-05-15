@@ -6,6 +6,11 @@ router.get("/:name", (req, res) => {
   const { name } = req.params;
   const tmp = {};
   tmp[name] = process.env[name];
+  if (!tmp[name]) {
+    res
+      .status(404)
+      .json({ status: "ko", data: { message: "variable not found" } });
+  }
   res.json({ status: "ok", data: tmp });
 });
 
