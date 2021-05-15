@@ -32,7 +32,8 @@ class Executor:
 			cmd_banSourceIPv6rule.replace("}", "elements={" + bannedIPv6 + "} \; }")
 			cmd_banDestinationIPv6rule.replace("}", "elements={" + bannedIPv6 + "} \; }")
 		if (bannedMAC != ""):
-			cmd_createBannedMACset.replace("}", "elements={" + bannedMAC + "} \; }")
+			cmd_banSourceMACrule.replace("}", "elements={" + bannedMAC + "} \; }")
+			cmd_banDestinationMACrule.replace("}", "elements={" + bannedMAC + "} \; }")
 
 		self.ExecuteNFTCommand(cmd_addBanTable)
 		self.ExecuteNFTCommand(cmd_addBanChain)
@@ -153,7 +154,7 @@ class Executor:
 		"""Delete specified Chain"""
 		if (identifier.isdecimal()):
 			identifier = "handle " + identifier
-		return self.ExecuteNFTCommand("flush chain " + family + " " + tableName + " " + identifier)
+		return self.ExecuteNFTCommand("delete chain " + family + " " + tableName + " " + identifier)
 
 
 	###
@@ -198,19 +199,19 @@ class Executor:
 	###############################
 
 	def BanIPv4Addr(self, args, cmd=None):
-		return self.ExecuteNFTCommand("add element inet BanTable BannedIPv4 {" + args + "}")
+		return self.ExecuteNFTCommand("add element inet BanTable BannedIPv4 { " + args + " }")
 	
 	def BanIPv6Addr(self, args, cmd=None):
-		return self.ExecuteNFTCommand("add element inet BanTable BannedIPv6 {" + args + "}")
+		return self.ExecuteNFTCommand("add element inet BanTable BannedIPv6 { " + args + " }")
 	
 	def BanMACAddr(self, args, cmd=None):
-		return self.ExecuteNFTCommand("add element inet BanTable BannedMAC {" + args + "}")
+		return self.ExecuteNFTCommand("add element inet BanTable BannedMAC { " + args + " }")
 
 	def UnbanIPv4Addr(self, args, cmd=None):
-		return self.ExecuteNFTCommand("delete element inet BanTable BannedIPv4 {" + args + "}")
+		return self.ExecuteNFTCommand("delete element inet BanTable BannedIPv4 { " + args + " }")
 
 	def UnbanIPv6Addr(self, args, cmd=None):
-		return self.ExecuteNFTCommand("delete element inet BanTable BannedIPv6 {" + args + "}")
+		return self.ExecuteNFTCommand("delete element inet BanTable BannedIPv6 { " + args + " }")
 	
 	def UnbanMACAddr(self, args, cmd=None):
-		return self.ExecuteNFTCommand("delete element inet BanTable BannedMAC {" + args + "}")
+		return self.ExecuteNFTCommand("delete element inet BanTable BannedMAC { " + args + " }")
