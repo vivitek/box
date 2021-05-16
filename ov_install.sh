@@ -36,6 +36,7 @@ nvm install stable
 
 echo -e "${GREEN}Installing pm2${NC}"
 npm install pm2 -g
+pm2 startup
 
 #Configuring openvvrt api
 echo -e "${GREEN}Installing ov_api dependencies${NC}"
