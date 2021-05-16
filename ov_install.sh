@@ -14,7 +14,6 @@ echo -e "${GREEN}Adding Docker GPT key${NC}"
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo -e "${GREEN}Adding Docker repository${NC}"
 echo "deb [arch=arm64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-echo -e "${GREEN}Adding Docker repository${NC}"
 sudo apt update
 echo -e "${GREEN}Installing Docker${NC}"
 sudo apt install -y docker-ce docker-ce-cli containerd.io
@@ -26,7 +25,9 @@ sudo pip3 install docker-compose
 echo -e "${GREEN}Installing and configuring nvm${NC}"
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
 echo -e "${GREEN}Installed nvm, sourcing bashrc${NC}"
-source ~/.bashrc
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 nvm install stable
 
 #Network hotspot configuration
