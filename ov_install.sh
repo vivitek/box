@@ -34,6 +34,15 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 nvm install stable
 
+echo -e "${GREEN}Installing pm2${NC}"
+npm i -g pm2
+#Configuring openvvrt api
+
+cd ov_api
+npm install
+cd ..
+
+
 #Network hotspot configuration
 echo -e "${GREEN}Configuring Hotspot network${NC}"
 sudo cp configs/10-my-config.yml /etc/netplan
