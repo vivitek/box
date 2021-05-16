@@ -22,6 +22,12 @@ echo -e "${GREEN}Installing docker-compose and seeting permissions${NC}"
 sudo apt install -y python3-pip
 sudo pip3 install docker-compose
 
+#Installing nvm and recommended version
+echo -e "${GREEN}Installing and configuring nvm${NC}"
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+echo -e "${GREEN}Installed nvm, sourcing bashrc${NC}"
+source ~/.bashrc
+nvm install stable
 
 #Network hotspot configuration
 echo -e "${GREEN}Configuring Hotspot network${NC}"
