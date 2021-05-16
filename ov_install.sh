@@ -31,9 +31,10 @@ export NVM_DIR="$HOME/.nvm"
 nvm install stable
 
 echo -e "${GREEN}Installing pm2${NC}"
-npm i -g pm2
-#Configuring openvvrt api
+npm install pm2 -g
 
+#Configuring openvvrt api
+echo -e "${GREEN}Installing ov_api dependencies${NC}"
 cd ov_api
 npm install
 cd ..
