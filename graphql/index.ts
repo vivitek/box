@@ -45,7 +45,7 @@ const sendRequest = async (data: GraphqlRequestContext) => {
 const requestFirewall = async (ban: Ban): Promise<void> => {
   logger.info(`New ${ban.banned ? 'ban' : 'unban'} for address ${ban.address}`)
   try {
-    const resp = await axios({
+    await axios({
       method: ban.banned ? 'post' : 'delete',
       url: `${FIREWALL_ENDPOINT}/rule/${ban.banned ? 'ban': 'unban'}MAC?address=${ban.address}`
     })
