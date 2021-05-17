@@ -56,7 +56,7 @@ sudo systemctl start rabbitmq-server
 echo -e "${GREEN}Activating rabbitmq management plugin${NC}"
 sudo rabbitmq-plugins enable rabbitmq_management
 echo -e "${GREEN}Creating RabbitMQ User${NC}"
-sudo rabbitmqctl add_user vivi openvivi2020
+sudo rabbitmqctl add_user vivi openvivi2021
 sudo rabbitmqctl set_user_tags vivi administrator
 sudo rabbitmqctl set_permissions -p / vivi ".*" ".*" ".*"
 
