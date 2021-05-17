@@ -42,8 +42,16 @@ pm2 startup
 echo -e "${GREEN}Installing ov_api dependencies${NC}"
 cd ov_api
 npm install
+pm2 start --name ov-api index.js
 cd ..
 
+#Configuring RabbitMQ
+echo -e "${GREEN}Installing RabbitMQ${NC}"
+sudo apt install -y erlang rabbitmq-server 
+sudo systemctl enable rabbitmq-server
+sudo systemctl start rabbitmq-server
+echo -e "${GREEN}Activating rabbitmq management plugin${NC}"
+sudo rabbitmq-plugins enable rabbitmq_management
 
 #Network hotspot configuration
 echo -e "${GREEN}Configuring Hotspot network${NC}"
