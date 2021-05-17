@@ -70,7 +70,7 @@ sudo psql -U fire -f ./postgres/init.sql
 echo -e "${GREEN}Installing OpenVVRT's services${NC}"
 cd dhcpd
 npm install
-./node_modules/typescript/bin/tsc .
+./node_modules/typescript/bin/tsc src
 pm2 start --name dhcpd dist/main.js
 cd ..
 
