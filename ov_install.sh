@@ -59,13 +59,14 @@ sudo rabbitmqctl set_permissions -p / vivi ".*" ".*" ".*"
 #Configuring postgres
 echo -e "${GREEN}Installing PostgreSQL${NC}"
 sudo apt install -y postgresql postgresql-contrib
+echo -e "${GREEN}Creating fire user${NC}"
 sudo -u postgres createuser fire -D -s
 sudo psql -U fire -f ./postgres/init.sql
 #Configuring individual services
 echo -e "${GREEN}Installing OpenVVRT's services${NC}"
 cd dhcpd
 npm install
-tsc .
+./node_modules/typescript/bin/tsc .
 pm2 start --name dhcpd dist/main.js
 cd ..
 
