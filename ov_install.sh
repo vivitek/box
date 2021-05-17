@@ -61,13 +61,14 @@ echo -e "${GREEN}Installing PostgreSQL${NC}"
 sudo apt install -y postgresql postgresql-contrib
 echo -e "${GREEN}Creating fire user${NC}"
 sudo -u postgres createuser fire -D -s
-sudo psql -U fire -f ./postgres/init.sql
+echo -e "${GREEN}Running init script${NC}"
+sudo psql -U fire -w -f ./postgres/init.sql
+
 #Configuring individual services
 echo -e "${GREEN}Installing OpenVVRT's services${NC}"
 cd dhcpd
 npm install
-./node_modules/typescript/bin/tsc src
-pm2 start --name dhcpd dist/main.js
+./node_modules/typescript/bin/tsc && pm2 start --name dhcpd dist/main.js
 cd ..
 
 
