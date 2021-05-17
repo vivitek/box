@@ -41,6 +41,9 @@ npm install
 pm2 start --name ov-api index.js
 cd ..
 
+#Installing tsc
+npm i -g typescript
+
 #Configuring RabbitMQ
 echo -e "${GREEN}Installing RabbitMQ${NC}"
 sudo apt install -y erlang rabbitmq-server 
@@ -52,6 +55,21 @@ echo -e "${GREEN}Creating RabbitMQ User${NC}"
 sudo rabbitmqctl add_user vivi openvivi2020
 sudo rabbitmqctl set_user_tags vivi administrator
 sudo rabbitmqctl set_permissions -p / vivi ".*" ".*" ".*"
+
+#Configuring postgres
+echo -e "${GREEN}Installing PostgreSQL${NC}"
+sudo apt install -y postgresql postgresql-contrib
+sudo -u postgres createuser fire -D -s
+sudo psql -U fire -f ./postgres/init.sql
+#Configuring individual services
+echo -e "${GREEN}Installing OpenVVRT's services${NC}"
+cd dhcpd
+npm install
+tsc .
+pm2 start --name dhcpd dist/main.js
+cd ..
+
+
 
 #Network hotspot configuration
 echo -e "${GREEN}Configuring Hotspot network${NC}"
