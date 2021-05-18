@@ -38,6 +38,9 @@ npm install
 sudo pm2 start --name ov-api index.js
 cd ..
 
+echo "${GREEN}Building Dockerized services${NC}"
+sudo docker-compose build dhcpd graphql
+
 
 #Configuring RabbitMQ
 echo "${GREEN}Installing RabbitMQ${NC}"
