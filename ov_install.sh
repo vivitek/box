@@ -77,6 +77,7 @@ python3 manage.py db init
 python3 manage.py db migrate
 python3 manage.py db upgrade
 echo "${GREEN}Starting firewall systemd${NC}"
+sudo systemctl daemon-reload
 sudo systemctl enable firewall
 sudo systemctl start firewall
 cd ..
