@@ -110,6 +110,7 @@ cd ..
 
 # Network hotspot configuration
 echo "${GREEN}Configuring Hotspot network${NC}"
+sudo nmcli con delete Hostspot
 sudo nmcli con add type wifi ifname wlan0 con-name Hostspot autoconnect yes ssid Hostspot
 sudo nmcli con modify Hostspot 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared
 sudo nmcli con modify Hostspot wifi-sec.key-mgmt wpa-psk
