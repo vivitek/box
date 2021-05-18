@@ -65,11 +65,13 @@ sudo apt install -y build-essential libpq-dev procps nftables
 echo "${GREEN}Installing Firewall service${NC}"
 cd firewall
 sudo pip3 install -r requirements.txt
-DATABASE_URL=postgresql://fire:fire2020@localhost:5432/firewall sudo python3 manage.py db init
-DATABASE_URL=postgresql://fire:fire2020@localhost:5432/firewall sudo python3 manage.py db migrate
-DATABASE_URL=postgresql://fire:fire2020@localhost:5432/firewall sudo python3 manage.py db upgrade
 
-sudo python3 manage.py run
+psql postgresql://fire:fire2020@localhost:5432/postgres < ../postgres/init.sql
+
+python3 manage.py db init
+python3 manage.py db migrate
+python3 manage.py db upgrade
+pm2 start --name firewall python3 manage.py run
 
 
 sudo docker-compose up -d dhcpd graphql
