@@ -52,17 +52,13 @@ sudo systemctl start rabbitmq-server
 echo -e "${GREEN}Activating rabbitmq management plugin${NC}"
 sudo rabbitmq-plugins enable rabbitmq_management
 echo -e "${GREEN}Creating RabbitMQ User${NC}"
-sudo rabbitmqctl add_user vivi openvivi2021
+sudo rabbitmqctl add_user vivi vivitek
 sudo rabbitmqctl set_user_tags vivi administrator
 sudo rabbitmqctl set_permissions -p / vivi ".*" ".*" ".*"
 
 #Configuring postgres
-echo -e "${GREEN}Installing PostgreSQL${NC}"
-sudo apt install -y postgresql postgresql-contrib
-echo -e "${GREEN}Creating fire user${NC}"
-sudo -u postgres createuser fire -D -s
-echo -e "${GREEN}Running init script${NC}"
-sudo psql -U fire -w -f ./postgres/init.sql
+echo "${GREEN}Running postgres service using docker-compose${NC}"
+docker-compose up -d postgres
 
 #Configuring individual services
 echo -e "${GREEN}Installing OpenVVRT's services${NC}"
