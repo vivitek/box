@@ -82,6 +82,8 @@ python3 manage.py db upgrade
 echo "${GREEN}Starting firewall systemd${NC}"
 sudo systemctl daemon-reload
 sudo systemctl enable firewall
+sudo systemctl enable nftables
+sudo systemctl start nftables
 sudo systemctl start firewall
 cd ..
 
