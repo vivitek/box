@@ -57,7 +57,8 @@ sudo rabbitmqctl set_permissions -p / vivi ".*" ".*" ".*"
 echo "${GREEN}Installing Postgresql services${NC}"
 sudo apt install -y postgresql postgresql-contrib
 SQL_DUMP=$(cat ./postgres/init.sql)
-sudo -u postgres psql postgres < $SQL_DUMP
+sudo chmod +r ./postgres/init.sql
+sudo -u postgres psql postgres < ./postgres/init.sql
 
 # Configuring postgres
 echo "${GREEN}Installing OpenVVRT's services${NC}"
@@ -67,7 +68,7 @@ echo "${GREEN}Installing OpenVVRT's services${NC}"
 echo "${GREEN}Installing Firewall service dependencies${NC}"
 sudo apt install -y build-essential libpq-dev procps nftables
 echo "${GREEN}Creating firewall systemd${NC}"
-cat ./configs/firewall.service.template | sed 's@$PWD@'"$PWD"'@' | sudo tee /etc/systemd/system/firewall
+cat ./configs/firewall.service.template | sed 's@$PWD@'"$PWD"'@' | sudo tee /etc/systemd/system/firewall.service
 echo "${GREEN}Installing Firewall service${NC}"
 cd firewall
 sudo pip3 install -r requirements.txt
