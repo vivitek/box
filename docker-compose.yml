@@ -54,7 +54,5 @@ services:
   graphql:
     build: ./graphql
     restart: "on-failure"
-    depends_on:
-      - rabbitmq
     network_mode: "host"
     env_file: .env
