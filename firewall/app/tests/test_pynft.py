@@ -4,9 +4,9 @@ import unittest
 from pynft import Executor
 
 
-interfaces = getnic.interfaces()
-detailed = getnic.ipaddr(interfaces)
-print("\nSETUP IP FORWARDING :\ninterfaces => " + interfaces + "\ndetailed => " + detailed)
+# interfaces = getnic.interfaces()
+# detailed = getnic.ipaddr(interfaces)
+# print("\nSETUP IP FORWARDING :\ninterfaces => " + interfaces + "\ndetailed => " + detailed)
 
 PyNFT_shell = Executor("192.168.0.32", "8080")
 
