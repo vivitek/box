@@ -58,19 +58,21 @@ sudo rabbitmqctl set_permissions -p / vivi ".*" ".*" ".*"
 
 #Configuring postgres
 echo "${GREEN}Installing OpenVVRT's services${NC}"
-sudo docker-compose up -d postgres dhcpd graphql
+sudo docker-compose up -d postgres
 
 echo "${GREEN}Installing Firewall service dependencies${NC}"
 sudo apt install -y build-essential libpq-dev procps nftables
 echo "${GREEN}Installing Firewall service${NC}"
 cd firewall
-pip3 install -r requirements.txt
+sudo pip3 install -r requirements.txt
+sudo python3 manage.py db init
+sudo python3 manage.py db migrate
+sudo python3 manage.py db upgrade
+
+sudo python3 manage.py run
 
 
-
-echo "${GREEN}Installing Graphql service${NC}"
-
-
+sudo docker-compose up -d dhcpd graphql
 
 
 #Network hotspot configuration
