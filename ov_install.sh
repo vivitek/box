@@ -66,7 +66,7 @@ echo "${GREEN}Installing OpenVVRT's services${NC}"
 echo "${GREEN}Installing Firewall service dependencies${NC}"
 sudo apt install -y build-essential libpq-dev procps nftables
 echo "${GREEN}Creating firewall systemd${NC}"
-sudo bash -c `cat ./configs/firewall.service.template | sed 's@$PWD@'"$PWD"'@' > /lib/systemd/system/firewall.service`
+cat ./configs/firewall.service.template | sed 's@$PWD@'"$PWD"'@' | sudo tee /etc/systemd/sysytem/firewall
 echo "${GREEN}Installing Firewall service${NC}"
 cd firewall
 sudo pip3 install -r requirements.txt
