@@ -67,7 +67,6 @@ python3 manage.py db init
 python3 manage.py db migrate
 python3 manage.py db upgrade
 cd ..
-sudo pm2 start --name firewall --interpreter python3 python3 firewall/manage.py -- run
 
 
 sudo docker-compose up -d dhcpd graphql
@@ -82,3 +81,4 @@ echo "${GREEN}Hotspot configured!${NC}"
 
 
 sudo apt autoremove -y
+sudo python3 firewall/manage.py run
