@@ -87,7 +87,7 @@ cd ..
 echo "${GREEN}Installing DHCP dependencies${NC}"
 cd dhcpd
 npm install
-./node_modules/typescript/bin/tsc
+./node_modules/typescript/bin/tsc .
 echo "${GREEN}Starting DHCP service${NC}"
 sudo pm2 start --name dhcp dist/main.js
 cd ..
@@ -97,13 +97,13 @@ cd ..
 echo "${GREEN}Installing GraphQl dependencies${NC}"
 cd graphql
 npm install
-./node_modules/typescript/bin/tsc
+./node_modules/typescript/bin/tsc .
 echo "${GREEN}Starting GraphQl service${NC}"
 sudo pm2 start --name graphql dist/index.js
 cd ..
 
 
-#Network hotspot configuration
+# Network hotspot configuration
 echo "${GREEN}Configuring Hotspot network${NC}"
 sudo cp configs/10-my-config.yml /etc/netplan
 sudo netplan generate
@@ -112,4 +112,3 @@ echo "${GREEN}Hotspot configured!${NC}"
 
 
 sudo apt autoremove -y
-sudo systemctl --follow
