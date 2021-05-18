@@ -71,7 +71,7 @@ psql postgresql://fire:fire2020@localhost:5432/postgres < ../postgres/init.sql
 python3 manage.py db init
 python3 manage.py db migrate
 python3 manage.py db upgrade
-pm2 start --name firewall python3 manage.py run
+sudo python3 manage.py run
 
 
 sudo docker-compose up -d dhcpd graphql
