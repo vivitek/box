@@ -14,7 +14,7 @@ class Executor:
 
 	def createBannedSets(self, bannedIPv4, bannedIPv6, bannedMAC):
 		cmd_addBanTable = "add table inet BanTable"
-		cmd_addBanChain = "add chain inet BanTable BanChain { type filter hook input priority 0\; }"
+		cmd_addBanChain = "add chain inet BanTable BanChain { type filter hook input priority -400\; }"
 		cmd_createBannedIPv4set = "add set inet BanTable BannedIPv4 { type ipv4_addr \; }"
 		cmd_banSourceIPv4rule = "add rule inet BanTable BanChain ip saddr @BannedIPv4 drop"
 		cmd_banDestinationIPv4rule = "add rule inet BanTable BanChain ip daddr @BannedIPv4 drop"
