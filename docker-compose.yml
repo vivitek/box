@@ -4,8 +4,6 @@ services:
   dhcpd:
     build: ./dhcpd
     network_mode: "host"
-    depends_on:
-      - rabbitmq
     privileged: true
 
   rabbitmq:
@@ -23,8 +21,6 @@ services:
     build: ./pcap
     privileged: true
     network_mode: "host"
-    depends_on:
-      - rabbitmq
 
   postgres:
     build: ./postgres
@@ -51,8 +47,8 @@ services:
       - adminer
     environment:
       DATABASE_URL: postgresql://fire:fire2020@localhost:5432/firewall
-    ports:
-      - "5000:5000"
+    expose:
+      - 5000
     network_mode: "host"
 
   graphql:

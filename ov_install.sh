@@ -65,9 +65,9 @@ sudo apt install -y build-essential libpq-dev procps nftables
 echo "${GREEN}Installing Firewall service${NC}"
 cd firewall
 sudo pip3 install -r requirements.txt
-sudo python3 manage.py db init
-sudo python3 manage.py db migrate
-sudo python3 manage.py db upgrade
+DATABASE_URL=postgresql://fire:fire2020@localhost:5432/firewall sudo python3 manage.py db init
+DATABASE_URL=postgresql://fire:fire2020@localhost:5432/firewall sudo python3 manage.py db migrate
+DATABASE_URL=postgresql://fire:fire2020@localhost:5432/firewall sudo python3 manage.py db upgrade
 
 sudo python3 manage.py run
 
