@@ -22,16 +22,12 @@ sudo apt install -y python3-pip
 sudo pip3 install docker-compose
 
 #Installing nvm and recommended version
-echo "${GREEN}Installing and configuring nvm${NC}"
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-echo "${GREEN}Installed nvm, sourcing bashrc${NC}"
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-nvm install stable
+echo "${GREEN}Installing and configuring nodejs${NC}"
+curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+sudo apt install -y nodejs
 
 echo "${GREEN}Installing pm2${NC}"
-npm install pm2 -g
+sudo npm i -g pm2@latest
 pm2 kill
 pm2 startup
 
