@@ -57,16 +57,15 @@ sudo rabbitmqctl set_user_tags vivi administrator
 sudo rabbitmqctl set_permissions -p / vivi ".*" ".*" ".*"
 
 
+# Configuring postgres
 echo "${GREEN}Installing Postgresql services${NC}"
 sudo apt install -y postgresql postgresql-contrib
 SQL_DUMP=$(cat ./postgres/init.sql)
 sudo chmod +r ./postgres/init.sql
 sudo -u postgres psql postgres < ./postgres/init.sql
 
-# Configuring postgres
+
 echo "${GREEN}Installing OpenVVRT's services${NC}"
-
-
 # Configuring firewall
 echo "${GREEN}Installing Firewall service dependencies${NC}"
 sudo apt install -y build-essential libpq-dev procps nftables
@@ -108,9 +107,11 @@ cd ..
 
 # Network hotspot configuration
 echo "${GREEN}Configuring Hotspot network${NC}"
-sudo cp configs/10-my-config.yml /etc/netplan
-sudo netplan generate
-sudo netplan apply
+sudo nmcli con add type wifi ifname wlan0 con-name Hostspot autoconnect yes ssid Hostspot
+sudo nmcli con modify Hostspot 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared
+sudo nmcli con modify Hostspot wifi-sec.key-mgmt wpa-psk
+sudo nmcli con modify Hostspot wifi-sec.psk "veryveryhardpassword1234"
+sudo nmcli con up Hostspot
 echo "${GREEN}Hotspot configured!${NC}"
 
 
