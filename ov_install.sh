@@ -66,7 +66,7 @@ echo "${GREEN}Installing OpenVVRT's services${NC}"
 echo "${GREEN}Installing Firewall service dependencies${NC}"
 sudo apt install -y build-essential libpq-dev procps nftables
 echo "${GREEN}Creating firewall systemd${NC}"
-FIREWALL_SYSTEMD=${cat ./configs/firewall.service.template | sed 's@$PWD@'"$PWD"'@'}
+FIREWALL_SYSTEMD=$(cat ./configs/firewall.service.template | sed 's@$PWD@'"$PWD"'@')
 echo $FIREWALL_SYSTEMD
 sudo echo $FIREWALL_SYSTEMD > /lib/systemd/system/firewall.service
 echo "${GREEN}Installing Firewall service${NC}"
