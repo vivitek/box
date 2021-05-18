@@ -1,0 +1,12 @@
+[Unit]
+Description=Firewall
+After=multi-user.target
+Conflicts=getty@tty1.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 $PWD/firewall/manage.py run
+StandardInput=tty-force
+
+[Install]
+WantedBy=multi-user.target
