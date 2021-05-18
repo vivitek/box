@@ -57,17 +57,8 @@ sudo rabbitmqctl set_user_tags vivi administrator
 sudo rabbitmqctl set_permissions -p / vivi ".*" ".*" ".*"
 
 #Configuring postgres
-echo "${GREEN}Running postgres service using docker-compose${NC}"
-sudo docker-compose up -d postgres
-
-#Configuring individual services
 echo "${GREEN}Installing OpenVVRT's services${NC}"
-echo "${GREEN}Installing DHCPD service${NC}"
-
-cd dhcpd
-npm install
-./node_modules/typescript/bin/tsc && pm2 start --name dhcpd dist/main.js
-cd ..
+sudo docker-compose up -d postgres dhcpd graphql
 
 echo "${GREEN}Installing Firewall service dependencies${NC}"
 sudo apt install -y build-essential libpq-dev procps nftables
