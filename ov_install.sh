@@ -39,7 +39,7 @@ sudo pm2 start --name ov-api index.js
 cd ..
 
 #Installing tsc
-npm i -g typescript
+sudo npm i -g typescript
 
 #Configuring RabbitMQ
 echo "${GREEN}Installing RabbitMQ${NC}"
@@ -81,3 +81,6 @@ sudo cp configs/10-my-config.yml /etc/netplan
 sudo netplan generate
 sudo netplan apply
 echo "${GREEN}Hotspot configured!${NC}"
+
+
+sudo apt autoremove -y
