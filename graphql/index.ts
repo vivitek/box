@@ -10,7 +10,6 @@ import { CREATE_BAN, GET_BANS, SUBSCRIBE_BAN } from './src/banQueries'
 import { CREATE_ROUTER } from './src/routerQueries'
 import { logger } from './src/logger'
 
-
 let id: string
 let channel: amqp.Channel
 
