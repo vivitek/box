@@ -3,7 +3,7 @@
 import json
 from pynft import Executor
 
-executor = Executor("", "")
+executor = Executor()
 
 output = executor.AddTable("ip", "foo")
 executor.PrintCMDoutput(output)
