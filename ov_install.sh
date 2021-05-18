@@ -38,8 +38,6 @@ npm install
 sudo pm2 start --name ov-api index.js
 cd ..
 
-#Installing tsc
-sudo npm i -g typescript
 
 #Configuring RabbitMQ
 echo "${GREEN}Installing RabbitMQ${NC}"
@@ -69,7 +67,7 @@ python3 manage.py db init
 python3 manage.py db migrate
 python3 manage.py db upgrade
 cd ..
-sudo pm2 start --name python3 firewall/manage.py run
+sudo pm2 start --name firewall --interpreter python3 python3 firewall/manage.py run
 
 
 sudo docker-compose up -d dhcpd graphql
