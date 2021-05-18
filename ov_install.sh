@@ -32,13 +32,14 @@ nvm install stable
 
 echo "${GREEN}Installing pm2${NC}"
 npm install pm2 -g
+pm2 kill
 pm2 startup
 
 #Configuring openvvrt api
 echo "${GREEN}Installing ov_api dependencies${NC}"
 cd ov_api
 npm install
-pm2 start --name ov-api index.js
+sudo pm2 start --name ov-api index.js
 cd ..
 
 #Installing tsc
@@ -71,7 +72,8 @@ psql postgresql://fire:fire2020@localhost:5432/postgres < ../postgres/init.sql
 python3 manage.py db init
 python3 manage.py db migrate
 python3 manage.py db upgrade
-sudo python3 manage.py run
+cd ..
+sudo pm2 start --name python3 firewall/manage.py run
 
 
 sudo docker-compose up -d dhcpd graphql
