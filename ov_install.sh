@@ -21,6 +21,9 @@ echo "Welcome to OpenVVRT! Now commencing installation"
 # sudo apt install -y python3-pip
 # sudo pip3 install docker-compose
 
+# Installing network-manager
+sudo apt install network-manager
+
 # Installing nvm and recommended version
 echo "${GREEN}Installing and configuring nodejs${NC}"
 curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
