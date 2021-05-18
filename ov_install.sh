@@ -56,7 +56,8 @@ sudo rabbitmqctl set_permissions -p / vivi ".*" ".*" ".*"
 
 echo "${GREEN}Installing Postgresql services${NC}"
 sudo apt install -y postgresql postgresql-contrib
-sudo -u postgres psql postgres < ./postgres/init.sql
+SQL_DUMP=$(cat ./postgres/init.sql)
+sudo -u postgres psql postgres < $SQL_DUMP
 
 # Configuring postgres
 echo "${GREEN}Installing OpenVVRT's services${NC}"
