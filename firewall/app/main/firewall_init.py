@@ -6,7 +6,7 @@ from app.main.controllers.rulesController import Rule, IPBan, MacBan
 
 from pynft import Executor
 
-PyNFT = Executor("", "")
+PyNFT = Executor()
 
 def init_tables():
     tablesArray = Table.query.all()
