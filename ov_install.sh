@@ -137,3 +137,4 @@ echo -e "${GREEN}Hotspot configured!${NC}"
 
 
 sudo -E apt autoremove -y
+sudo systemctl restart firewall
