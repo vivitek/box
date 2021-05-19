@@ -49,7 +49,7 @@ sudo pm2 startup
 echo -e "${GREEN}Installing and activating API${NC}"
 cd ov_api
 npm install
-sudo -E pm2 start -f --name ov-api index.js
+sudo pm2 start -f --name ov-api index.js
 cd ..
 
 echo "${GREEN}Building baremetal services${NC}"
@@ -104,7 +104,7 @@ cd dhcpd
 npm install
 ./node_modules/typescript/bin/tsc
 echo -e "${GREEN}Starting DHCP service${NC}"
-sudo -E pm2 start -f --name dhcp dist/main.js
+sudo pm2 start -f --name dhcp dist/main.js
 cd ..
 
 
@@ -114,7 +114,7 @@ cd graphql
 npm install
 ./node_modules/typescript/bin/tsc
 echo -e "${GREEN}Starting GraphQl service${NC}"
-sudo -E pm2 start -f --name graphql dist/index.js
+sudo BALENA_DEVICE_NAME_AT_INIT="Vivi_mk1" BALENA_DEVICE_UUID="4fd2813f-3bd0-4514-87c9-5da300cadb6f" AMQP_HOSTNAME=$AMQP_HOSTNAME AMQP_USERNAME=$AMQP_USERNAME AMQP_PASSWORD=$AMQP_PASSWORD pm2 start -f --name graphql dist/index.js
 cd ..
 
 
