@@ -9,7 +9,7 @@ if ! sudo -E dpkg --configure -a; then
 fi
 
 
-echo "Welcome to OpenVVRT! Now commencing installation"
+echo "${GREEN}Welcome to OpenVVRT! Now commencing installation${NC}"
 
 export NODE_ENV="production"
 echo '
