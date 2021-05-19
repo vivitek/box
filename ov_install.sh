@@ -3,8 +3,9 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+sudo dpkg --configure -a
 echo "Welcome to OpenVVRT! Now commencing installation"
-
+export NODE_ENV="production"
 # # Installing docker
 # echo "${GREEN}Removing existing Docker installation${NC}"
 # sudo apt remove -y docker docker-engine docker.io containerd runc
