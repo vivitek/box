@@ -42,8 +42,8 @@ sudo apt install -y nodejs
 
 echo -e "${GREEN}Installing pm2${NC}"
 sudo npm i -g pm2@latest
-pm2 kill
-pm2 startup
+sudo pm2 kill
+sudo pm2 startup
 
 # Configuring openvvrt api
 echo "${GREEN}Installing and activating API${NC}"
