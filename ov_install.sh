@@ -46,10 +46,10 @@ sudo pm2 kill
 sudo pm2 startup
 
 # Configuring openvvrt api
-echo "${GREEN}Installing and activating API${NC}"
+echo -e "${GREEN}Installing and activating API${NC}"
 cd ov_api
 npm install
-sudo -E pm2 start --name ov-api index.js
+sudo -E pm2 start -f --name ov-api index.js
 cd ..
 
 echo "${GREEN}Building baremetal services${NC}"
@@ -104,17 +104,17 @@ cd dhcpd
 npm install
 ./node_modules/typescript/bin/tsc
 echo -e "${GREEN}Starting DHCP service${NC}"
-sudo -E pm2 start --name dhcp dist/main.js
+sudo -E pm2 start -f --name dhcp dist/main.js
 cd ..
 
 
 # Configuring GraphQL relay
-echo "${GREEN}Installing GraphQl dependencies${NC}"
+echo -e "${GREEN}Installing GraphQl dependencies${NC}"
 cd graphql
 npm install
 ./node_modules/typescript/bin/tsc
 echo -e "${GREEN}Starting GraphQl service${NC}"
-sudo -E pm2 start --name graphql dist/index.js
+sudo -E pm2 start -f --name graphql dist/index.js
 cd ..
 
 
