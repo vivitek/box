@@ -121,7 +121,7 @@ cd graphql
 npm install
 ./node_modules/typescript/bin/tsc
 echo -e "${GREEN}Starting GraphQl service${NC}"
-sudo BALENA_DEVICE_NAME_AT_INIT="Vivi_mk1" BALENA_DEVICE_UUID="4fd2813f-3bd0-4514-87c9-5da300cadb6f" AMQP_HOSTNAME="0.0.0.0" AMQP_USERNAME="vivi" AMQP_PASSWORD="vivitek" pm2 start -f --name graphql dist/index.js
+sudo NODE_ENv="production" BALENA_DEVICE_NAME_AT_INIT="Vivi_mk1" BALENA_DEVICE_UUID="4fd2813f-3bd0-4514-87c9-5da300cadb6f" AMQP_HOSTNAME="0.0.0.0" AMQP_USERNAME="vivi" AMQP_PASSWORD="vivitek" pm2 start -f --name graphql dist/index.js
 cd ..
 
 
