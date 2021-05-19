@@ -121,7 +121,7 @@ cd graphql
 npm install
 ./node_modules/typescript/bin/tsc
 echo -e "${GREEN}Starting GraphQl service${NC}"
-sudo NODE_ENV="production" BALENA_DEVICE_NAME_AT_INIT="Vivi_mk1" BALENA_DEVICE_UUID="4fd2813f-3bd0-4514-87c9-5da300cadb6f" AMQP_HOSTNAME="0.0.0.0" AMQP_USERNAME="vivi" AMQP_PASSWORD="vivitek" pm2 start -f --name graphql dist/index.js
+sudo VINCIPIT_BEARER_TOKEN="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDQ2MDk2NzljZGY3MTAwMWU1MjE2MDkiLCJlbWFpbCI6Im1hdHRlby5nYXNzZW5kQGVwaXRlY2guZXUiLCJwYXNzd29yZCI6IiQyYiQxMiRsZWtnVnJaRDNsRDJZck5PbU9VVlVlcDBSdnYxRHVCd2lqbERaZ05rV0hIeVNERHZCTGtESyIsInVzZXJuYW1lIjoibWdhc3NlbmQiLCJfX3YiOjAsImlhdCI6MTYxNTI5MjMzMn0.OAkmFGS4-ib0mD9FWqc7aSfMzQ53gjliO_C2pdetab4" NODE_ENV="production" BALENA_DEVICE_NAME_AT_INIT="Vivi_mk1" BALENA_DEVICE_UUID="4fd2813f-3bd0-4514-87c9-5da300cadb6f" AMQP_HOSTNAME="0.0.0.0" AMQP_USERNAME="vivi" AMQP_PASSWORD="vivitek" pm2 start -f --name graphql dist/index.js
 cd ..
 
 
