@@ -27,7 +27,7 @@ sudo apt install -y python3-pip
 
 # Installing nvm and recommended version
 echo "${GREEN}Installing and configuring nodejs${NC}"
-curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt install -y nodejs
 
 echo "${GREEN}Installing pm2${NC}"
