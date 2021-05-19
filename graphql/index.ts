@@ -69,6 +69,7 @@ const selfCreate = async (name: string, url: string): Promise<void> => {
 				}
 			}
 		})
+		console.log(res.data)
 		id = res.data.data.createRouter._id
 		if (id == undefined)
 			throw new Error('Router already created')
