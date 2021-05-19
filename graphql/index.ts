@@ -57,8 +57,9 @@ const requestFirewall = async (ban: Ban): Promise<void> => {
 /*  Utils End */
 
 const selfCreate = async (name: string, url: string): Promise<void> => {
-	logger.info("Server url" + GRAPHQL_ENDPOINT)
+	logger.info("Server url " + GRAPHQL_ENDPOINT)
 	try {
+		console.log("creating")
 		const res = await sendRequest({
 			query: print(CREATE_ROUTER),
 			variables: {
