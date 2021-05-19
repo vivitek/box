@@ -3,7 +3,12 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-sudo -E dpkg --configure -a
+if ! sudo -E dpkg --configure -a; then
+    echo -e "${RED}dpkg is not available, please wait a few minutes${NC}"
+    exit 1
+fi
+
+
 echo "Welcome to OpenVVRT! Now commencing installation"
 
 export NODE_ENV="production"
@@ -45,6 +50,7 @@ echo -e "${GREEN}Installing pm2${NC}"
 sudo npm i -g pm2@latest
 sudo pm2 kill
 sudo pm2 startup
+sudo pm2 flush
 
 # Configuring openvvrt api
 echo -e "${GREEN}Installing and activating API${NC}"
@@ -115,7 +121,7 @@ cd graphql
 npm install
 ./node_modules/typescript/bin/tsc
 echo -e "${GREEN}Starting GraphQl service${NC}"
-sudo BALENA_DEVICE_NAME_AT_INIT="Vivi_mk1" BALENA_DEVICE_UUID="4fd2813f-3bd0-4514-87c9-5da300cadb6f" AMQP_HOSTNAME=$AMQP_HOSTNAME AMQP_USERNAME=$AMQP_USERNAME AMQP_PASSWORD=$AMQP_PASSWORD pm2 start -f --name graphql dist/index.js
+sudo BALENA_DEVICE_NAME_AT_INIT="Vivi_mk1" BALENA_DEVICE_UUID="4fd2813f-3bd0-4514-87c9-5da300cadb6f" AMQP_HOSTNAME="0.0.0.0" AMQP_USERNAME="vivi" AMQP_PASSWORD="vivitek" pm2 start -f --name graphql dist/index.js
 cd ..
 
 
