@@ -150,6 +150,7 @@ const initRabbitMQ = async (): Promise<void> => {
 			logger.fatal(`Status code: ${error.response.status}`)
 		} else
 			logger.fatal('A mystical error occured during the RabbitMQ initialization ')
+			logger.fatal(error)
 		process.exit(1);
 	}
 };

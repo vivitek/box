@@ -33,6 +33,7 @@ source ~/.bashrc
 
 # Installing basic stuff
 sudo apt install -y network-manager
+sudo apt install -y net-tools
 sudo apt install -y python3-pip
 
 # Installing nvm and recommended version
@@ -49,10 +50,10 @@ sudo pm2 startup
 echo -e "${GREEN}Installing and activating API${NC}"
 cd ov_api
 npm install
-sudo pm2 start -f --name ov-api index.js
+sudo PORT=9090 pm2 start -f --name ov-api index.js
 cd ..
 
-echo "${GREEN}Building baremetal services${NC}"
+echo -e "${GREEN}Building baremetal services${NC}"
 
 
 # Configuring RabbitMQ
