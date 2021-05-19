@@ -11,6 +11,8 @@ echo '
 export AMQP_HOSTNAME=0.0.0.0
 export AMQP_USERNAME=vivi
 export AMQP_PASSWORD=vivitek
+export BALENA_DEVICE_NAME_AT_INIT=Vivi_mk1
+export BALENA_DEVICE_UUID=4fd2813f-3bd0-4514-87c9-5da300cadb6f
 ' >> ~/.bashrc
 source ~/.bashrc
 # # Installing docker
