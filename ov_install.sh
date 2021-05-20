@@ -9,32 +9,16 @@ if ! sudo -E dpkg --configure -a; then
 fi
 
 
-echo "${GREEN}Welcome to OpenVVRT! Now commencing installation${NC}"
+echo -e "${GREEN}Welcome to OpenVVRT! Now commencing installation${NC}"
 
 export NODE_ENV="production"
 echo '
 export AMQP_HOSTNAME=0.0.0.0
 export AMQP_USERNAME=vivi
 export AMQP_PASSWORD=vivitek
-export BALENA_DEVICE_NAME_AT_INIT=Vivi_mk1
-export BALENA_DEVICE_UUID=4fd2813f-3bd0-4514-87c9-5da300cadb6f
 ' >> ~/.bashrc
 source ~/.bashrc
-# # Installing docker
-# echo "${GREEN}Removing existing Docker installation${NC}"
-# sudo -E apt remove -y docker docker-engine docker.io containerd runc
-# echo "${GREEN}Installing Docker dependencies${NC}"
-# sudo -E apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
-# echo "${GREEN}Adding Docker GPT key${NC}"
-# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo -E gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-# echo "${GREEN}Adding Docker repository${NC}"
-# echo "deb [arch=arm64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo -E tee /etc/apt/sources.list.d/docker.list > /dev/null
-# sudo -E apt update
-# echo "${GREEN}Installing Docker${NC}"
-# sudo -E apt install -y docker-ce docker-ce-cli containerd.io
-# echo "${GREEN}Installing docker-compose and seeting permissions${NC}"
-# sudo -E apt install -y python3-pip
-# sudo -E pip3 install docker-compose
+
 
 # Installing basic stuff
 sudo apt install -y network-manager
@@ -121,7 +105,7 @@ cd graphql
 npm install
 ./node_modules/typescript/bin/tsc
 echo -e "${GREEN}Starting GraphQl service${NC}"
-sudo VINCIPIT_DEVICE_ID="60a528a0d48163001ed44441" VINCIPIT_BEARER_TOKEN="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDQ2MDk2NzljZGY3MTAwMWU1MjE2MDkiLCJlbWFpbCI6Im1hdHRlby5nYXNzZW5kQGVwaXRlY2guZXUiLCJwYXNzd29yZCI6IiQyYiQxMiRsZWtnVnJaRDNsRDJZck5PbU9VVlVlcDBSdnYxRHVCd2lqbERaZ05rV0hIeVNERHZCTGtESyIsInVzZXJuYW1lIjoibWdhc3NlbmQiLCJfX3YiOjAsImlhdCI6MTYxNTI5MjMzMn0.OAkmFGS4-ib0mD9FWqc7aSfMzQ53gjliO_C2pdetab4" NODE_ENV="production" BALENA_DEVICE_NAME_AT_INIT="Vivi_mk1" BALENA_DEVICE_UUID="4fd2813f-3bd0-4514-87c9-5da300cadb6f" AMQP_HOSTNAME="0.0.0.0" AMQP_USERNAME="vivi" AMQP_PASSWORD="vivitek" pm2 start -f --name graphql dist/index.js
+sudo pm2 start -f --name graphql dist/index.js
 cd ..
 
 
