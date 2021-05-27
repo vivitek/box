@@ -9,12 +9,12 @@ from ShellExecutor import Executor
 ##                           ##
 ###############################
 
-def RuleActionSwitcher(args, pynft):
+def RuleActionSwitcher(args, pyip):
     switcher = {
-        "add" : pynft.AddRule,
-        "insert" : pynft.InsertRule,
-        "replace" : pynft.ReplaceRule,
-        "delete" : pynft.DeleteRule,
+        "add" : pyip.AddRule,
+        "insert" : pyip.InsertRule,
+        "replace" : pyip.ReplaceRule,
+        "delete" : pyip.DeleteRule,
     }
 
     if (len(args) < 2):
@@ -38,14 +38,14 @@ def RuleActionErr(args, cmd):
 ##                           ##
 ###############################
 
-def ChainActionSwitcher(args, pynft):
+def ChainActionSwitcher(args, pyip):
     switcher = {
-        "add" : pynft.AddChain,
-        "create" : pynft.CreateChain,
-        "delete" : pynft.DeleteChain,
-        "list" : pynft.ListChain,
-        "flush" : pynft.FlushChain,
-        "rename" : pynft.RenameChain,
+        "add" : pyip.AddChain,
+        "create" : pyip.CreateChain,
+        "delete" : pyip.DeleteChain,
+        "list" : pyip.ListChain,
+        "flush" : pyip.FlushChain,
+        "rename" : pyip.RenameChain,
     }
 
     if (len(args) < 2):
@@ -69,12 +69,12 @@ def ChainActionErr(args, cmd):
 ##                           ##
 ###############################
 
-def TableActionSwitcher(args, pynft):
+def TableActionSwitcher(args, pyip):
     switcher = {
-        "add" : pynft.AddTable,
-        "delete" : pynft.DeleteTable,
-        "list" : pynft.GetTable,
-        "flush" : pynft.FlushTable,
+        "add" : pyip.AddTable,
+        "delete" : pyip.DeleteTable,
+        "list" : pyip.GetTable,
+        "flush" : pyip.FlushTable,
     }
 
     if (len(args) < 2):
@@ -99,7 +99,7 @@ def TableActionErr(args, cmd):
 ##                           ##
 ###############################
 
-def ActionSwitcher(args, pynft):
+def ActionSwitcher(args, pyip):
     switcher = {
         "table" : TableActionSwitcher,
         "chain" : ChainActionSwitcher,
@@ -108,14 +108,14 @@ def ActionSwitcher(args, pynft):
     }
 
     func = switcher.get(args[0], ActionErr)
-    return func(args, pynft)
+    return func(args, pyip)
 
-def ActionErr(args, pynft):
+def ActionErr(args, pyip):
     print("[" + args[0] + "] => Invalid Action\n")
     return -1
 
-def PrintLSOFence(args, pynft):
-    pynft.PrintLSO()
+def PrintLSOFence(args, pyip):
+    pyip.PrintLSO()
 
 
 
@@ -140,40 +140,40 @@ def InputErrorManagement(args):
 
 def main():
 
-    pynft = Executor()
+    pyip = Executor()
 
     isRunning = True
     i = 0
     while (isRunning):
 
         # Get Input
-        user_input = input("pynft> ")
+        user_input = input("pyip> ")
         args = shlex.split(user_input)
 
         # Basic Input Error Management
         errManagement = InputErrorManagement(args)
         if (errManagement == -1):
-            print("Quitting pynft\n")
+            print("Quitting pyip\n")
             return 0
         elif (errManagement == 84):
             print("Invalid Command, please try again\n")
             continue
 
         # Actions to Take
-        ActionSwitcher(args, pynft)
+        ActionSwitcher(args, pyip)
 
 
 main()
 
 #   Note :
 #
-#       pynft is a python script executable in shell
+#       pyip is a python script executable in shell
 #       it should be integrated to the python hooks that Remy Bouvard created to allow router NetFilter modification inputs from Server
 #
-#   pynft syntax :
+#   pyip syntax :
 #
 #       -   "sudo nft" is automatically added to the command
 #
 #       -   actions and objects are reversed
 #           normal nft table command example    =>     $> nft add table ip filter
-#           same command using pynft (in shell) =>     $> python3 pynft.py table add ip filter
+#           same command using pyip (in shell) =>     $> python3 pyip.py table add ip filter

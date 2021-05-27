@@ -2,11 +2,11 @@
 
 import subprocess, shlex, json
 
+
+
 class Executor:
 
 	output = bytearray()
-
-
 
 
 

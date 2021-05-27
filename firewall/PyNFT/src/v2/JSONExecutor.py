@@ -3,7 +3,7 @@
 import nftables
 import json
 from enum import Enum
-from PyNFT.src.JSONGenerator import PreGenCmd
+from PyNFT.src.v2.JSONGenerator import PreGenCmd
 
 class JSONExecutor:
 
