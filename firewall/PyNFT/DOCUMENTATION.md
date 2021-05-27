@@ -2,48 +2,85 @@
 
 Welcome to PyNFT's documentation.
 
-PyNFT stands for Python NFT as it is a python overlay for manipulating NFTables. Its use is very similar to NFT's as I tried to keep most of the flexibilty provided by the nft command line tool
+PyNFT is a python wrapper for manipulating the JSON-NFTables python executor (named python3-nftables).
+
+You can find links to NFTable's documentation, tutorials, and source code at the end of this file
 
 
 
-## NFTables documentation
->Information on functions, parameters and possible values can be found in this [quick references to nftables](https://wiki.nftables.org/wiki-nftables/index.php/Quick_reference-nftables_in_10_minutes#Extras)
 
->More Documentation:
-[Debian man libnftables-json(5)](https://manpages.debian.org/unstable/libnftables1/libnftables-json.5.en.html)
-[Ubuntu man nft(8)](http://manpages.ubuntu.com/manpages/bionic/man8/nft.8.html)
-[libnftables-json](https://www.mankier.com/5/libnftables-json#Ruleset_Elements-Rule)
-[nftables.py source code](https://git.netfilter.org/nftables/tree/py/nftables.py)
+## How to use
+
+> **pynft** is the name of the module.
+
+> **Executor** is the core class from which can be called the module's functions.
+```python
+# import module
+import pynft
+
+# create executor
+nft = pynft.Executor()
+
+# call PyNFT method
+res = nft.AddTable("ip", "myTable")
+
+# print response ...
+nft.PrintCMDOutput(res)
+
+# ... or use response
+if (res["rc"] != 0)
+	print("error:\t{}".format(res["error"]))
+```
 
 
 
-## Base Class
-
->**pynft** is the name of the module.
->**Executor** is the core class from which can be called the module's functions.
 
 
+## Executor Class
 
-## Executor Functions
+- *Italic* function parameters are **optional**.
 
-Here is a list of functions implemented by PyNFT.
-For more informations on Customization Methods, please refer to the NFTables Documentation.
-
-- *Italic* parameters are **optional**.
 - All function parameters are **string**s for now.
 <!-- This will change in the future with the arrival of NamedTuple function objects -->
 <!-- Arguments will later be typed with ENUM overriding classes to secure the entries -->
-- All functions return None in case of invalid command syntax or type. As this is abstracted in Executor functions, it should already be dealt with by pynft.
+
 - All functions return a **dict** containing 4 values:
 	- *cmd*		=> the name of the called pynft command (string)
-	- *rc*		=> the return code (int), 0 == all good
+	- *rc*		=> the return code, 0 means no error (int)
 	- *output*	=> the output (dict)
-	- *error*	=> the error output if (*rc* != 0)
+	- *error*	=> the error output (dict)
 
 
-### Customization Methods
 
-#### Ruleset
+
+
+## Shortcut Functions
+
+Shortcuts should abstract nft rule creation in Flask API
+
+- BanMacSaddr(`addr`)
+	- Adds rule to default chain in default table to block MAC source address **addr**
+- UnbanMacSaddr(`addr`)
+	- Work in progress
+	- Deletes rule in default chain in default table blocking MAC source address **addr** if it exists
+
+- BanIpSaddr(`addr`)
+	- Adds rule to default chain in default table to block IP source address **addr**
+- UnbanIpSaddr(`addr`)
+	- Work in progress
+	- Deletes rule in default chain in default table blocking IP source address **addr** if it exists
+
+
+
+
+
+## Customization Methods
+
+> Customization methods are designed to replicate the uses of the "nft" CLI tool
+
+
+
+### Ruleset
 
 - PrintRuleset(*indentOutput*)
 	- Prints the result of '*nft list ruleset*' to stdout
@@ -52,7 +89,8 @@ For more informations on Customization Methods, please refer to the NFTables Doc
 	- Returns the ruleset in JSON format
 
 
-#### Tables
+
+### Tables
 
 <!--
 % nft list tables [<family>]
@@ -80,7 +118,8 @@ For more informations on Customization Methods, please refer to the NFTables Doc
 	- Deletes the specified Table from the Ruleset
 
 
-#### Chains
+
+### Chains
 
 <!-- 
 % nft (add | create) chain [<family>] <table> <name> [ { type <type> hook <hook> [device <device>] priority <priority> \; [policy <policy> \;] } ]
@@ -108,7 +147,8 @@ For more informations on Customization Methods, please refer to the NFTables Doc
 	- If **chainIdentifier** is the chain's handle it SHOULD be a numeric only string (ex: "42")
 
 
-#### Rules
+
+### Rules
 
 <!--
 % nft add rule [<family>] <table> <chain> <matches> <statements>
@@ -125,25 +165,6 @@ For more informations on Customization Methods, please refer to the NFTables Doc
 	- Work in progress
 - DeleteRule(`tableFamily`, `tableName`, `chainName`, `ruleHandle`)
 	- Deletes the specified Rule
-
-
-
-### Shortcuts
-
-Shortcuts should abstract nft rule creation in Flask API
-
-- BanMacSaddr(`addr`)
-	- Adds rule to default chain in default table to block MAC source address **addr**
-- UnbanMacSaddr(`addr`)
-	- Work in progress
-	- Deletes rule in default chain in default table blocking MAC source address **addr** if it exists
-
-- BanIpSaddr(`addr`)
-	- Adds rule to default chain in default table to block IP source address **addr**
-- UnbanIpSaddr(`addr`)
-	- Work in progress
-	- Deletes rule in default chain in default table blocking IP source address **addr** if it exists
-
 
 
 
@@ -181,3 +202,16 @@ Python JSON encoding :
 >>> list(ComplexEncoder().iterencode(2 + 1j))
 ['[2.0', ', 1.0', ']']
 -->
+
+
+## NFTables references
+- NFTables documentation:
+	- [Ubuntu man nft(8)](http://manpages.ubuntu.com/manpages/focal/man8/nft.8.html)
+	- [NFTables official wiki](https://wiki.nftables.org/wiki-nftables/index.php/Quick_reference-nftables_in_10_minutes#Extras)
+
+- JSON-nftables documentation:
+	- [Debian man libnftables-json(5)](https://manpages.debian.org/unstable/libnftables1/libnftables-json.5.en.html)
+	- [libnftables-json](https://www.mankier.com/5/libnftables-json#Ruleset_Elements-Rule)
+
+- NFTables source code:
+	- [nftables.py source code](https://git.netfilter.org/nftables/tree/py/nftables.py)

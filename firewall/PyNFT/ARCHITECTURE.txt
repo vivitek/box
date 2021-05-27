@@ -5,12 +5,14 @@
 ////////////////////////////////////////////////////////////////
 
 
+
 Disclaimer :
-some types are written as STRING but are actually a specific DATA_FIELD
-some types are written as *STRING*, they represent a DATA_FIELD that has not been created yet
+some types are written as *STRING*, they are a specific yet uncreated DATA_FIELDs (specific values not listed)
+some types are STRING but aren't flagged as *STRING* yet
 
 JSON nftables Documentation :
 https://manpages.debian.org/unstable/libnftables1/libnftables-json.5.en.html
+
 
 
 Understanding the architecture :
@@ -34,7 +36,7 @@ Understanding the architecture :
 
 	- "value"
 	represents a litteral string, value should not be changed
-	
+
 	- *STRING* (work in progress)
 	represents known untraced type (== DATA_FIELD)
 	Beware: some values written as STRING should be *STRING* which should be a specific DATA_FIELD
@@ -96,7 +98,7 @@ Understanding the architecture :
 
 
 #
-#	Ruleset Object
+#	Ruleset Objects
 #
 
 	RULESET_OBJECT := TABLE | CHAIN | RULE | SET | MAP | ELEMENT | FLOWTABLE | COUNTER | QUOTA | CT_HELPER | LIMIT | CT_TIMEOUT | CT_EXPECTATION | METAINFO_OBJECT
@@ -208,7 +210,7 @@ Understanding the architecture :
 		"table": STRING,
 		"name": STRING,
 		"handle": NUMBER,
-		"type": 'STRING,
+		"type": STRING,
 		"protocol": CT_HELPER_PROTO,
 		"l3proto": STRING
 	}}

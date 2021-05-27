@@ -68,29 +68,23 @@ class Executor:
 	###############################
 
 	def ExecuteNFTCommand(self, args, cmdName=""):
+		retCode = 0
+		output = ""
+		errors = ""
 		command_line = "sudo nft " + args
 		args = shlex.split(command_line)
-		rc = 0
-		errors = ""
 		try:
-			self.output = subprocess.check_output(args, stderr=subprocess.STDOUT)
+			output = subprocess.check_output(args, stderr=subprocess.STDOUT)
 		except subprocess.CalledProcessError as err:
-			rc = err.returncode
+			retCode = err.returncode
 			errors = err.output.decode()
-		return self.formatResponse(cmdName, rc, errors)
-
-	def formatResponse(self, cmdName, retCode, errors):
 		return {
 			"cmd" : cmdName,
 			"rc" : retCode,
-			"output" : self.output.decode(),
+			"output" : output.decode(),
 			"error" : errors
 		}
-	
-	def PrintLSO(self):
-		print(self.output.decode())
-		return self.output
-	
+
 	def PrintCMDoutput(self, output, indentOutput=2):
 		print("Print Command Output => " + output["cmd"])
 		print("return value :\t\t{}".format(output["rc"]))
