@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-import subprocess, shlex, collections, json
+import subprocess, shlex, json
 
 class Executor:
 
