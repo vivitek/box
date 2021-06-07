@@ -12,12 +12,16 @@ from app.main.model import rules
 from app.main.controllers import tableController as table
 from app.main.controllers import chainsController as chains
 from app.main.controllers import rulesController as rules
+from app.main.controllers import ipController as ip
+from app.main.controllers import macController as mac
 
 app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
 
 app.register_blueprint(table.bp)
 app.register_blueprint(rules.bp)
 app.register_blueprint(chains.bp)
+app.register_blueprint(ip.bp)
+app.register_blueprint(mac.bp)
 
 app.app_context().push()
 

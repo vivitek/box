@@ -28,69 +28,12 @@ def addRule():
         )
         db.session.add(ruleDB)
         db.session.commit()
-        return rule, status.HTTP_201_CREATED
+        return rule, status.HTTP_200_OK
     except Exception as e:
         return(str(e)), status.HTTP_500_INTERNAL_SERVER_ERROR
 
-@bp.route('/banIP', methods=['GET', 'POST'])
-def banIP():
-    try:
-        response = PyNFT.BanIPv4Addr(request.args.get('address'))
-        if (response['error'] != ''):
-            return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
-        ruleDB = IPBan (
-            address = request.args.get('address'),
-            handle = 0
-        )
-        db.session.add(ruleDB)
-        db.session.commit()
-        return response, status.HTTP_201_CREATED
-    except Exception as e:
-        return (str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-@bp.route('/unbanIP', methods=['GET', 'DELETE'])
-def unbanIp():
-    try:
-        response = PyNFT.UnbanIPv4Addr(request.args.get('address'))
-        if (response['error'] != ''):
-            return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
-        ruleDB = IPBan.query.filter_by(address=request.args.get('address')).delete()
-        db.session.commit()
-        return response, status.HTTP_200_OK
-    except Exception as e:
-        return (str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-@bp.route('/banMAC', methods=['GET', 'POST'])
-def banMac():
-    try:
-        response = PyNFT.BanMACAddr(request.args.get('address'), None)
-        if (response['error'] != ''):
-            return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
-        ruleDB = MacBan (
-            address = request.args.get('address'),
-            handle = 0
-        )
-        db.session.add(ruleDB)
-        db.session.commit()
-        return response, status.HTTP_201_CREATED
-    except Exception as e:
-        return (str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-@bp.route('/unbanMAC', methods=['GET', 'DELETE'])
-def unbanMac():
-    try:
-        response = PyNFT.UnbanMACAddr(request.args.get('address'))
-        if (response['error'] != ''):
-            return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
-        ruleDB = MacBan.query.filter_by(address=request.args.get('address')).delete()
-        db.session.commit()
-        return response, status.HTTP_200_OK
-    except Exception as e:
-        return (str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 @bp.route('/', methods=['DELETE'])
 def deleteRules():
-    
     try:
         ruleDB = Rule.query.filter_by(address=request.form.get('address'))
         ruleObject = ruleDB.first()

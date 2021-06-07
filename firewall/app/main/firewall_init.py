@@ -1,8 +1,8 @@
 from . import db
 
-from app.main.controllers.tableController import Table
-from app.main.controllers.chainsController import Chain
-from app.main.controllers.rulesController import Rule, IPBan, MacBan
+from app.main.model.tables import Table
+from app.main.model.chains import Chain
+from app.main.model.rules import Rule, IPBan, MacBan
 
 from pynft import Executor
 
