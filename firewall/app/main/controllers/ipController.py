@@ -11,7 +11,7 @@ PyNFT = Executor()
 
 regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
 
-@bp.route('/banIP', methods=['POST'])
+@bp.route('/ban', methods=['POST'])
 def banIP():
     try:
         if (request.form.get('address') == None or request.form.get('address') == ''):
@@ -31,7 +31,7 @@ def banIP():
     except Exception as e:
         return (str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@bp.route('/unbanIP', methods=['DELETE'])
+@bp.route('/unban', methods=['DELETE'])
 def unbanIp():
     try:
         if (request.form.get('address') == None or request.form.get('address') == ''):

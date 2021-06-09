@@ -8,7 +8,7 @@ servers:
     description: firewall
 paths:
 
-  /ip/banIP:
+  /ip/ban:
     post:
       summary: Ban an IP address.
       description: Endpoint to ban an ip address.
@@ -51,7 +51,7 @@ paths:
         '500':
           description: firewall can't ban the IP address
   
-  /ip/unbanIP:
+  /ip/unban:
     delete:
       summary: Unban IP address
       description: Endpoint to unban IP address
@@ -93,7 +93,7 @@ paths:
         '500':
           descirption: firewall can't unban the IP address
   
-  /mac/banMAC:
+  /mac/ban:
     post:
       summary: Ban a MAC address.
       description: Endpoint to ban a MAC address.
@@ -136,7 +136,7 @@ paths:
         '500':
           description: firewall can't ban the MAC address
   
-  /mac/unbanMAC:
+  /mac/unban:
     delete:
       summary: Unban MAC address
       description: Endpoint to unban MAC address
