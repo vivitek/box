@@ -1,8 +1,10 @@
 import os
 import unittest
 
+from flask import send_from_directory
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
+from flask_swagger_ui import get_swaggerui_blueprint
 
 from app.main import create_app, db, firewall_init
 from app.main.model import tables
@@ -17,11 +19,28 @@ from app.main.controllers import macController as mac
 
 app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
 
+SWAGGER_URL = '/api/docs'
+API_URL = '/docs/swagger.yml'
+
 app.register_blueprint(table.bp)
 app.register_blueprint(rules.bp)
 app.register_blueprint(chains.bp)
 app.register_blueprint(ip.bp)
 app.register_blueprint(mac.bp)
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL, 
+    API_URL,
+    config={
+        'app_name': "Test application"
+    }
+)
+
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
+@app.route("/docs/swagger.yml")
+def specs():
+    return send_from_directory(os.getcwd(), "firewall/docs/swagger.yml")
 
 app.app_context().push()
 
