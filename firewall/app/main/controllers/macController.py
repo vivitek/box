@@ -1,7 +1,7 @@
 from flask import (Blueprint, request, abort)
 from flask_api import status
 from pynft import Executor
-from app.main.model.rules import MacBan
+from app.main.model.mac import MacBan
 from app.main import db
 
 import re
@@ -22,8 +22,7 @@ def banMac():
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = MacBan (
-            address = request.form.get('address'),
-            handle = 0
+            address = request.form.get('address')
         )
         db.session.add(ruleDB)
         db.session.commit()
