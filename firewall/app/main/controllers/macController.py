@@ -47,7 +47,7 @@ def unbanMac():
         response = PyNFT.UnbanMACAddr(address)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
-        ruleDB = MacBan.query.filter_by(address=address).delete()
+        MacBan.query.filter_by(address=address).delete()
         db.session.commit()
         return response, status.HTTP_200_OK
     except Exception as e:

@@ -47,7 +47,7 @@ def unbanIp():
         response = PyNFT.UnbanIPv4Addr(address)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
-        ruleDB = IPBan.query.filter_by(address=address).delete()
+        IPBan.query.filter_by(address=address).delete()
         db.session.commit()
         return response, status.HTTP_200_OK
     except Exception as e:
