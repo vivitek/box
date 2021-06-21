@@ -14,15 +14,16 @@ regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-
 @bp.route('/ban', methods=['POST'])
 def banIP():
     try:
-        if (request.form.get('address') == None or request.form.get('address') == ''):
+        address = request.form.get('address')
+        if (not address or address == ''):
             return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not search(regex, request.form.get('address'))):
+        if (not search(regex, address)):
             return 'Invalid IP address', status.HTTP_400_BAD_REQUEST
-        response = PyNFT.BanIPv4Addr(request.form.get('address'))
+        response = PyNFT.BanIPv4Addr(address)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = IPBan (
-            address = request.form.get('address')
+            address = address
         )
         db.session.add(ruleDB)
         db.session.commit()
@@ -33,14 +34,15 @@ def banIP():
 @bp.route('/unban', methods=['DELETE'])
 def unbanIp():
     try:
-        if (request.form.get('address') == None or request.form.get('address') == ''):
+        address = request.form.get('address')
+        if (not address or address == ''):
             return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not search(regex, request.form.get('address'))):
+        if (not search(regex, address)):
             return 'Invalid IP address', status.HTTP_400_BAD_REQUEST
-        response = PyNFT.UnbanIPv4Addr(request.form.get('address'))
+        response = PyNFT.UnbanIPv4Addr(address)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
-        ruleDB = IPBan.query.filter_by(address=request.form.get('address')).delete()
+        ruleDB = IPBan.query.filter_by(address=address).delete()
         db.session.commit()
         return response, status.HTTP_200_OK
     except Exception as e:

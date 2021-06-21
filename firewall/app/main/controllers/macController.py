@@ -14,15 +14,16 @@ PyNFT = Executor()
 @bp.route('/ban', methods=['POST'])
 def banMac():
     try:
-        if (request.form.get('address') == None or request.form.get('address') == ''):
+        address = request.form.get('address');
+        if (not address or address == ''):
             return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not search(regex, request.form.get('address'))):
+        if (not search(regex, address)):
             return 'Invalid address', status.HTTP_400_BAD_REQUEST
-        response = PyNFT.BanMACAddr(request.form.get('address'), None)
+        response = PyNFT.BanMACAddr(address, None)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = MacBan (
-            address = request.form.get('address')
+            address = address
         )
         db.session.add(ruleDB)
         db.session.commit()
@@ -33,14 +34,15 @@ def banMac():
 @bp.route('/unban', methods=['DELETE'])
 def unbanMac():
     try:
-        if (request.form.get('address') == None or request.form.get('address') == ''):
+        address = request.form.get('address')
+        if (not address or address == ''):
             return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not search(regex, request.form.get('address'))):
+        if (not search(regex, address)):
             return 'Invalid address', status.HTTP_400_BAD_REQUEST
-        response = PyNFT.UnbanMACAddr(request.form.get('address'))
+        response = PyNFT.UnbanMACAddr(address)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
-        ruleDB = MacBan.query.filter_by(address=request.form.get('address')).delete()
+        ruleDB = MacBan.query.filter_by(address=address).delete()
         db.session.commit()
         return response, status.HTTP_200_OK
     except Exception as e:
