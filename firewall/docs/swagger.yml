@@ -35,13 +35,10 @@ paths:
                 properties:
                   cmd:
                     type: string
-                    example: ""
                   error:
                     type: string
-                    example: ""
                   output:
                     type: string
-                    example: ""
                   rc:
                     type: integer
                     format: int64
@@ -77,17 +74,13 @@ paths:
               properties:
                 cmd:
                   type: string
-                  example: ""
                 error:
                   type: string
-                  example: ""
                 output:
                   type: string
-                  example: ""
                 rc:
                   type: integer
                   format: int64
-                  example: 0
         '400':
           description: address is not valid or isn't specified
         '500':
@@ -120,17 +113,13 @@ paths:
                 properties:
                   cmd:
                     type: string
-                    example: ""
                   error:
                     type: string
-                    example: ""
                   output:
                     type: string
-                    example: ""
                   rc:
                     type: integer
                     format: int64
-                    exmaple: 0
         '400':
           description: address is not valid or isn't specified
         '500':
@@ -162,17 +151,13 @@ paths:
               properties:
                 cmd:
                   type: string
-                  example: ""
                 error:
                   type: string
-                  example: ""
                 output:
                   type: string
-                  example: ""
                 rc:
                   type: integer
                   format: int64
-                  example: 0
         '400':
           description: address is not valid or isn't specified
         '500':
