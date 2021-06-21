@@ -9,7 +9,7 @@ from re import search
 bp = Blueprint('ip', __name__, url_prefix='/ip')
 PyNFT = Executor()
 
-regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
+IP_FORMAT = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
 
 @bp.route('/ban', methods=['POST'])
 def banIP():
@@ -17,7 +17,7 @@ def banIP():
         address = request.form.get('address')
         if (not address or address == ''):
             return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not search(regex, address)):
+        if (not search(IP_FORMAT, address)):
             return 'Invalid IP address', status.HTTP_400_BAD_REQUEST
         response = PyNFT.BanIPv4Addr(address)
         if (response['error'] != ''):
@@ -37,7 +37,7 @@ def unbanIp():
         address = request.form.get('address')
         if (not address or address == ''):
             return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not search(regex, address)):
+        if (not search(IP_FORMAT, address)):
             return 'Invalid IP address', status.HTTP_400_BAD_REQUEST
         response = PyNFT.UnbanIPv4Addr(address)
         if (response['error'] != ''):
