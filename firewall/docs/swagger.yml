@@ -26,7 +26,7 @@ paths:
               example:
                 address: '127.0.0.1'
       responses:
-        '200':    # status code
+        '200':
           description: Ip banned
           content:
             application/json:
@@ -104,7 +104,7 @@ paths:
               example:
                 address: '14:59:C0:CA:87:61'
       responses:
-        '200':    # status code
+        '200':
           description: MAC banned
           content:
             application/json:
