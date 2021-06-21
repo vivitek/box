@@ -4,7 +4,7 @@ from pynft import Executor
 from app.main.model.ip import IPBan
 from app.main import db
 
-import re
+from re import search
 
 bp = Blueprint('ip', __name__, url_prefix='/ip')
 PyNFT = Executor()
@@ -16,7 +16,7 @@ def banIP():
     try:
         if (request.form.get('address') == None or request.form.get('address') == ''):
             return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not re.search(regex, request.form.get('address'))):
+        if (not search(regex, request.form.get('address'))):
             return 'Invalid IP address', status.HTTP_400_BAD_REQUEST
         response = PyNFT.BanIPv4Addr(request.form.get('address'))
         if (response['error'] != ''):
@@ -35,7 +35,7 @@ def unbanIp():
     try:
         if (request.form.get('address') == None or request.form.get('address') == ''):
             return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not re.search(regex, request.form.get('address'))):
+        if (not search(regex, request.form.get('address'))):
             return 'Invalid IP address', status.HTTP_400_BAD_REQUEST
         response = PyNFT.UnbanIPv4Addr(request.form.get('address'))
         if (response['error'] != ''):

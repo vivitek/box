@@ -4,7 +4,7 @@ from pynft import Executor
 from app.main.model.mac import MacBan
 from app.main import db
 
-import re
+from re import search
 
 regex = "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})|([0-9a-fA-F]{4}\\.[0-9a-fA-F]{4}\\.[0-9a-fA-F]{4})$"
 
@@ -16,7 +16,7 @@ def banMac():
     try:
         if (request.form.get('address') == None or request.form.get('address') == ''):
             return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not re.search(regex, request.form.get('address'))):
+        if (not search(regex, request.form.get('address'))):
             return 'Invalid address', status.HTTP_400_BAD_REQUEST
         response = PyNFT.BanMACAddr(request.form.get('address'), None)
         if (response['error'] != ''):
@@ -35,7 +35,7 @@ def unbanMac():
     try:
         if (request.form.get('address') == None or request.form.get('address') == ''):
             return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not re.search(regex, request.form.get('address'))):
+        if (not search(regex, request.form.get('address'))):
             return 'Invalid address', status.HTTP_400_BAD_REQUEST
         response = PyNFT.UnbanMACAddr(request.form.get('address'))
         if (response['error'] != ''):
