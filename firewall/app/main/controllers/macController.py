@@ -11,14 +11,20 @@ MAC_FORMAT = "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})|([0-9a-fA-F]{4}\\.[0-9a-f
 bp = Blueprint('mac', __name__, url_prefix='/mac')
 PyNFT = Executor()
 
+def validateForm(address):
+    if (not address or address == ''):
+        return 'Address is missing', status.HTTP_400_BAD_REQUEST
+    if (not search(MAC_FORMAT, address)):
+        return 'Invalid address', status.HTTP_400_BAD_REQUEST
+    return True
+
 @bp.route('/ban', methods=['POST'])
 def banMac():
     try:
         address = request.form.get('address');
-        if (not address or address == ''):
-            return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not search(MAC_FORMAT, address)):
-            return 'Invalid address', status.HTTP_400_BAD_REQUEST
+        isValid = validateForm(address)
+        if (isValid != True):
+            return isValid
         response = PyNFT.BanMACAddr(address, None)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -35,10 +41,9 @@ def banMac():
 def unbanMac():
     try:
         address = request.form.get('address')
-        if (not address or address == ''):
-            return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not search(MAC_FORMAT, address)):
-            return 'Invalid address', status.HTTP_400_BAD_REQUEST
+        isValid = validateForm(address)
+        if (isValid != True):
+            return isValid
         response = PyNFT.UnbanMACAddr(address)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR

@@ -11,14 +11,20 @@ PyNFT = Executor()
 
 IP_FORMAT = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
 
+def validateForm(address): 
+    if (not address or address == ''):
+            return 'Address is missing', status.HTTP_400_BAD_REQUEST
+    if (not search(IP_FORMAT, address)):
+        return 'Invalid IP address', status.HTTP_400_BAD_REQUEST
+    return True
+
 @bp.route('/ban', methods=['POST'])
 def banIP():
     try:
         address = request.form.get('address')
-        if (not address or address == ''):
-            return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not search(IP_FORMAT, address)):
-            return 'Invalid IP address', status.HTTP_400_BAD_REQUEST
+        isValid = validateForm(address)
+        if (isValid != True):
+            return isValid
         response = PyNFT.BanIPv4Addr(address)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -35,10 +41,9 @@ def banIP():
 def unbanIp():
     try:
         address = request.form.get('address')
-        if (not address or address == ''):
-            return 'Address is missing', status.HTTP_400_BAD_REQUEST
-        if (not search(IP_FORMAT, address)):
-            return 'Invalid IP address', status.HTTP_400_BAD_REQUEST
+        isValid = validateForm(address)
+        if (isValid != True):
+            return isValid
         response = PyNFT.UnbanIPv4Addr(address)
         if (response['error'] != ''):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
