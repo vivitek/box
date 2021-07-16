@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { freemem, totalmem, cpus, uptime } from 'os';
 import { promisify } from 'util';
 import { exec } from 'child_process';
@@ -60,6 +60,17 @@ export class SystemService {
 
   public getUptime() {
     return uptime();
+  }
+
+  public async logs(service: string, lines: string) {
+    if (Number(lines) !== NaN)
+      throw new BadRequestException("Lines should be an integer")
+    const execSync = promisify(exec);
+    const { stdout, stderr } = await execSync(`pm2 logs --nostream --lines ${lines} ${service}`);
+    if (stderr)
+      throw new InternalServerErrorException(stderr)
+    return stdout
+
   }
 
   public reboot() {
