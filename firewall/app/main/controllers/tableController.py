@@ -8,7 +8,6 @@ from app.main import db
 bp = Blueprint('table', __name__, url_prefix='/table')
 PyNFT = Executor()
 
-
 @bp.route('/', methods=['GET'])
 def getTable():
     if (request.form.get('family') is not None and request.form.get('tablename') is not None):
@@ -17,9 +16,8 @@ def getTable():
         table = PyNFT.GetTable()
     if (table['error'] != ''):
         return table['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
-    
-    return table['output'], status.HTTP_200_OK
 
+    return table['output'], status.HTTP_200_OK
 
 @bp.route('/', methods=['POST'])
 def addTable():
@@ -37,7 +35,6 @@ def addTable():
     except Exception as e:
         return(str(e))
 
-
 @bp.route('/', methods=['DELETE'])
 def deleteTable():
     try:
@@ -49,5 +46,3 @@ def deleteTable():
         return table, status.HTTP_200_OK
     except Exception as e:
         return(str(e))
-
-

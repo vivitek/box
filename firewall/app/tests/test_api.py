@@ -92,7 +92,5 @@ class RuleTest(TestCase):
 		))
 		self.assertEqual(201, response.status_code)
 
-
-
 if __name__ == "__main__":
 	unittest.main()

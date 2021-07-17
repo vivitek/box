@@ -17,13 +17,13 @@ Understanding the architecture :
 
 	- [ OBJ ]
 	represents an array of one or multiple values
-	
+
 	- OBJ_A [, OBJ_B ]
 	represents the possibility of adding OBJ_B, only if comma separated from OBJ_A
-	
+
 	- OBJ_A | OBJ_B
 	represents the value possibilities, acts as "or"
-	
+
 	- { OBJ_KEY: OBJ_VALUE }
 	often you will find this OBJ definition
 	OBJ_KEY and OBJ_VALUE have a 1 to 1 defintion schema
@@ -34,7 +34,7 @@ Understanding the architecture :
 
 	- "value"
 	represents a litteral string, value should not be changed
-	
+
 	- *STRING* (work in progress)
 	represents known untraced type (== DATA_FIELD)
 	Beware: some values written as STRING should be *STRING* which should be a specific DATA_FIELD

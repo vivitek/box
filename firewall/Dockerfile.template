@@ -25,34 +25,3 @@ RUN pip install -r requirements.txt
 RUN pip install get_nic
 
 CMD [ "sh", "start.sh" ]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# FROM balenalib/%%BALENA_MACHINE_NAME%%-python
-
-# WORKDIR /app
-# COPY . .
-
-# RUN apt-get update -y
-# RUN apt-get upgrade -y
-# RUN apt-get install -y build-essential
-# RUN apt-get install -y libpq-dev
-
-# RUN apt-get install -y nftables
-
-
-# RUN pip install --upgrade pip
-# RUN pip install -r requirements.txt
-
-# CMD [ "python3", "manage.py", "run" ]

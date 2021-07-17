@@ -50,12 +50,8 @@ class Executor:
 		cmd_addNatTable = "add table ip nat"
 		cmd_addNatPreroutingChain = "add chain nat PREROUTING { type nat hook PREROUTING priority -100; }"
 		cmd_addNatPostroutingChain = "add chain nat POSTROUTING { type nat hook POSTROUTING priority 100 ; }"
-		# cmd_addNatPreroutingRule = "add rule nat prerouting iif eth0 tcp dport { 80, 443 } dnat to 192.168.1.120
 		ethernetIP = "192.168.0.32"
 		cmd_addNatPreroutingRule = "add rule nat prerouting iif wlan0 dnat to " + ethernetIP
-		# cmd_addNatPostroutingRule = "add rule nat POSTROUTING ip saddr " + sNatAddr+ "/" + sNatPort + " oifname \'eth0\' masquerade"
-
-
 
 	def ExecuteNFTCommand(self, args, cmdName=""):
 		command_line = "sudo nft " + args
@@ -76,11 +72,11 @@ class Executor:
 			"output" : self.output.decode(),
 			"error" : errors
 		}
-	
+
 	def PrintLSO(self):
 		print(self.output.decode())
 		return self.output
-	
+
 	def PrintCMDoutput(self, output, indentOutput=2):
 		print("Print Command Output => " + output["cmd"])
 		print("return value :\t\t{}".format(output["rc"]))
@@ -88,15 +84,6 @@ class Executor:
 		if (output["rc"] != 0):
 			print("error :\t\t\t{}".format(output["error"]))
 		print()
-
-
-
-
-
-
-
-
-
 
 
 	###############################
@@ -144,7 +131,7 @@ class Executor:
 	def AddChain(self, family:str, tableName:str, chainName:str, chainType:str="filter", chainHook:str="prerouting", chainPrio:str="0", chainPolicy:str="accept"):
 		"""Add a Chain to specified Table"""
 		return self.ExecuteNFTCommand("add chain " + str(family) + " " + str(tableName) + " " + str(chainName) + " { type " + str(chainType) + " hook " + str(chainHook) + " priority " + str(chainPrio)  + " ; policy " + str(chainPolicy) + " ; }")
-	
+
 	def RenameChain(self, family:str, tableName:str, chainName:str, chainNewName:str):
 		"""Rename specified Chain"""
 		return self.ExecuteNFTCommand("rename chain " + family + " " + tableName + " " + chainName + " " + chainNewName)
@@ -180,17 +167,6 @@ class Executor:
 		return self.ExecuteNFTCommand("delete rule " + family + " " + tableName + " " + chainName + " " + ruleHandle)
 
 
-	
-
-
-
-
-
-
-
-
-
-
 	###############################
 	##                           ##
 	##      Shortcut Methods     ##
@@ -199,10 +175,10 @@ class Executor:
 
 	def BanIPv4Addr(self, args, cmd=None):
 		return self.ExecuteNFTCommand("add element inet BanTable BannedIPv4 {" + args + "}")
-	
+
 	def BanIPv6Addr(self, args, cmd=None):
 		return self.ExecuteNFTCommand("add element inet BanTable BannedIPv6 {" + args + "}")
-	
+
 	def BanMACAddr(self, args, cmd=None):
 		return self.ExecuteNFTCommand("add element inet BanTable BannedMAC {" + args + "}")
 
@@ -211,6 +187,6 @@ class Executor:
 
 	def UnbanIPv6Addr(self, args, cmd=None):
 		return self.ExecuteNFTCommand("delete element inet BanTable BannedIPv6 {" + args + "}")
-	
+
 	def UnbanMACAddr(self, args, cmd=None):
 		return self.ExecuteNFTCommand("delete element inet BanTable BannedMAC {" + args + "}")
