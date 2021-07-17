@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { freemem, totalmem, cpus, uptime } from 'os';
-import { promisify } from 'util';
-import { exec } from 'child_process';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common'
+import { freemem, totalmem, cpus, uptime } from 'os'
+import { exec } from "child_process"
+import { execSync } from "../utils"
 
 @Injectable()
 export class SystemService {
@@ -45,7 +45,6 @@ export class SystemService {
   }
 
   public async storage() {
-    const execSync = promisify(exec);
     const { stdout } = await execSync("df -h | grep '/$'");
     const stat = stdout.split(' ').filter((e) => e);
 
@@ -63,9 +62,8 @@ export class SystemService {
   }
 
   public async logs(service: string, lines: string) {
-    if (Number(lines) !== NaN)
+    if (Number(lines) === NaN)
       throw new BadRequestException("Lines should be an integer")
-    const execSync = promisify(exec);
     const { stdout, stderr } = await execSync(`pm2 logs --nostream --lines ${lines} ${service}`);
     if (stderr)
       throw new InternalServerErrorException(stderr)

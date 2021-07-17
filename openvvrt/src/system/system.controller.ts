@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Post, Query } from '@nestjs/common';
 import { SystemService } from './system.service';
 
 @Controller('/system')
@@ -25,20 +25,20 @@ export class SystemController {
     return this.service.getUptime();
   }
 
-  @Get(['/logs/:service', '/logs/:service/:lines'])
+  @Get('/logs')
   logs(
-    @Param('service') service: string,
-    @Param('lines') lines: string = "15"
+    @Query('service') service: string,
+    @Query('lines') lines: string = "32"
   ) {
     return this.service.logs(service, lines)
   }
 
-  @Get('/reboot')
+  @Post('/reboot')
   reboot() {
     this.service.reboot();
   }
 
-  @Get('/poweroff')
+  @Post('/poweroff')
   poweroff() {
     this.service.poweroff();
   }
