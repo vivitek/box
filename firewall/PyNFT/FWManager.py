@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from PyNFT.src.v3 import *
+from PyNFT import *
 
 
 

@@ -3,7 +3,7 @@
 import nftables
 import json
 import jsonschema
-from PyNFT.src.v3.nft_objects.command_objects import *
+from PyNFT.objects.command_objects import *
 
 
 

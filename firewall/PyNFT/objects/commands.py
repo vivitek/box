@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import nftables
-from PyNFT.src.v3.nft_objects.ruleset_objects import *
+from PyNFT.objects.ruleset_objects import *
 from typing import List, Union
 
 

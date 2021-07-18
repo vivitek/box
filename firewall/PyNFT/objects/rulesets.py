@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from PyNFT.src.v3.nft_objects.root import NFT_OBJ
-from PyNFT.src.v3.nft_objects.expressions import *
-from PyNFT.src.v3.nft_objects.enumerations import *
+from PyNFT.objects.root import NFT_OBJ
+from PyNFT.objects.expressions import *
+from PyNFT.objects.enumerations import *
 from typing import List, Union
 
 
