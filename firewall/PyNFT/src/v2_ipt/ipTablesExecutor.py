@@ -11,7 +11,7 @@ class IpTablesExecutor:
 			rule.src = saddr
 			target = rule.create_target("DROP")
 			iptc.Chain(table, chainName).insert_rule(rule)
-	
+
 	def UnbanIpSaddr(self, saddr, ruleNum=0, chainName="INPUT", tableName=iptc.Table.FILTER):
 		table = iptc.Table(tableName)
 		if (table.is_chain(chainName) == False):
@@ -27,5 +27,3 @@ class IpTablesExecutor:
 			print(rule.src)
 			if (rule.src.startswith(saddr)):
 				chain.delete_rule(rule)
-
-		

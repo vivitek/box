@@ -142,7 +142,7 @@ class Executor:
 	def AddChain(self, family:str, tableName:str, chainName:str, chainType:str="filter", chainHook:str="prerouting", chainPrio:str="0", chainPolicy:str="accept"):
 		"""Add a Chain to specified Table"""
 		return self.ExecuteNFTCommand("add chain " + str(family) + " " + str(tableName) + " " + str(chainName) + " { type " + str(chainType) + " hook " + str(chainHook) + " priority " + str(chainPrio)  + " ; policy " + str(chainPolicy) + " ; }")
-	
+
 	def RenameChain(self, family:str, tableName:str, chainName:str, chainNewName:str):
 		"""Rename specified Chain"""
 		return self.ExecuteNFTCommand("rename chain " + family + " " + tableName + " " + chainName + " " + chainNewName)

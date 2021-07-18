@@ -118,9 +118,6 @@ def PrintLSOFence(args, pyip):
     pyip.PrintLSO()
 
 
-
-
-
 ###############################
 ##                           ##
 ##           MAIN            ##
@@ -161,7 +158,6 @@ def main():
 
         # Actions to Take
         ActionSwitcher(args, pyip)
-
 
 main()
 

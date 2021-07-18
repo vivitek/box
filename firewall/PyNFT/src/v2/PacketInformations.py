@@ -2,8 +2,6 @@
 
 from enum import Enum
 
-# PackInfo stands for Packet Information
-
 class PackInfo(Enum):
     def toString(self):
         return self.name.lower().replace("_", " ")

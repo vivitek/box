@@ -4,19 +4,12 @@ import unittest
 from pynft import Executor
 
 
-# interfaces = getnic.interfaces()
-# detailed = getnic.ipaddr(interfaces)
-# print("\nSETUP IP FORWARDING :\ninterfaces => " + interfaces + "\ndetailed => " + detailed)
-
-PyNFT_shell = Executor("192.168.0.32", "8080")
-
-
 #
 #	PyNFT v2_shell tests
 #
 
 class TestPyNFT(unittest.TestCase):
-	
+
 	def testRulesetMethods(self):
 		output = PyNFT_shell.PrintRuleset()
 		self.assertEqual(output["rc"], 0)
@@ -34,9 +27,9 @@ class TestPyNFT(unittest.TestCase):
 		self.assertEqual(output["rc"], 0)
 		output = PyNFT_shell.DeleteTable(family="inet", identifier="TeStTaBlE")
 		self.assertEqual(output["rc"], 0)
-		
+
 		PyNFT_shell.FlushRuleset()
-	
+
 
 	def testChainMethods(self):
 		output = PyNFT_shell.FlushRuleset()
@@ -61,7 +54,7 @@ class TestPyNFT(unittest.TestCase):
 		self.assertEqual(output["rc"], 0)
 		# output = PyNFT_shell.PrintRuleset()
 		# print("Step 4 / 4:\n" + output["output"])
-		
+
 		PyNFT_shell.FlushRuleset()
 
 

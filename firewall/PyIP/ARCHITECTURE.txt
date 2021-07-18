@@ -1,0 +1,531 @@
+////////////////////////////////////////////////////////////////
+//                                                            //
+//                       architecture                         //
+//                                                            //
+////////////////////////////////////////////////////////////////
+
+
+
+Disclaimer :
+some types are written as STRING but are actually a specific DATA_FIELD
+some types are written as *STRING*, they represent a DATA_FIELD that has not been created yet
+
+JSON nftables Documentation :
+https://manpages.debian.org/unstable/libnftables1/libnftables-json.5.en.html
+
+
+Understanding the architecture :
+
+	- [ OBJ ]
+	represents an array of one or multiple values
+
+	- OBJ_A [, OBJ_B ]
+	represents the possibility of adding OBJ_B, only if comma separated from OBJ_A
+
+	- OBJ_A | OBJ_B
+	represents the value possibilities, acts as "or"
+
+	- { OBJ_KEY: OBJ_VALUE }
+	often you will find this OBJ definition
+	OBJ_KEY and OBJ_VALUE have a 1 to 1 defintion schema
+	ex: CMD_OBJECT
+	CMD_ADD only goes with "add" CMD_KEY
+	ex: VERDICT
+	VERDICT_RETURN only goes with "return" VERDICT_KEY
+
+	- "value"
+	represents a litteral string, value should not be changed
+
+	- *STRING* (work in progress)
+	represents known untraced type (== DATA_FIELD)
+	Beware: some values written as STRING should be *STRING* which should be a specific DATA_FIELD
+
+
+
+#
+#	Meta
+#
+
+	{ "nftables": [ OBJECTS ] }
+
+	OBJECTS := RULESET_OBJECTS | CMD_OBJECTS
+
+	RULESET_OBJECTS := RULESET_OBJECT [, RULESET_OBJECTS ]
+
+	CMD_OBJECTS := CMD_OBJECT [, CMD_OBJECTS ]
+
+	METAINFO_OBJECT := { "metainfo": {
+		"version": STRING,
+		"release_name": STRING,
+		"json_schema_version": NUMBER
+	}}
+
+
+
+#
+#	Command Objects
+#
+
+	CMD_OBJECT := { CMD_KEY: CMD_VALUE } | METAINFO_OBJECT
+
+	CMD_KEY := "add" | "replace" | "create" | "insert" | "delete" | "list" | "reset" | "flush" | "rename"
+
+	CMD_VALUE := CMD_ADD | CMD_REPLACE | CMD_CREATE | CMD_INSERT | CMD_DELETE | CMD_LIST | CMD_RESET | CMD_FLUSH | CMD_RENAME
+
+	CMD_ADD := ADD_OBJECT
+	ADD_OBJECT := TABLE | CHAIN | RULE | SET | MAP | ELEMENT | FLOWTABLE | COUNTER | QUOTA | CT_HELPER | LIMIT | CT_TIMEOUT | CT_EXPECTATION
+
+	CMD_REPLACE := RULE
+
+	CMD_CREATE := ADD_OBJECT
+
+	CMD_INSERT := RULE
+
+	CMD_DELETE := ADD_OBJECT
+
+	CMD_LIST := LIST_OBJECT
+	LIST_OBJECT := TABLE | TABLES | CHAIN | CHAINS | SET | SETS | MAP | MAPS | COUNTER | COUNTERS | QUOTA | QUOTAS | CT_HELPER | CT_HELPERS | LIMIT | LIMITS | RULESET | METER | METERS | FLOWTABLE |  LOWTABLES | CT_TIMEOUT | CT_EXPECTATION
+
+	CMD_RESET := RESET_OBJECT
+	RESET_OBJECT := COUNTER | COUNTERS | QUOTA | QUOTAS
+
+	CMD_FLUSH := FLUSH_OBJECT
+	FLUSH_OBJECT := TABLE | CHAIN | SET | MAP | METER | RULESET
+
+	CMD_RENAME := CHAIN
+
+
+
+#
+#	Ruleset Object
+#
+
+	RULESET_OBJECT := TABLE | CHAIN | RULE | SET | MAP | ELEMENT | FLOWTABLE | COUNTER | QUOTA | CT_HELPER | LIMIT | CT_TIMEOUT | CT_EXPECTATION | METAINFO_OBJECT
+
+	TABLE := { "table": {
+		"family": STRING,
+		"name": STRING,
+		"handle": NUMBER
+	}}
+
+	CHAIN := { "chain": {
+		"family": STRING,
+		"table": STRING,
+		"name": STRING,
+		"newname": STRING,
+		"handle": NUMBER,
+		"type": STRING,
+		"hook": STRING,
+		"prio": NUMBER,
+		"dev": STRING,
+		"policy": STRING
+	}}
+
+	RULE := { "rule": {
+		"family": STRING,
+		"table": STRING,
+		"chain": STRING,
+		"expr": [ STATEMENTS ],
+		"handle": NUMBER,
+		"index": NUMBER,
+		"comment": STRING
+	}}
+
+	SET := { "set": {
+		"family": STRING,
+		"table": STRING,
+		"name": STRING,
+		"handle": NUMBER,
+		"type": SET_TYPE,
+		"policy": SET_POLICY,
+		"flags": [ SET_FLAG_LIST ],
+		"elem": SET_ELEMENTS,
+		"timeout": NUMBER,
+		"gc-interval": NUMBER,
+		"size": NUMBER
+	}}
+	SET_TYPE := STRING | [ SET_TYPE_LIST ]
+	SET_TYPE_LIST := STRING [, SET_TYPE_LIST ]
+	SET_POLICY := "performance" | "memory"
+	SET_FLAG_LIST := SET_FLAG [, SET_FLAG_LIST ]
+	SET_FLAG := "constant" | "interval" | "timeout"
+	SET_ELEMENTS := EXPRESSION | [ EXPRESSION_LIST ]
+
+	MAP := { "map": {
+		"family": STRING,
+		"table": STRING,
+		"name": STRING,
+		"handle": NUMBER,
+		"type": SET_TYPE,
+		"map": STRING,
+		"policy": SET_POLICY,
+		"flags": [ SET_FLAG_LIST ],
+		"elem": SET_ELEMENTS,
+		"timeout": NUMBER,
+		"gc-interval": NUMBER,
+		"size": NUMBER
+	}}
+
+	ELEMENT := { "element": {
+		"family": STRING,
+		"table": STRING,
+		"name": STRING,
+		"elem": SET_ELEMENTS
+	}}
+
+	FLOWTABLE := { "flowtable": {
+		"family": STRING,
+		"table": STRING,
+		"name": STRING,
+		"handle": NUMBER,
+		"hook": STRING,
+		"prio": NUMBER,
+		"dev": FT_INTERFACE
+	}}
+	FT_INTERFACE := STRING | [ FT_INTERFACE_LIST ]
+	FT_INTERFACE_LIST := STRING [, STRING ]
+
+	COUNTER := { "counter": {
+		"family": STRING,
+		"table": STRING,
+		"name": STRING,
+		"handle": NUMBER,
+		"packets": NUMBER,
+		"bytes": NUMBER
+	}}
+
+	QUOTA := { "quota": {
+		"family": STRING,
+		"table": STRING,
+		"name": STRING,
+		"handle": NUMBER,
+		"bytes": NUMBER,
+		"used": NUMBER,
+		"inv": BOOLEAN
+	}}
+
+	CT_HELPER := { "ct helper": {
+		"family": STRING,
+		"table": STRING,
+		"name": STRING,
+		"handle": NUMBER,
+		"type": 'STRING,
+		"protocol": CT_HELPER_PROTO,
+		"l3proto": STRING
+	}}
+	CT_HELPER_PROTO := "tcp" | "udp"
+
+	LIMIT := { "limit": {
+		"family": STRING,
+		"table": STRING,
+		"name": STRING,
+		"handle": NUMBER,
+		"rate": NUMBER,
+		"per": STRING,
+		"burst": NUMBER,
+		"unit": LIMIT_UNIT,
+		"inv": BOOLEAN
+	}}
+	LIMIT_UNIT := "packets" | "bytes"
+
+	CT_TIMEOUT := { "ct timeout": {
+		"family": STRING,
+		"table": STRING,
+		"name": STRING,
+		"handle": NUMBER,
+		"protocol": CT_TIMEOUT_PROTO,
+		"state": STRING,
+		"value: NUMBER,
+		"l3proto": STRING
+	}}
+	CT_TIMEOUT_PROTO := "tcp" | "udp" | "dccp" | "sctp" | "gre" | "icmpv6" | "icmp" | "generic"
+
+	CT_EXPECTATION := { "ct expectation": {
+		"family": STRING,
+		"table": STRING,
+		"name": STRING,
+		"handle": NUMBER,
+		"l3proto": STRING
+		"protocol":* CT_EXPECTATION_PROTO,
+		"dport": NUMBER,
+		"timeout: NUMBER,
+		"size: NUMBER,
+	}}
+	CT_EXPECTATION_PROTO := "tcp" | "udp" | "dccp" | "sctp" | "gre" | "icmpv6" | "icmp" | "generic"
+
+
+
+#
+#	Statements
+#
+
+	STATEMENTS := STATEMENT [, STATEMENTS ]
+	STATEMENT := VERDICT | MATCH | COUNTER | MANGLE | QUOTA | LIMIT | FWD | NOTRACK | DUP | NATWORK_ADDRESS_TRANSLATION | REJECT | SET | LOG | CT_HELPER | METER | QUEUE | VERDICT_MAP | CT_COUNT | CT_TIMEOUT | CT_EXPECTATION | XT
+
+	VERDICT := { VERDICT_KEY: VERDICT_VALUE }
+	VERDICT_KEY := "accept" | "drop" | "continue" | "return" | "jump" | "goto"
+	VERDICT_VALUE := VERDICT_ACCEPT | VERDICT_DROP | VERDICT_CONTINUE | VERDICT_RETURN | VERDICT_JUMP | VERDICT_GOTO
+	VERDICT_ACCEPT := null
+	VERDICT_DROP := null
+	VERDICT_CONTINUE := null
+	VERDICT_RETURN := null
+	VERDICT_JUMP := { "target": *STRING* }
+	VERDICT_GOTO := { "target": *STRING* }
+
+	MATCH := { "match": {
+		"left": EXPRESSION,
+		"right": EXPRESSION,
+		"op": *STRING*
+	}}
+
+	COUNTER := { "counter": COUNTER_VALUE }
+	COUNTER_VALUE:= STRING | {
+		"packets": NUMBER,
+		"bytes": NUMBER
+	}
+
+	MANGLE := { "mangle": {
+		"key": EXPRESSION,
+		"value": EXPRESSION
+	}}
+
+	QUOTA := { "quota": QUOTA_VALUE }
+	QUOTA_VALUE := STRING | {
+		"val": NUMBER,
+		"val_unit": STRING,
+		"used": NUMBER,
+		"used_unit": STRING,
+		"inv": BOOLEAN
+	}
+
+	LIMIT := { "limit": LIMIT_VALUE }
+	LIMIT_VALUE := STRING | {
+		"rate": NUMBER,
+		"rate_unit": STRING,
+		"per": STRING,
+		"burst": NUMBER,
+		"burst_unit": STRING,
+		"inv": BOOLEAN
+	}
+
+	FWD := { "fwd": {
+		"dev": EXPRESSION,
+		"family": FWD_FAMILY,
+		"addr": EXPRESSION
+	}}
+	FWD_FAMILY := "ip" | "ip6"
+
+	NOTRACK := { "notrack": null }
+
+	DUP := { "dup": {
+		"addr": EXPRESSION,
+		"dev": EXPRESSION
+	}}
+
+	NETWORK_ADDRESS_TRANSLATION := { NAT_KEY: NAT_VALUE }
+	NAT_KEY := "snat" | "dnat" | "masquerade" | "redirect"
+	NAT_VALUE := NAT_SNAT | NAT_DNAT | NAT_MASQUERADE | NAT_REDIRECT
+	NAT_SNAT := {
+		"addr": EXPRESSION,
+		"family": STRING,
+		"port": EXPRESSION,
+		"flags": NAT_REDIRECT_FLAGS
+	}
+	NAT_DNAT := {
+		"addr": EXPRESSION,
+		"family": STRING,
+		"port": EXPRESSION,
+		"flags": NAT_REDIRECT_FLAGS
+	}
+	NAT_MASQUERADE := {
+		"port": EXPRESSION,
+		"flags": NAT_REDIRECT_FLAGS
+	}
+	NAT_REDIRECT := {
+		"port": EXPRESSION,
+		"flags": NAT_REDIRECT_FLAGS
+	}
+	NAT_REDIRECT_FLAGS := NAT_REDIRECT_FLAG | [ NAT_REDIRECT_FLAG_LIST ]
+	NAT_REDIRECT_FLAG_LIST := NAT_REDIRECT_FLAG [, NAT_REDIRECT_FLAG_LIST ]
+	NAT_REDIRECT_FLAG := "random" | "fully-random" | "persistent"
+
+	REJECT := { "reject": {
+		"type": STRING,
+		"expr": EXPRESSION
+	}}
+
+	SET := { "set": {
+		"op": STRING,
+		"elem": EXPRESSION,
+		"set": STRING
+	}}
+
+	LOG := { "log": {
+		"prefix": STRING,
+		"group": NUMBER,
+		"snaplen": NUMBER,
+		"queue-threshold": NUMBER,
+		"level": LEVEL,
+		"flags": LOG_FLAGS
+	}}
+	LEVEL := "emerg" | "alert" | "crit" | "err" | "warn" | "notice" |  "info" | "debug" | "audit"
+	LOG_FLAGS := LOG_FLAG | [ LOG_FLAG_LIST ]
+	LOG_FLAG_LIST := LOG_FLAG [, LOG_FLAG_LIST ]
+	LOG_FLAG := "tcp sequence" | "tcp options" | "ip options" | "skuid" | "ether" | "all"
+
+	CT_HELPER := { "ct helper": EXPRESSION }
+
+	METER := { "meter": {
+		"name": STRING,
+		"key": EXPRESSION,
+		"stmt": STATEMENT
+	}}
+
+	QUEUE := { "queue": {
+		"num": EXPRESSION,
+		"flags": QUEUE_FLAGS
+	}}
+	QUEUE_FLAGS := QUEUE_FLAG | [ QUEUE_FLAG_LIST ]
+	QUEUE_FLAG_LIST := QUEUE_FLAG [, QUEUE_FLAG_LIST ]
+	QUEUE_FLAG := "bypass" | "fanout"
+
+	VERDICT_MAP := { "vmap": {
+		"key": EXPRESSION,
+		"data": EXPRESSION
+	}}
+
+	CT_COUNT := { "ct count": {
+		"val": NUMBER,
+		"inv": BOOLEAN
+	}}
+
+	CT_TIMEOUT := { "ct timeout": EXPRESSION }
+
+	CT_EXPECTATION := { "ct expectation": EXPRESSION }
+
+	XT := { "xt": null }
+
+
+
+#
+#	Expressions
+#
+
+	EXPRESSION := IMMEDIATE | LISTS | CONCAT | SET | MAP | PREFIX | RANGE | PAYLOAD | EXTHDR | TCP_OPTION | META | RT | CT | NUMGEN | HASH | FIB | BINARY_OPERATION | VERDICT | ELEM | SOCKET | OSF
+	EXPRESSION_LIST := EXPRESSION [, EXPRESSION_LIST ]
+
+	IMMEDIATE := STRING | NUMBER | BOOLEAN
+
+	LISTS := [ EXPRESSION_LIST ]
+
+	CONCAT := { "concat": CONCAT_VALUE }
+	CONCAT_VALUE := [ EXPRESSION_LIST ]
+
+	SET := { "set": SET_VALUE }
+	SET_VALUE := EXPRESSION | [ EXPRESSION_LIST ]
+
+	MAP := { "map": {
+		"key": EXPRESSION,
+		"data": EXPRESSION
+	}}
+
+	PREFIX := { "prefix": {
+		"addr": EXPRESSION,
+		"len": NUMBER
+	}}
+
+	RANGE := { "range": [ EXPRESSION , EXPRESSION ] }
+
+	PAYLOAD := { "payload": PAYLOAD_VALUE }
+	PAYLOAD_VALUE := RAW_PAYLOAD | REFERENCE_PAYLOAD
+	RAW_PAYLOAS := {
+		"base": BASE,
+		"offset": NUMBER,
+		"len": NUMBER
+	}
+	REFERENCE_PAYLOAD := {
+		"protocol": STRING,
+		"field": STRING
+	}
+	BASE := "ll" | "nh" | "th"
+
+	EXTHDR := { "exthdr": {
+		"name": STRING,
+		"field": STRING,
+		"offset": NUMBER
+	}}
+
+	TCP OPTION := { "tcp option": {
+		"name": STRING,
+		"field": STRING
+	}}
+
+	META := { "meta": {
+		"key": META_KEY
+	}}
+	META_KEY := "length" | "protocol" | "priority" | "random" | "mark" | "iif" | "iifname" | "iiftype" | "oif" | "oifname" | "oiftype" | "skuid" | "skgid" | "nftrace" | "rtclassid" | "ibriport" | "obriport" | "ibridgename" | "obridgename" | "pkttype" | "cpu" | "iifgroup" | "oifgroup" | "cgroup" | "nfproto" | "l4proto" | "secpath"
+
+	RT := { "rt": {
+		"key": RT_KEY,
+		"family": RT_FAMILY
+	}}
+	RT_KEY := "classid" | "nexthop" | "mtu"
+	RT_FAMILY := "ip" | "ip6"
+
+	CT := { "ct": {
+		"key": STRING,
+		"family": CT_FAMILY,
+		"dir": CT_DIRECTION
+	}}
+	CT_FAMILY := "ip" | "ip6"
+	CT_DIRECTION := "original" | "reply"
+
+	NUMGEN := { "numgen": {
+		"mode": NG_MODE,
+		"mod": NUMBER,
+		"offset": NUMBER
+	}}
+	NG_MODE := "inc" | "random"
+
+	HASH := HASH_JHASH | HASH_SYMHASH
+	HASH_JHASH :=  { "jhash": {
+		"mod": NUMBER,
+		"offset": NUMBER,
+		"expr": EXPRESSION,
+		"seed": NUMBER
+	}}
+	HASH_SYMHASH := { "symhash": {
+		"mod": NUMBER,
+		"offset": NUMBER
+	}}
+
+	FIB := { "fib": {
+		"result": FIB_RESULT,
+		"flags": FIB_FLAGS
+	}}
+	FIB_RESULT := "oif" | "oifname" | "type"
+	FIB_FLAGS := FIB_FLAG | [ FIB_FLAG_LIST ]
+	FIB_FLAG_LIST := FIB_FLAG [, FIB_FLAG_LIST ]
+	FIB_FLAG := "saddr" | "daddr" | "mark" | "iif" | "oif"
+
+	BINARY_OPERATION := { BO_KEY: [ EXPRESSION, EXPRESSION ] }
+	BO_KEY := "|" | "^" | "&" | "<<" | ">>"
+
+	ELEM := { "elem": {
+		"val": EXPRESSION,
+		"timeout": NUMBER,
+		"expires": NUMBER,
+		"comment": STRING
+	}}
+
+	SOCKET := { "socket": {
+		"key": SOCKET_KEY
+	}}
+	SOCKET_KEY := "transparent"
+
+	OSF := { "osf": {
+		"key": OSF_KEY,
+		"ttl": OSF_TTL
+	}}
+	OSF_KEY := "name"
+	OSF_TTL := "loose" | "skip"
