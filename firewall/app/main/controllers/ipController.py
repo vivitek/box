@@ -23,10 +23,10 @@ def banIP():
     try:
         address = request.form.get('address')
         isValid = validateForm(address)
-        if (isValid != True):
+        if (validateForm(address)):
             return isValid
         response = PyNFT.BanIPv4Addr(address)
-        if (response['error'] != ''):
+        if (response['error']):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = IPBan (
             address = address
@@ -45,7 +45,7 @@ def unbanIp():
         if (isValid != True):
             return isValid
         response = PyNFT.UnbanIPv4Addr(address)
-        if (response['error'] != ''):
+        if (response['error']):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         IPBan.query.filter_by(address=address).delete()
         db.session.commit()

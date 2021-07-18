@@ -26,7 +26,7 @@ def banMac():
         if (isValid != True):
             return isValid
         response = PyNFT.BanMACAddr(address, None)
-        if (response['error'] != ''):
+        if (response['error']):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         ruleDB = MacBan (
             address = address
@@ -45,7 +45,7 @@ def unbanMac():
         if (isValid != True):
             return isValid
         response = PyNFT.UnbanMACAddr(address)
-        if (response['error'] != ''):
+        if (response['error']):
             return response['error'], status.HTTP_500_INTERNAL_SERVER_ERROR
         MacBan.query.filter_by(address=address).delete()
         db.session.commit()
