@@ -52,7 +52,8 @@ class SET_TYPE(Enum):
 	INET_SERVICE	= "inet_service"
 	MARK			= "mark"
 	IFNAME			= "ifname"
-SET_TYPES = Union[SET_TYPE, List[SET_TYPE]]
+SET_TYPE_ARRAY = List[SET_TYPE]
+SET_TYPES = Union[SET_TYPE, SET_TYPE_ARRAY]
 
 class SET_POLICY(Enum):
 	PERFORMANCE	= "performance"

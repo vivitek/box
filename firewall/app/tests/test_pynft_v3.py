@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-import os
-import json
 import unittest
-from pynft import Executor
+from pynft import Executor, FWManager
 
 
-
-
+executor = Executor()
+fwm = FWManager()
 
 #
 #	Executor Tests

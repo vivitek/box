@@ -84,17 +84,38 @@ Understanding the architecture :
 #	Command Objects
 #
 
-	CMD_OBJECT :=	CMD_ADD | CMD_REPLACE | CMD_CREATE | CMD_INSERT | CMD_DELETE | CMD_LIST | CMD_RESET | CMD_FLUSH | CMD_RENAME
+	CMD_OBJECT := CMD_ADD
+				| CMD_REPLACE
+				| CMD_CREATE
+				| CMD_INSERT
+				| CMD_DELETE
+				| CMD_LIST
+				| CMD_RESET
+				| CMD_FLUSH
+				| CMD_RENAME
 
-	CMD_ADD := { "add": RULESET_OBJECT }
+	CMD_ADD := { "add": ADD_OBJECT }
+	ADD_OBJECT := TABLE
+				| CHAIN
+				| RULE
+				| SET
+				| MAP
+				| ELEMENT
+				| FLOWTABLE
+				| COUNTER
+				| QUOTA
+				| CT_HELPER
+				| LIMIT
+				| CT_TIMEOUT
+				| CT_EXPECTATION
 
 	CMD_REPLACE := { "replace": RULE }
 
-	CMD_CREATE := { "create": RULESET_OBJECT }
+	CMD_CREATE := { "create": ADD_OBJECT }
 
 	CMD_INSERT := { "insert": RULE }
 
-	CMD_DELETE := { "delete": RULESET_OBJECT }
+	CMD_DELETE := { "delete": ADD_OBJECT }
 
 	CMD_LIST := { "list": LIST_OBJECT }
 	LIST_OBJECT := RULESET
@@ -102,12 +123,12 @@ Understanding the architecture :
 				| CHAINS
 				| SETS
 				| MAPS
+				| FLOWTABLES
 				| COUNTERS
 				| QUOTAS
 				| CT_HELPERS
 				| LIMITS
 				| METERS
-				| FLOWTABLES
 				| CT_TIMEOUT
 				| CT_EXPECTATION
 
