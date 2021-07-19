@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from PyNFT.objects.root import NFT_OBJ
-from PyNFT.objects.expressions import *
-from PyNFT.objects.enumerations import *
+from pynft.objects.root import NFT_OBJ
+from pynft.objects.expressions import *
+from pynft.objects.enumerations import *
 from typing import List, Union
 
 
@@ -27,6 +27,7 @@ class TABLE(RULESET_OBJ):
 TABLE_ARRAY = List[TABLE]
 TABLES = Union[TABLE, TABLE_ARRAY]
 
+
 class CHAIN(RULESET_OBJ):
 	objname			: str							= "chain"
 	family			: ADDR_FAMILY
@@ -42,6 +43,7 @@ class CHAIN(RULESET_OBJ):
 
 CHAIN_ARRAY = List[CHAIN]
 CHAINS = Union[CHAIN, CHAIN_ARRAY]
+
 
 class RULE(RULESET_OBJ):
 	objname			: str							= "rule"
@@ -64,6 +66,7 @@ ELEMENT_ARRAY = List[ELEMENT]
 ELEMENTS = Union[ELEMENT, ELEMENT_ARRAY]
 SET_ELEMENTS = Union[EXPRESSIONS, ELEMENTS]
 
+
 class SET(RULESET_OBJ):
 	objname			: str							= "set"
 	family			: ADDR_FAMILY
@@ -80,6 +83,7 @@ class SET(RULESET_OBJ):
 
 SET_ARRAY = List[SET]
 SETS = Union[SET, SET_ARRAY]
+
 
 class MAP(RULESET_OBJ):
 	objname			: str							= "map"
@@ -98,3 +102,98 @@ class MAP(RULESET_OBJ):
 
 MAP_ARRAY = List[MAP]
 MAPS = Union[MAP, MAP_ARRAY]
+
+
+class FLOWTABLE(RULESET_OBJ):
+	objname	: str				= "flowtable"
+	family	: ADDR_FAMILY
+	table	: str
+	name	: str
+	handle	: Union[int, None]	= None
+	hook	: str
+	prio	: Union[int, None]	= None
+	dev		: str
+
+FLOWTABLE_ARRAY = List[FLOWTABLE]
+FLOWTABLES = Union[FLOWTABLE, FLOWTABLE_ARRAY]
+
+
+class COUNTER(RULESET_OBJ):
+	objname	: str				= "counter"
+	family	: ADDR_FAMILY
+	table	: str
+	name	: str
+	handle	: Union[int, None]	= None
+	packets	: int
+	bytes	: int
+
+COUNTER_ARRAY = List[COUNTER]
+COUNTERS = Union[COUNTER, COUNTER_ARRAY]
+
+
+class QUOTA(RULESET_OBJ):
+	objname	: str				= "quota"
+	family	: ADDR_FAMILY
+	table	: str
+	name	: str
+	handle	: Union[int, None]	= None
+	bytes	: int
+	used	: int
+	inv		: bool
+
+QUOTA_ARRAY = List[QUOTA]
+QUOTAS = Union[QUOTA, QUOTA_ARRAY]
+
+
+class CT_HELPER(RULESET_OBJ):
+	objname		: str				= "ct helper"
+	family		: ADDR_FAMILY
+	table		: str
+	name		: str
+	handle		: Union[int, None]	= None
+	type		: str
+	protocol	: CT_HELPER_PROTO
+	l3proto		: str
+
+CT_HELPER_ARRAY = List[CT_HELPER]
+CT_HELPERS = Union[CT_HELPER, CT_HELPER_ARRAY]
+
+
+class LIMIT(RULESET_OBJ):
+	objname	: str				= "limit"
+	family	: ADDR_FAMILY
+	table	: str
+	name	: str
+	handle	: Union[int, None]	= None
+	rate	: int
+	per		: TIME_UNIT			= TIME_UNIT.SECOND
+	burst	: int				= 0
+	unit	: LIMIT_UNIT		= "packets"
+	inv		: bool				= False
+
+LIMIT_ARRAY = List[LIMIT]
+LIMITS = Union[LIMIT, LIMIT_ARRAY]
+
+
+class CT_TIMEOUT(RULESET_OBJ):
+	objname		: str				= "ct timeout"
+	family		: ADDR_FAMILY
+	table		: str
+	name		: str
+	handle		: Union[int, None]	= None
+	protocol	: CT_TIMEOUT_PROTO
+	state		: str
+	value		: int
+	l3proto		: str
+
+class CT_EXPECTATION(RULESET_OBJ):
+	objname		: str					= "ct expectation"
+	family		: ADDR_FAMILY
+	table		: str
+	name		: str
+	handle		: Union[int, None]		= None
+	l3proto		: str
+	protocol	: CT_EXPECTATION_PROTO
+	dport		: int
+	timeout		: int
+	size		: int

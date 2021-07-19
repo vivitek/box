@@ -69,6 +69,13 @@ class CT_HELPER_PROTO(Enum):
 	TCP	= "tcp"
 	UDP	= "udp"
 
+class TIME_UNIT(Enum):
+	SECOND	= "second"
+	MINUTE	= "minute"
+	HOUR	= "hour"
+	DAY		= "day"
+	WEEK	= "week"
+
 class LIMIT_UNIT(Enum):
 	PACKETS	= "packets"
 	BYTES	= "bytes"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-from PyNFT.objects.meta import Options
+from pynft.objects.meta import Options
 from typing import Any
 from typeguard import check_type
 

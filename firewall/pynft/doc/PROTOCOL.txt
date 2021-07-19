@@ -310,7 +310,7 @@ Understanding the architecture :
 		"handle": INTEGER,
 		"protocol": CT_TIMEOUT_PROTO,
 		"state": STRING,
-		"value: INTEGER,
+		"value": INTEGER,
 		"l3proto": STRING
 	}}
 	CT_TIMEOUT_PROTO := "tcp" | "udp" | "dccp" | "sctp" | "gre" | "icmpv6" | "icmp" | "generic"
@@ -323,8 +323,8 @@ Understanding the architecture :
 		"l3proto": STRING
 		"protocol": CT_EXPECTATION_PROTO,
 		"dport": INTEGER,
-		"timeout: INTEGER,
-		"size: INTEGER,
+		"timeout": INTEGER,
+		"size": INTEGER,
 	}}
 	CT_EXPECTATION_PROTO := "tcp" | "udp" | "dccp" | "sctp" | "gre" | "icmpv6" | "icmp" | "generic"
 
