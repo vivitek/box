@@ -68,7 +68,6 @@ export class SystemService {
     if (stderr)
       throw new InternalServerErrorException(stderr)
     return stdout
-
   }
 
   public reboot() {

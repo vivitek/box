@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "tsc"
   },
   "author": "Arthur LE BRETON",
   "license": "ISC",
