@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { SystemService } from './system.service';
 
 @Controller('/system')
@@ -33,11 +33,13 @@ export class SystemController {
     return this.service.logs(service, lines)
   }
 
+  @HttpCode(204)
   @Post('/reboot')
   reboot() {
     this.service.reboot();
   }
 
+  @HttpCode(204)
   @Post('/poweroff')
   poweroff() {
     this.service.poweroff();
