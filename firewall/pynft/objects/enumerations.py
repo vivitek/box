@@ -123,8 +123,10 @@ class NAT_REDIRECT_FLAG(Enum):
 	RANDOM		= "random"
 	FULLY		= "fully-random"
 	PERSISTENT	= "persistent"
+NAT_REDIRECT_FLAG_ARRAY = List[NAT_REDIRECT_FLAG]
+NAT_REDIRECT_FLAGS = Union[NAT_REDIRECT_FLAG, NAT_REDIRECT_FLAG_ARRAY]
 
-class STRING_OPERATOR(Enum):
+class SET_OPERATOR(Enum):
 	ADD		= "add"
 	UPDATE	= "update"
 
@@ -146,10 +148,14 @@ class LOG_FLAG(Enum):
 	SKUID			= "skuid"
 	ETHER			= "ether"
 	ALL				= "all"
+LOG_FLAG_ARRAY = List[LOG_FLAG]
+LOG_FLAGS = Union[LOG_FLAG, LOG_FLAG_ARRAY]
 
 class QUEUE_FLAG(Enum):
 	BYPASS	= "bypass"
 	FANOUT	= "fanout"
+QUEUE_FLAG_ARRAY = List[QUEUE_FLAG]
+QUEUE_FLAGS = Union[QUEUE_FLAG, QUEUE_FLAG_ARRAY]
 
 class BASE(Enum):
 	LL	= "ll"

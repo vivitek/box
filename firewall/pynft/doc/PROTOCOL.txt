@@ -146,7 +146,19 @@ Understanding the architecture :
 #	Ruleset Objects
 #
 
-	RULESET_OBJECT := TABLE | CHAIN | RULE | SET | MAP | ELEMENT | FLOWTABLE | COUNTER | QUOTA | CT_HELPER | LIMIT | CT_TIMEOUT | CT_EXPECTATION
+	RULESET_OBJECT := TABLE
+				| CHAIN
+				| RULE
+				| SET
+				| MAP
+				| ELEMENT
+				| FLOWTABLE
+				| COUNTER
+				| QUOTA
+				| CT_HELPER
+				| LIMIT
+				| CT_TIMEOUT
+				| CT_EXPECTATION
 
 	RULESET := { "ruleset": null }
 
@@ -336,9 +348,35 @@ Understanding the architecture :
 
 	STATEMENTS := STATEMENT | STATEMENT_ARRAY
 	STATEMENT_ARRAY := [ STATEMENT +, STATEMENT ]
-	STATEMENT := VERDICT | MATCH | COUNTER | MANGLE | ANONYMOUS_QUOTA | QUOTA_REFERENCE | LIMIT | FWD | NOTRACK | DUP | NATWORK_ADDRESS_TRANSLATION | REJECT | SET | LOG | CT_HELPER | METER | QUEUE | VERDICT_MAP | CT_COUNT | CT_TIMEOUT | CT_EXPECTATION | XT
+	STATEMENT := VERDICT
+				| MATCH
+				| COUNTER
+				| MANGLE
+				| ANONYMOUS_QUOTA
+				| QUOTA_REFERENCE
+				| LIMIT
+				| FWD
+				| NOTRACK
+				| DUP
+				| NATWORK_ADDRESS_TRANSLATION
+				| REJECT
+				| SET
+				| LOG
+				| CT_HELPER
+				| METER
+				| QUEUE
+				| VERDICT_MAP
+				| CT_COUNT
+				| CT_TIMEOUT
+				| CT_EXPECTATION
+				| XT
 
-	VERDICT := VERDICT_ACCEPT | VERDICT_DROP | VERDICT_CONTINUE | VERDICT_RETURN | VERDICT_JUMP | VERDICT_GOTO
+	VERDICT := VERDICT_ACCEPT
+			| VERDICT_DROP
+			| VERDICT_CONTINUE
+			| VERDICT_RETURN
+			| VERDICT_JUMP
+			| VERDICT_GOTO
 	VERDICT_ACCEPT := { "accept": null }
 	VERDICT_DROP := { "drop": null }
 	VERDICT_CONTINUE := { "continue": null }
@@ -384,15 +422,15 @@ Understanding the architecture :
 	}}
 	QUOTA_REFERENCE := { "quota": STRING }
 
-	LIMIT := { "limit": LIMIT_VALUE }
-	LIMIT_VALUE := STRING | {
+	ANONYMOUS_LIMIT := { "limit": {
 		"rate": INTEGER,
 		"rate_unit": STRING,
 		"per": STRING,
 		"burst": INTEGER,
 		"burst_unit": STRING,
 		"inv": BOOLEAN
-	}
+	}}
+	LIMIT_REFERENCE := { "limit": STRING }
 
 	FWD := { "fwd": {
 		"dev": EXPRESSION,
@@ -442,7 +480,7 @@ Understanding the architecture :
 		"expr": EXPRESSION
 	}}
 
-	SET := { "set": {
+	SET_UPDATE := { "set": {
 		"op": STRING_OPERATOR,
 		"elem": EXPRESSION,
 		"set": STRING
@@ -494,10 +532,7 @@ Understanding the architecture :
 
 	CT_EXPECTATION := { "ct expectation": EXPRESSION }
 
-	XT := { "xt": null }{
-		"port": EXPRESSION,
-		"flags": NAT_REDIRECT_FLAGS
-	}
+	XT := { "xt": null }
 
 
 

@@ -74,6 +74,7 @@ class NFT_OBJ(Options):
 		res = input.replace("*head", "")
 		res = res.replace(",  ]", " ]")
 		res = res.replace(",  }", " }")
-		res = res.replace("__", "-")
+		res = res.replace("_0_", " ")
+		res = res.replace("_1_", "-")
 		res = res.replace("{  }", "\"null\"")
 		return res

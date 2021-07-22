@@ -9,7 +9,7 @@ from pynft.objects.commands import *
 
 #
 #	The NFT_Executor class serves the firewall manager
-#	It offers nft initialization and COMMAND_OBJ execution
+#	It offers nft initialization and CMD_OBJ execution
 #
 
 class NFT_Executor():
@@ -18,7 +18,7 @@ class NFT_Executor():
 		self.nft = nftables.Nftables()
 		self.nft.set_json_output(True)
 
-	def execute(self, cmd:COMMAND_OBJ, cmdName:str):
+	def execute(self, cmd:CMD_OBJ, cmdName:str):
 		cmdStr = cmd.bake()
 		try:
 			self.nft.json_validate(json.loads(cmdStr))
@@ -36,6 +36,10 @@ class NFT_Executor():
 			"output" : retTuple[1],
 			"error" : retTuple[2]
 		}
+
+	def print_cmd(self, cmd:NFT_OBJ):
+		res = cmd.bake()
+		print(f"printing command\n---------------------\n{res}\n---------------------\n")
 
 	def print_cmd_output(self, output, indentOutput = 2):
 		print("Print Command Output => " + output["cmd"])
