@@ -5,10 +5,10 @@ import axios from 'axios'
 import { DocumentNode, print } from 'graphql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import * as ws from 'ws'
-import { FIREWALL_ENDPOINT, GRAPHQL_ENDPOINT } from './constant'
-import { CREATE_BAN, GET_BANS, SUBSCRIBE_BAN } from './src/banQueries'
-import { CREATE_ROUTER } from './src/routerQueries'
-import { logger } from './src/logger'
+import { FIREWALL_ENDPOINT, GRAPHQL_ENDPOINT } from '../constant'
+import { CREATE_BAN, GET_BANS, SUBSCRIBE_BAN } from './banQueries'
+import { CREATE_ROUTER } from './routerQueries'
+import { logger } from './logger'
 
 let id: string
 let channel: amqp.Channel
