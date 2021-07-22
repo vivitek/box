@@ -10,8 +10,8 @@ export class ServicesController {
   }
 
   @Post(['/reboot', '/reboot/:service'])
-  reboot(@Param("service") service: string = null) {
-    return this.service.reboot(service)
+  restart(@Param("service") service: string = null) {
+    return this.service.restart(service)
   }
 
   @Post(['/update', '/update/:service'])

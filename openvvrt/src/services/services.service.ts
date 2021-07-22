@@ -19,7 +19,7 @@ export class ServicesService {
     })
   }
 
-  public async reboot(service: string) {
+  public async restart(service: string) {
     const s = service || await this.getAllServicesNames()
     const { stderr } = await execSync(`sudo pm2 restart ${s}`)
     if (stderr)
