@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
+import { Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { SystemService } from './system.service';
 
 @Controller('/system')
@@ -23,14 +23,6 @@ export class SystemController {
   @Get('/uptime')
   uptime() {
     return this.service.getUptime();
-  }
-
-  @Get('/logs')
-  logs(
-    @Query('service') service: string,
-    @Query('lines') lines: string = "32"
-  ) {
-    return this.service.logs(service, lines)
   }
 
   @HttpCode(204)
