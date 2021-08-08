@@ -41,9 +41,7 @@ def banIP():
 def unbanIp():
     try:
         address = request.form.get('address')
-        isValid = validateForm(address)
-        if (isValid != True):
-            return isValid
+        validateForm(address)
         response = PyNFT.UnbanIPv4Addr(address)
         if (response['error']):
             raise Exception(response['error'])
