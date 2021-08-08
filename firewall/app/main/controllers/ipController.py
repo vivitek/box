@@ -26,9 +26,7 @@ def banIP():
         response = PyNFT.BanIPv4Addr(address)
         if (response['error']):
             raise Exception(response['error'])
-        ruleDB = IPBan (
-            address = address
-        )
+        ruleDB = IPBan (address = address)
         db.session.add(ruleDB)
         db.session.commit()
         return response, status.HTTP_200_OK
