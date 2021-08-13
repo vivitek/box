@@ -26,9 +26,7 @@ def banMac():
         response = PyNFT.BanMACAddr(address, None)
         if (response['error']):
             raise Exception(response['error'])
-        ruleDB = MacBan (
-            address = address
-        )
+        ruleDB = MacBan (address = address)
         db.session.add(ruleDB)
         db.session.commit()
         return response, status.HTTP_200_OK
