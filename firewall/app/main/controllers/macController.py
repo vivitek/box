@@ -4,25 +4,18 @@ from pynft import Executor
 from app.main.model.mac import MacBan
 from app.main import db
 from app.main.utils.custom_exception import CustomException
-
-from re import search
+import app.main.utils.validate_form as validateForm
 
 MAC_FORMAT = "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})|([0-9a-fA-F]{4}\\.[0-9a-fA-F]{4}\\.[0-9a-fA-F]{4})$"
 
 bp = Blueprint('mac', __name__, url_prefix='/mac')
 PyNFT = Executor()
 
-def validateForm(address):
-    if (not address or address == ''):
-        raise CustomException('Address is missing', status.HTTP_400_BAD_REQUEST)
-    if (not search(MAC_FORMAT, address)):
-        raise CustomException('Invalid address', status.HTTP_400_BAD_REQUEST)
-
 @bp.route('/ban', methods=['POST'])
 def banMac():
     try:
         address = request.form.get('address');
-        validateForm(address)
+        validateForm.validateForm(address, MAC_FORMAT)
         response = PyNFT.BanMACAddr(address, None)
         if (response['error']):
             raise Exception(response['error'])
@@ -39,7 +32,7 @@ def banMac():
 def unbanMac():
     try:
         address = request.form.get('address')
-        validateForm(address)
+        validateForm.validateForm(address, MAC_FORMAT)
         response = PyNFT.UnbanMACAddr(address)
         if (response['error']):
             raise Exception(response['error'])
