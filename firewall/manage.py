@@ -23,9 +23,7 @@ app.register_blueprint(mac.bp)
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL, 
     API_URL,
-    config={
-        'app_name': "Firewall"
-    }
+    config={'app_name': "Firewall"}
 )
 
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
