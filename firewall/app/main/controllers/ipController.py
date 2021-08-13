@@ -1,4 +1,4 @@
-from flask import (Blueprint, request, abort)
+from flask import Blueprint, request, abort
 from flask_api import status
 from pynft import Executor
 from app.main.model.ip import IPBan
