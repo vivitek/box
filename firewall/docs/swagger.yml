@@ -1,0 +1,164 @@
+openapi: 3.0.0
+info:
+  title: VIVI Firewall API
+  description: Description of VIVI firewall API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: firewall
+paths:
+
+  /ip/ban:
+    post:
+      summary: Ban an IP address.
+      description: Endpoint to ban an ip address.
+      tags:
+        - IP
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+              example:
+                address: '127.0.0.1'
+      responses:
+        '200':
+          description: Ip banned
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  cmd:
+                    type: string
+                  error:
+                    type: string
+                  output:
+                    type: string
+                  rc:
+                    type: integer
+                    format: int64
+                    exmaple: 0
+        '400':
+          description: address is not valid or isn't specified
+        '500':
+          description: firewall can't ban the IP address
+  
+  /ip/unban:
+    delete:
+      summary: Unban IP address
+      description: Endpoint to unban IP address
+      tags:
+        - IP
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+              example:
+                address: '127.0.0.1'
+      responses:
+        '200':
+          description: Ip unbanned
+          content:
+            application/json:
+              type: object
+              properties:
+                cmd:
+                  type: string
+                error:
+                  type: string
+                output:
+                  type: string
+                rc:
+                  type: integer
+                  format: int64
+        '400':
+          description: address is not valid or isn't specified
+        '500':
+          descirption: firewall can't unban the IP address
+  
+  /mac/ban:
+    post:
+      summary: Ban a MAC address.
+      description: Endpoint to ban a MAC address.
+      tags:
+        - MAC
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+              example:
+                address: '14:59:C0:CA:87:61'
+      responses:
+        '200':
+          description: MAC banned
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  cmd:
+                    type: string
+                  error:
+                    type: string
+                  output:
+                    type: string
+                  rc:
+                    type: integer
+                    format: int64
+        '400':
+          description: address is not valid or isn't specified
+        '500':
+          description: firewall can't ban the MAC address
+  
+  /mac/unban:
+    delete:
+      summary: Unban MAC address
+      description: Endpoint to unban MAC address
+      tags:
+        - MAC
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+              example:
+                address: '14:59:C0:CA:87:61'
+      responses:
+        '200':
+          description: MAC unbanned
+          content:
+            application/json:
+              type: object
+              properties:
+                cmd:
+                  type: string
+                error:
+                  type: string
+                output:
+                  type: string
+                rc:
+                  type: integer
+                  format: int64
+        '400':
+          description: address is not valid or isn't specified
+        '500':
+          descirption: firewall can't unban the MAC address
