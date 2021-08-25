@@ -1,0 +1,104 @@
+{
+  "dependencies": [
+    "network-manager",
+    "net-tools",
+    "python3-pip",
+    "build-essential",
+    "postgresql",
+    "postgresql-contrib",
+    "libpq-dev",
+    "procps",
+    "nftables"
+  ],
+  "hotspot": {
+    "interface": "wlan0",
+    "name": "Hostpot",
+    "password": "veryveryhardpassword1234"
+  },
+  "services": [
+    {
+      "name": "RabbitMQ",
+      "folder": ".",
+      "dependencies": [
+        "rabbitmq-server"
+      ],
+      "preInstallCmd": [],
+      "installCmd": [
+        "sudo systemctl enable rabbitmq-server",
+        "sudo systemctl start rabbitmq-server",
+        "sudo rabbitmq-plugins enable rabbitmq_management",
+        "sudo rabbitmqctl add_user vivi vivitek",
+        "sudo rabbitmqctl set_user_tags vivi administrator",
+        "sudo rabbitmqctl set_permissions -p / vivi '.*' '.*' '.*'"
+      ],
+      "runCmd": []
+    },
+    {
+      "name": "PostgreSQL",
+      "folder": ".",
+      "dependencies": [
+        "postgres",
+        "postgresql-contrib"
+      ],
+      "preInstallCmd": [],
+      "installCmd": [
+        "SQL_DUMP=$(cat ./postgres/init.sql)",
+        "sudo chmod +r ./postgres/init.sql",
+        "sudo -u postgres psql postgres < ./postgres/init.sql"
+      ],
+      "runCmd": []
+    },
+    {
+      "name": "Firewall",
+      "folder": "firewall",
+      "dependencies": [
+        "build-essential",
+        "libpq-dev",
+        "procps",
+        "nftables"
+      ],
+      "preInstallCmd": [
+        "cat ./config/firewall.service.template | sed 's@$PWD@'\"$PWD\"'@' | sudo -E tee /etc/systemd/system/firewall.service"
+      ],
+      "installCmd": [
+        "sudo pip3 install -r requirements.txt",
+        "python3 manage.py db init",
+        "python3 manage.py db migrate",
+        "python3 manage.py db upgrade"
+      ],
+      "runCmd": [
+        "sudo systemctl daemon-reload",
+        "sudo systemctl enable firewall",
+        "sudo systemctl enable nftables",
+        "sudo systemctl start nftables",
+        "sudo systemctl start firewall"
+      ]
+    },
+    {
+      "name": "DHCP",
+      "folder": "dhcpd",
+      "dependencies": [],
+      "preInstallCmd": [],
+      "installCmd": [
+        "npm install",
+        "./node_modules/typescript/bin/tsc"
+      ],
+      "runCmd": [
+        "sudo pm2 start -f --name dhcp dist/main.js"
+      ]
+    },
+    {
+      "name": "GraphQL",
+      "folder": "graplqh",
+      "dependencies": [],
+      "preInstallCmd": [],
+      "installCmd": [
+        "npm install",
+        "./node_modules/typescript/bin/tsc"
+      ],
+      "runCmd": [
+        "sudo pm2 start -f --name graphql dist/index.js"
+      ]
+    }
+  ]
+}
