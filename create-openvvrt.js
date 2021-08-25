@@ -33,7 +33,7 @@ const start = async () => {
     writeSync(log, `Logs from ${+new Date()}`)
 
     console.log(chalk.bold('Installing dependencies'))
-    await runCommands([`sudo apt install -y ${config.dependencies.join(' ')}`])
+    await runCommands("Install dependencies", [`sudo apt install -y ${config.dependencies.join(' ')}`])
 
     console.log(chalk.bold('Initializing services'))
     await Promise.all(config.services.map(async service => {
