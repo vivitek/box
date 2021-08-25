@@ -1,31 +1,32 @@
-import chalk from "chalk";
-import { openSync, writeSync } from "fs"
-import Spinnies from "spinnies"
-import execa from "execa";
+const  chalk = require("chalk")
+const { openSync, writeSync } = require("fs")
+const Spinnies = require("spinnies")
+const execa = require("execa")
 
 const config = require('./config/openvvrt.config.json')
-const log = openSync(`${+new Date()}.log`)
+const log = openSync(`${+new Date()}.log`, "a+")
 const spinnies = new Spinnies()
 
-const runCommands = async (name, commands) => {
-  if (!commands || !commands.length)
+const runCommands = async (name, commands, path = '.') => {
+  if (!commands || commands.length === 0)
     return
-  commands.forEach(command => {
+ await Promise.all(commands.map(async command => {
     try {
       spinnies.add(name)
+	   console.log(process.cwd())
       const { stdout, stderr } = await execa.command(command)
-      if (stderr && stderr.length)
-        throw `Could not run ${command}`
+      if (stderr && !stderr.startsWith("\nWARNING"))
+        throw stderr
       writeSync(log, stdout)
-      spinnies.success(name)
+      spinnies.succeed(name)
       console.log(stdout)
     } catch (err) {
       spinnies.fail(name)
-      writeSync(log, err)
+      writeSync(log, String(err))
       console.log(chalk.red(err))
       process.exit(1)
     }
-  })
+  }))
 }
 
 const start = async () => {
@@ -41,8 +42,8 @@ const start = async () => {
       if (service.dependencies && service.dependencies.length)
         await runCommands("Install dependencies", [`sudo apt install -y ${service.dependencies.join(' ')}`])
       await runCommands("Run pre-install commands", service.preInstallCmd)
-      await runCommands("Run install commands", `cd ${service.folder} && ${service.installCmd.join(' && ')}`)
-      await runCommands("Start service", `cd ${service.folder} && ${service.runCmd.join(' && ')}`)
+      await runCommands("Run install commands", [`cd ${service.folder} && ${service.installCmd.join(' && ')}`])
+      await runCommands("Start service", [`cd ${service.folder} && ${service.runCmd.join(' && ')}`])
       spinnies.success(service.name)
     }))
   } catch (err) {
