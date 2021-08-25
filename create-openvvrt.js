@@ -1,90 +1,49 @@
-const  chalk = require("chalk")
-const { openSync, writeSync } = require("fs")
-const Spinnies = require("spinnies")
-const execa = require("execa")
-const Aigle = require("aigle")
-const config = require('./config/openvvrt.config.json')
-const { run } = require("./tunnel")
+import chalk from "chalk";
+import { openSync, writeSync } from "fs"
+import Spinnies from "spinnies"
+import execa from "execa";
 
-const log = openSync(`${+new Date()}.log`, "a+")
+const config = require('./config/openvvrt.config.json')
+const log = openSync(`${+new Date()}.log`)
 const spinnies = new Spinnies()
 
-const runCommands = async (name, commands, {execPath, hideLogs = true}) => {
-  if (!commands || commands.length === 0)
+const runCommands = async (commands) => {
+  if (!commands || !commands.length)
     return
-  await Aigle.eachSeries(commands, async command => {
+  commands.forEach(command => {
     try {
-      spinnies.add(name, {indent: 4})
-      const { stdout, stderr } = await execa.command(command, {execPath, preferLocal: true, path: execPath, cwd: execPath})
-      writeSync(log, String(stdout))
-      if (!hideLogs)
-        console.log(stdout)
-      if (stderr && !stderr.startsWith("\nWARNING") && !stderr.startsWith("npm WARN") && !stderr.startsWith("npm notice"))
-        throw stderr
-      spinnies.succeed(name)
+      spinnies.add(command)
+      const { stdout, stderr } = await execa.command(command)
+      if (stderr && stderr.length)
+        throw `Could not run ${command}`
+      writeSync(log, stdout)
+      console.log(stdout)
     } catch (err) {
-      spinnies.fail(name)
-      writeSync(log, String(err))
+      spinnies.fail(`Could not run ${command}`)
+      writeSync(log, err)
       console.log(chalk.red(err))
       process.exit(1)
     }
   })
 }
 
-
-/* TODO */
-// Start openvvrt api on boot
-
 const start = async () => {
-  const startHotspot = !process.argv.includes('--no-hotspot')
-  const startServices = !process.argv.includes('--no-services')
-  const initTunnel = !process.argv.includes('--no-tunnel')
-
   try {
-    writeSync(log, `Logs from ${+new Date()}\n`)
+    writeSync(log, `Logs from ${+new Date()}`)
 
     console.log(chalk.bold('Installing dependencies'))
-    await Aigle.eachSeries(config.dependencies, async (dependency) => {
-      spinnies.add(dependency)
-      await runCommands(dependency, [`sudo apt install -y ${dependency}`], {execPath: process.cwd()})
-    })
+    await runCommands([`sudo apt install -y ${config.dependencies.join(' ')}`])
 
-    console.log(chalk.bold('Installing node global packages'))
-    await Aigle.eachSeries(config.nodeDependencies, async (dependency) => {
-      spinnies.add(dependency)
-      await runCommands(dependency, [`sudo npm i -g ${dependency}`], {execPath: process.cwd()})
-    })
-
-    console.log(chalk.bold('Initializing services'))
-    await Aigle.eachSeries(config.services, async (service) => {
-      const path = `${process.cwd()}/${service.folder}`
-
-      spinnies.add(service.name, {color: "white", succeedColor: "white"})
-      await runCommands("Run pre-install commands", service.preInstallCmd, {execPath: process.cwd()})
-      await runCommands("Run install commands", service.installCmd, {execPath: path})
-      if (startServices)
-        await runCommands("Start service", service.runCmd, {execPath: path})
-      spinnies.succeed(service.name)
-    })
-
-    if (initTunnel) {
-      console.log(chalk.bold('Installing OpenViVi Tunnel'))
-      spinnies.add("OpenViVi Tunnel")
-      await run()
-      spinnies.succeed("OpenViVi Tunnel")
-    }
-
-    if (startHotspot) {
-      spinnies.add('Hotspot', {color: "white", succeedColor: "white"})
-      await runCommands("Creating interface", [`sudo nmcli con add type wifi ifname ${config.hotspot.interface} con-name ${config.hotspot.name} autoconnect yes ssid ${config.hotspot.name}`], {execPath: process.cwd()})
-      await runCommands("Configuring interface", [`sudo nmcli con modify ${config.hotspot.name} 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared`], {execPath: process.cwd()})
-      await runCommands("Configuring encryption protcol", [`sudo nmcli con modify ${config.hotspot.name} wifi-sec.key-mgmt wpa-psk`], {execPath: process.cwd()})
-      await runCommands("Setting password", [`sudo nmcli con modify ${config.hotspot.name} wifi-sec.psk ${config.hotspot.password}`], {execPath: process.cwd()})
-      await runCommands("Bringing up hotspot", [`sudo nmcli con up ${config.hotspot.name}`], {execPath: process.cwd()})
-      spinnies.succeed('Hotspot')
-    }
-
-    console.log(chalk.bold("All done !"))
+    console.log(chalk.bold('Initialzing services'))
+    await Promise.all(config.services.map(async service => {
+      spinnies.add(service.name)
+      if (service.dependencies && service.dependencies.length)
+        await runCommands([`sudo apt install -y ${service.dependencies}`])
+      await runCommands(service.preInstallCmd)
+      await runCommands(`cd ${service.folder} && ${service.installCmd.join(' && ')}`)
+      await runCommands(`cd ${service.folder} && ${service.runCmd.join(' && ')}`)
+      spinnies.success(service.name)
+    }))
   } catch (err) {
     console.log(chalk.red('Critical error occured.'))
     console.log(err)
