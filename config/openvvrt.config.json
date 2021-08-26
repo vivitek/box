@@ -3,9 +3,10 @@
     "network-manager",
     "net-tools",
     "python3-pip",
-    "build-essential",
     "postgresql",
     "postgresql-contrib",
+    "rabbitmq-server",
+    "build-essential",
     "libpq-dev",
     "procps",
     "nftables"
@@ -19,9 +20,6 @@
     {
       "name": "RabbitMQ",
       "folder": ".",
-      "dependencies": [
-        "rabbitmq-server"
-      ],
       "preInstallCmd": [],
       "installCmd": [
         "sudo systemctl enable rabbitmq-server",
@@ -36,10 +34,6 @@
     {
       "name": "PostgreSQL",
       "folder": ".",
-      "dependencies": [
-        "postgres",
-        "postgresql-contrib"
-      ],
       "preInstallCmd": [],
       "installCmd": [
         "SQL_DUMP=$(cat ./postgres/init.sql)",
@@ -51,14 +45,8 @@
     {
       "name": "Firewall",
       "folder": "firewall",
-      "dependencies": [
-        "build-essential",
-        "libpq-dev",
-        "procps",
-        "nftables"
-      ],
       "preInstallCmd": [
-        "cat ./config/firewall.service.template | sed 's@$PWD@'\"$PWD\"'@' | sudo -E tee /etc/systemd/system/firewall.service"
+        "(sed 's@$PWD@'$PWD'@' < ./config/firewall.service.template)"
       ],
       "installCmd": [
         "sudo pip3 install -r requirements.txt",
@@ -77,7 +65,6 @@
     {
       "name": "DHCP",
       "folder": "dhcpd",
-      "dependencies": [],
       "preInstallCmd": [],
       "installCmd": [
         "npm install",
@@ -90,7 +77,6 @@
     {
       "name": "GraphQL",
       "folder": "graphql",
-      "dependencies": [],
       "preInstallCmd": [],
       "installCmd": [
         "npm install",
