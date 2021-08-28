@@ -42,6 +42,8 @@ const executeArp = async () => {
   exec("arp -e -i wlan0", (err, out, error) => {
     if (err || error) {
       logger.error("Fatal: executing arp failed");
+      logger.error(err);
+      logger.error(error);
       exit(1);
     }
     const parsedCommand = out.split("\n");
