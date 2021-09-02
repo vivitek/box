@@ -6,8 +6,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_swagger_ui import get_swaggerui_blueprint
 
-from app.main import create_app, db, firewall_init
-from app.main.model import mac, ip
+from app.main import create_app, redis_client, firewall_init
 
 from app.main.controllers import ipController as ip
 from app.main.controllers import macController as mac
@@ -36,7 +35,7 @@ app.app_context().push()
 
 manager = Manager(app)
 
-migrate = Migrate(app, db)
+migrate = Migrate(app, redis_client)
 
 manager.add_command('db', MigrateCommand)
 

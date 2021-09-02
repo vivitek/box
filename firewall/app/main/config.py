@@ -1,6 +1,7 @@
 import os
 
-postgres_local_base = os.getenv('DATABASE_URL', 'my_database_url')
+database_url = "redis://localhost:6379/"
+print(database_url)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -9,20 +10,17 @@ class Config:
     DEBUG = False
 
 class DevelopmentConfig(Config):
-    SQLALCHEMY_DATABASE_URI = postgres_local_base
+    REDIS_URL = database_url
     DEBUG = True
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class TestingConfig(Config):
     DEBUG = True
     TESTING = True
     PRESERVE_CONTEXT_ON_EXCEPTION = False
-    SQLALCHEMY_DATABASE_URI = postgres_local_base
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    REDIS_URL = database_url
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 config_by_name = dict(
     dev=DevelopmentConfig,
