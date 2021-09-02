@@ -14,7 +14,7 @@ def init_rules():
         db.session.commit()
     MACArray = MacBan.query.all()
     for mac in MACArray:
-        response = PyNFT.ban_man(MacBan.query.get(str(mac)).address)
+        response = PyNFT.ban_mac(MacBan.query.get(str(mac)).address)
         db.session.add(mac)
         db.session.commit()
 
