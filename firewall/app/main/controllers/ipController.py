@@ -1,13 +1,13 @@
 from flask import Blueprint, request, abort
 from flask_api import status
-from pynft import Executor
+from app.main.firewall_manager import FWManager
 from app.main.model.ip import IPBan
 from app.main import db
 from app.main.utils.custom_exception import CustomException
 import app.main.utils.validate_form as validateForm
 
 bp = Blueprint('ip', __name__, url_prefix='/ip')
-PyNFT = Executor()
+PyNFT = FWManager()
 
 IP_FORMAT = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
 
@@ -16,7 +16,7 @@ def banIP():
     try:
         address = request.form.get('address')
         validateForm.validateForm(address, IP_FORMAT)
-        response = PyNFT.BanIPv4Addr(address)
+        response = PyNFT.ban_ipv4(address)
         if (response['error']):
             raise Exception(response['error'])
         ruleDB = IPBan (address = address)
@@ -33,7 +33,7 @@ def unbanIp():
     try:
         address = request.form.get('address')
         validateForm.validateForm(address, IP_FORMAT)
-        response = PyNFT.UnbanIPv4Addr(address)
+        response = PyNFT.unban_ipv4(address)
         if (response['error']):
             raise Exception(response['error'])
         IPBan.query.filter_by(address=address).delete()

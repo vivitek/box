@@ -92,17 +92,22 @@ class FWManager(metaclass=Singleton):
 
 	def ban_mac(self, addr:str):
 		cmdObj = CMD.ADD(add=OBJ.ELEMENT(family=ENUM.ADDR_FAMILY.INET, table="BanTable", name="BannedMAC", elem=addr))
-		self.nft.execute(cmdObj, "ban_mac")
+		return self.nft.execute(cmdObj, "ban_mac")
 
 	def unban_mac(self, addr:str):
 		cmdObj = CMD.DELETE(delete=OBJ.ELEMENT(family=ENUM.ADDR_FAMILY.INET, table="BanTable", name="BannedMAC", elem=addr))
-		self.nft.execute(cmdObj, "unban_mac")
+		return self.nft.execute(cmdObj, "unban_mac")
 
 	def ban_ipv4(self, addr:str):
 		cmdObj = CMD.ADD(add=OBJ.ELEMENT(family=ENUM.ADDR_FAMILY.INET, table="BanTable", name="BannedIPv4", elem=addr))
-		self.nft.execute(cmdObj, "ban_ipv4")
+		return self.nft.execute(cmdObj, "ban_ipv4")
 
 	def unban_ipv4(self, addr:str):
 		cmdObj = CMD.DELETE(delete=OBJ.ELEMENT(family=ENUM.ADDR_FAMILY.INET, table="BanTable", name="BannedIPv4", elem=addr))
-		self.nft.execute(cmdObj, "unban_ipv4")
+		return self.nft.execute(cmdObj, "unban_ipv4")
 
+
+
+	#
+	#	Band-width management
+	#

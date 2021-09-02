@@ -22,15 +22,15 @@ class NFT_OBJ(OBJ_BASE):
 		for field in tobake._fields:
 			attribute = tobake.__getattribute__(field)
 
-			if (tobake == self):
-				self.__check_attr_type(field, attribute)
-
 			if issubclass(type(attribute), NFT_OBJ):
 				subres = attribute.bake() + ", "
 			elif (type(attribute) == list):
 				subres = self.bake(other=attribute) + ", "
 			elif (attribute != None and (tobake != self or tobake._fields[i] != "objname")):
 				subres = "\"" + str(attribute) + "\", "
+
+			if (tobake == self):
+				self.__check_attr_type(field, attribute)
 
 			if (subres != None):
 				res = res[:res.index("*head")] + "\"" + self._fields[i] + "\": " + subres + res[res.index("*head"):] \
@@ -45,29 +45,19 @@ class NFT_OBJ(OBJ_BASE):
 
 	def __check_attr_type(self, field:str, attribute:Any) -> int:
 		field_type = self.__annotations__[field]
+		check_type(field, attribute, field_type)
 
-		# print("field:\t\t\t", field)
-		# print("expected type(s):\t", field_type)
-		# print("attribute:\t\t", attribute)
-		# print("attribute type:\t\t", type(attribute))
-		# print()
+		# try:
+		# 	check_type(field, attribute, field_type)
+		# except TypeError:
+		# 	types = field_type.__args__ if isinstance(field_type, list) else field_type
+		# 	print(f"TypeError: type of \"{field}\" must be one of ({types})")
+		# 	exit(84)
 
-		try:
-			check_type(field, attribute, field_type)
-		except TypeError:
-			print(f"TypeError: \"{field}\" attribute is not of one of the following types:\n{field_type.__args__}\n")
 
-		# if isinstance(field_type, _GenericAlias):
-		# 	if not isinstance(attribute, field_type.__args__):
-		# 		raise TypeError(f"{field} attribute must be set to an instance of one of the following types {field_type.__args__}")
-		# elif isinstance(field_type, type):
-		# 	if (type(attribute) != field_type):
-		# 		raise TypeError(f"{field} attribute must be set to an instance of {field_type}")
-		# else:
-		# 	# comparing attribute type with other than instance of type or Union
-		# 	raise ValueError("check_attr_type() internal error")
 
-		return 0
+
+
 
 
 	def __cleanup(self, input:str) -> str:

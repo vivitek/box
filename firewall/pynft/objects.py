@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-# from pynft.root import NFT_OBJ
-# from pynft.enumerations import *
-# from pynft.expressions import *
-from pynft.statements import *
 from typing import List, Union
+
+from pynft.root import NFT_OBJ
+from pynft.enumerations import ADDR_FAMILY, CHAIN_HOOK, CHAIN_POLICY, CHAIN_PRIORITY, CHAIN_TYPE, CT_EXPECTATION_PROTO, CT_HELPER_PROTO, CT_TIMEOUT_PROTO, LIMIT_UNIT, SET_FLAG_ARRAY, SET_POLICY, SET_TYPE, SET_TYPES, TIME_UNIT
+from pynft.expressions import EXPRESSIONS
 
 
 
