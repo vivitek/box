@@ -1,17 +1,17 @@
+from . import db
+
 from app.main import redis_client
+from app.main.firewall_manager import FWManager
 
-from pynft import Executor
-
-PyNFT = Executor()
+PyNFT = FWManager()
 
 def init_rules():
     IPArray = redis_client.zrange("ipBan", 0, -1)
     for ip in IPArray:
-        response = PyNFT.BanIPv4Addr(ip.decode())
+        response = PyNFT.ban_ipv4(ip.decode())
     MACArray = redis_client.zrange("macBan", 0, -1)
     for mac in MACArray:
-        response = PyNFT.BanMACAddr(mac.decode())
+        response = PyNFT.ban_man(mac.decode())
 
 def init_firewall():
-    PyNFT.init_pynft("", "")
     init_rules()
