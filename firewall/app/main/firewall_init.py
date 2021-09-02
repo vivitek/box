@@ -5,7 +5,6 @@ from pynft import Executor
 PyNFT = Executor()
 
 def init_rules():
-    print(redis_client.exists('ipBan'))
     IPArray = redis_client.zrange("ipBan", 0, -1)
     for ip in IPArray:
         response = PyNFT.BanIPv4Addr(ip.decode())

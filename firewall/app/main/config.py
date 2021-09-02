@@ -1,7 +1,6 @@
 import os
 
 database_url = "redis://localhost:6379/"
-print(database_url)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
