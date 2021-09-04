@@ -13,8 +13,8 @@
   ],
   "hotspot": {
     "interface": "wlan0",
-    "name": "Hostpot",
-    "password": "veryveryhardpassword1234"
+    "name": "VIVI",
+    "password": "Viv12o2I!"
   },
   "services": [
     {
@@ -22,23 +22,7 @@
       "folder": ".",
       "preInstallCmd": [],
       "installCmd": [
-        "sudo systemctl enable rabbitmq-server",
-        "sudo systemctl start rabbitmq-server",
-        "sudo rabbitmq-plugins enable rabbitmq_management",
-        "sudo rabbitmqctl add_user vivi vivitek",
-        "sudo rabbitmqctl set_user_tags vivi administrator",
-        "sudo rabbitmqctl set_permissions -p / vivi '.*' '.*' '.*'"
-      ],
-      "runCmd": []
-    },
-    {
-      "name": "PostgreSQL",
-      "folder": ".",
-      "preInstallCmd": [],
-      "installCmd": [
-        "SQL_DUMP=$(cat ./postgres/init.sql)",
-        "sudo chmod +r ./postgres/init.sql",
-        "sudo -u postgres psql postgres < ./postgres/init.sql"
+        "bash config/initRabbitmq.sh"
       ],
       "runCmd": []
     },
@@ -46,20 +30,18 @@
       "name": "Firewall",
       "folder": "firewall",
       "preInstallCmd": [
-        "(sed 's@$PWD@'$PWD'@' < ./config/firewall.service.template)"
+        "bash config/initFirewall.sh",
+        "sudo systemctl daemon-reload"
       ],
       "installCmd": [
-        "sudo pip3 install -r requirements.txt",
-        "python3 manage.py db init",
-        "python3 manage.py db migrate",
-        "python3 manage.py db upgrade"
+        "sudo pip3 install -r requirements.txt"
       ],
       "runCmd": [
         "sudo systemctl daemon-reload",
         "sudo systemctl enable firewall",
         "sudo systemctl enable nftables",
-        "sudo systemctl start nftables",
-        "sudo systemctl start firewall"
+        "sudo systemctl start firewall",
+        "sudo systemctl start nftables"
       ]
     },
     {
