@@ -32,6 +32,7 @@ const runCommands = async (name, commands, {execPath, hideLogs = true}) => {
 
 
 /* TODO */
+// SSH configuration
 // Add a cronjob to pull master every day
 // Start openvvrt api on boot
 // Generate and store uuid & name using openvvrt
@@ -45,7 +46,7 @@ const start = async () => {
       spinnies.add(dependency)
       await runCommands(dependency, [`sudo apt install -y ${dependency}`], {execPath: process.cwd()})
     })
-    
+
     console.log(chalk.bold('Installing node global packages'))
     await Aigle.eachSeries(config.nodeDependencies, async (dependency) => {
       spinnies.add(dependency)
@@ -55,7 +56,7 @@ const start = async () => {
     console.log(chalk.bold('Initializing services'))
     await Aigle.eachSeries(config.services, async (service) => {
       const path = `${process.cwd()}/${service.folder}`
-      
+
       spinnies.add(service.name, {color: "white", succeedColor: "white"})
       await runCommands("Run pre-install commands", service.preInstallCmd, {execPath: process.cwd()})
       await runCommands("Run install commands", service.installCmd, {execPath: path})
