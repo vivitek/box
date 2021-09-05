@@ -32,7 +32,6 @@ const runCommands = async (name, commands, {execPath, hideLogs = true}) => {
 
 
 /* TODO */
-// Start hotspot
 // Add a cronjob to pull master every day
 // Start openvvrt api on boot
 // Generate and store uuid & name using openvvrt
@@ -47,7 +46,7 @@ const start = async () => {
       await runCommands(dependency, [`sudo apt install -y ${dependency}`], {execPath: process.cwd()})
     })
     
-    console.log(chalk.bold('Installing node dependencies'))
+    console.log(chalk.bold('Installing node global packages'))
     await Aigle.eachSeries(config.nodeDependencies, async (dependency) => {
       spinnies.add(dependency)
       await runCommands(dependency, [`sudo npm i -g ${dependency}`], {execPath: process.cwd()})
@@ -63,6 +62,14 @@ const start = async () => {
       await runCommands("Start service", service.runCmd, {execPath: path})
       spinnies.succeed(service.name)
     })
+
+    spinnies.add('Hotspot', {color: "white", succeedColor: "white"})
+    await runCommands("Creating interface", [`sudo nmcli con add type wifi ifname ${config.hotspot.interface} con-name ${config.hotspot.name} autoconnect yes ssid ${config.hotspot.name}`], {execPath: process.cwd()})
+    await runCommands("Configuring interface", [`sudo nmcli con modify ${config.hotspot.name} 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared`], {execPath: process.cwd()})
+    await runCommands("Configuring encryption protcol", [`sudo nmcli con modify ${config.hotspot.name} wifi-sec.key-mgmt wpa-psk`], {execPath: process.cwd()})
+    await runCommands("Setting password", [`sudo nmcli con modify ${config.hotspot.name} wifi-sec.psk ${config.hotspot.password}`], {execPath: process.cwd()})
+    await runCommands("Bringing up hotspot", [`sudo nmcli con up ${config.hotspot.name}`], {execPath: process.cwd()})
+    spinnies.succeed('Hotspot')
 
     console.log(chalk.bold("All done !"))
   } catch (err) {
