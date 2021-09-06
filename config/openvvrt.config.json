@@ -1,4 +1,8 @@
 {
+  "configuration":{
+    "server": "https://api.openvivi.com",
+    "apiPort": 3000
+  },
   "dependencies": [
     "network-manager",
     "net-tools",
@@ -28,6 +32,19 @@
         "bash config/initRabbitmq.sh"
       ],
       "runCmd": []
+    },
+    {
+      "name": "Redis",
+      "folder": ".",
+      "dependencies": [],
+      "preInstallCmd": [],
+      "installCmd": [
+        "sudo apt install -y redis-server"
+      ],
+      "runCmd": [
+        "sudo systemctl enable redis-server",
+        "sudo systemctl start redis-server"
+      ]
     },
     {
       "name": "Firewall",
@@ -82,6 +99,13 @@
       "runCmd": [
         "sudo pm2 start -f --name openvvrt dist/index.js"
       ]
+    },
+    {
+      "name":"OpenViVi",
+      "folder":".",
+      "preInstallCmd":[],
+      "installCmd":[],
+      "runCmd":[]
     }
   ]
 }
