@@ -45,13 +45,12 @@ class CHAIN(RULESET_OBJ):
 CHAIN_ARRAY = List[CHAIN]
 CHAINS = Union[CHAIN, CHAIN_ARRAY]
 
-
 class RULE(RULESET_OBJ):
 	objname			: str							= "rule"
 	family			: ADDR_FAMILY
 	table			: str
 	chain			: str
-	expr			: Union[str, None]				= None
+	expr			: Union[list, None]		= None
 	handle			: Union[int, None]				= None
 	index			: Union[int, None]				= None
 	comment			: Union[str, None]				= None

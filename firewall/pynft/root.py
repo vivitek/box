@@ -19,8 +19,11 @@ class NFT_OBJ(OBJ_BASE):
 			  "{ *head }" if (self.objname == "") else \
 			  "{ \"" + self.objname + "\": { *head } }"
 
-		for field in tobake._fields:
-			attribute = tobake.__getattribute__(field)
+		fields = tobake._fields if tobake == self else tobake
+
+		for field in fields:
+
+			attribute = field if other != None else tobake.__getattribute__(field)
 
 			if issubclass(type(attribute), NFT_OBJ):
 				subres = attribute.bake() + ", "
@@ -33,7 +36,7 @@ class NFT_OBJ(OBJ_BASE):
 				self.__check_attr_type(field, attribute)
 
 			if (subres != None):
-				res = res[:res.index("*head")] + "\"" + self._fields[i] + "\": " + subres + res[res.index("*head"):] \
+				res = res[:res.index("*head")] + "\"" + field + "\": " + subres + res[res.index("*head"):] \
 					if tobake == self else \
 					res[:res.index("*head")] + subres + res[res.index("*head"):]
 				subres = None

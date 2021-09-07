@@ -47,22 +47,20 @@ class VERDICT_GOTO(VERDICT):
 # j'ai besoin des VERDICTs dans EXPRESSION ... c'est tordu mais ça fonctionne
 from pynft.expressions import EXPRESSION
 
+
 class MATCH(STATEMENT):
 	objname				: str					= "match"
 	left				: EXPRESSION
 	right				: EXPRESSION
 	op					: OPERATOR
 
-
-
-class COUNTER_RATE(STATEMENT):
-	packets				: int
-	bytes				: int
-
-COUNTER_VALUE = Union[str, COUNTER_RATE]
-
 class COUNTER(STATEMENT):
-	counter				: COUNTER_VALUE
+	objname				: str					= "counter"
+	packets				: Union[int, None]		= None
+	bytes				: Union[int, None]		= None
+
+class COUNTER_REF(STATEMENT):
+	counter				: str
 
 
 

@@ -13,12 +13,12 @@ from pynft.statements import VERDICT
 #	Expressions
 #
 
-EXPRESSION = Union[str, int, bool]
+class EXPRESSION_OBJ(NFT_OBJ):
+	objname : str = ""
+
+EXPRESSION = Union[str, int, bool, EXPRESSION_OBJ]
 EXPRESSION_ARRAY = List[EXPRESSION]
 EXPRESSIONS = Union[EXPRESSION, EXPRESSION_ARRAY]
-
-class EXPRESSION_OBJ(NFT_OBJ):
-	objname : str = "expression"
 
 
 
