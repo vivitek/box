@@ -105,7 +105,9 @@
       "folder":".",
       "preInstallCmd":[],
       "installCmd":[],
-      "runCmd":[]
+      "runCmd":[
+        "sudo systemctl start openvivi.service"
+      ]
     }
   ]
 }
