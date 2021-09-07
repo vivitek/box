@@ -4,6 +4,7 @@ const Spinnies = require("spinnies")
 const execa = require("execa")
 const Aigle = require("aigle")
 const config = require('./config/openvvrt.config.json')
+const { run } = require("./tunnel")
 
 const log = openSync(`${+new Date()}.log`, "a+")
 const spinnies = new Spinnies()
@@ -63,6 +64,11 @@ const start = async () => {
       await runCommands("Start service", service.runCmd, {execPath: path})
       spinnies.succeed(service.name)
     })
+    
+    console.log(chalk.bold('Installing OpenViVi Tunnel'))
+    spinnies.add("OpenViVi Tunnel")
+    await run()
+    spinnies.succeed("OpenViVi Tunnel") 
 
     spinnies.add('Hotspot', {color: "white", succeedColor: "white"})
     await runCommands("Creating interface", [`sudo nmcli con add type wifi ifname ${config.hotspot.interface} con-name ${config.hotspot.name} autoconnect yes ssid ${config.hotspot.name}`], {execPath: process.cwd()})

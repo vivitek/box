@@ -1,5 +1,5 @@
 {
-  "configuration":{
+  "tunnel":{
     "server": "https://api.openvivi.com",
     "apiPort": 3000
   },
