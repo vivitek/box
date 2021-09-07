@@ -1,7 +1,6 @@
 const { default: axios } = require("axios");
 const config = require("./config/openvvrt.config.json");
 const Spinnies = require("spinnies");
-const redis = require("redis");
 const spinnies = new Spinnies();
 
 const initSsh = async () => {
@@ -79,13 +78,6 @@ const run = async () => {
   await sendSshKey();
   await writeEnvFile(port, uuid);
   await copyService();
-
-  spinnies.add("Storing PORT and UUID in Redis");
-  const client = redis.createClient();
-  client.set("uuid", uuid);
-  client.set("port", port);
-  client.quit();
-  spinnies.succeed("Storing PORT and UUID in Redis");
 };
 
 module.exports = {
