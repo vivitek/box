@@ -46,7 +46,7 @@ const start = async () => {
   try {
     writeSync(log, `Logs from ${+new Date()}\n`)
 
-    console.log(chalk.bold('Installing dependencies'))
+    /*console.log(chalk.bold('Installing dependencies'))
     await Aigle.eachSeries(config.dependencies, async (dependency) => {
       spinnies.add(dependency)
       await runCommands(dependency, [`sudo apt install -y ${dependency}`], {execPath: process.cwd()})
@@ -56,7 +56,7 @@ const start = async () => {
     await Aigle.eachSeries(config.nodeDependencies, async (dependency) => {
       spinnies.add(dependency)
       await runCommands(dependency, [`sudo npm i -g ${dependency}`], {execPath: process.cwd()})
-    })
+    })*/
 
     console.log(chalk.bold('Initializing services'))
     await Aigle.eachSeries(config.services, async (service) => {

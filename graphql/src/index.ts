@@ -160,11 +160,13 @@ const initRabbitMQ = async (): Promise<void> => {
 
 const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
   const msgData = JSON.parse(qMsg.content.toString())
-  if (await createBan(msgData.mac, false)) {
+  channel.ack(qMsg)
+  console.log(`msgData => ${msgData}`)
+  /*if (await createBan(msgData.mac, false)) {
     channel.ack(qMsg)
   } else {
     channel.nack(qMsg)
-  }
+  }*/
 }
 
 const main = async (): Promise<void> => {

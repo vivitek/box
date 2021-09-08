@@ -74,31 +74,19 @@
         "./node_modules/typescript/bin/tsc"
       ],
       "runCmd": [
-        "sudo pm2 start -f --name dhcp dist/main.js"
+        "sudo pm2 start -f --name dhcp dist/index.js"
       ]
     },
     {
-      "name": "GraphQL",
-      "folder": "graphql",
+      "name": "PCAP",
+      "folder": "pcap",
       "preInstallCmd": [],
       "installCmd": [
         "npm install",
         "./node_modules/typescript/bin/tsc"
       ],
       "runCmd": [
-        "sudo pm2 start -f --name graphql dist/index.js"
-      ]
-    },
-    {
-      "name": "OpenVVRT",
-      "folder": "openvvrt",
-      "preInstallCmd": [],
-      "installCmd": [
-        "npm install",
-        "./node_modules/typescript/bin/tsc"
-      ],
-      "runCmd": [
-        "sudo pm2 start -f --name openvvrt dist/index.js"
+        "sudo pm2 start -f --name pcap dist/index.js"
       ]
     },
     {
