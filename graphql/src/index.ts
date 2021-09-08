@@ -144,9 +144,14 @@ const initRabbitMQ = async (): Promise<void> => {
       username: process.env.AMQP_USERNAME,
       password: process.env.AMQP_PASSWORD,
     });
+    
     channel = await connection.createChannel();
     await channel.assertQueue("dhcp");
     channel.consume("dhcp", consumerDhcp)
+
+    await channel.assertQueue("pcap");
+    channel.consume("pcap", consumerPcap)
+
   } catch (error) {
     if (error.response) {
       logger.fatal('An error occured while connecting to RabbitMQ')
@@ -167,6 +172,11 @@ const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
   } else {
     channel.nack(qMsg)
   }*/
+}
+
+const consumerPcap = async (qMsg: any): Promise<void> => {
+  channel.ack(qMsg)
+  console.log(`received packet => ${qMsg}`)
 }
 
 const main = async (): Promise<void> => {

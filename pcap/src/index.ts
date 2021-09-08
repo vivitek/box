@@ -65,7 +65,7 @@ const initPcap = async () => {
 		const packet = pcap.decode.packet(raw_packet);
 		console.log(`Packet received => ${packet}`);
 
-		// sendToQueue(packet)
+		sendToQueue(packet)
 
 		// tcpTracker.track_packet(packet);
 	});
