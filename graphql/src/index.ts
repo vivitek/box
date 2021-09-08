@@ -158,8 +158,7 @@ const initRabbitMQ = async (): Promise<void> => {
       logger.fatal(`Status code: ${error.response.status}`)
     } else
       logger.fatal('A mystical error occured during the RabbitMQ initialization ')
-    logger.fatal(error)
-    process.exit(1);
+      process.exit(1);
   }
 };
 
@@ -175,8 +174,9 @@ const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
 }
 
 const consumerPcap = async (qMsg: any): Promise<void> => {
-  channel.ack(qMsg)
-  console.log(`received packet => ${qMsg}`)
+	const msgData = JSON.parse(qMsg.toString())
+	channel.ack(qMsg)
+	console.log(`received packet => ${msgData}`)
 }
 
 const main = async (): Promise<void> => {
