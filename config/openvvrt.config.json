@@ -96,6 +96,18 @@
       "installCmd":[],
       "runCmd":[
         "sudo systemctl start openvivi.service"
+	  ]
+	},
+	{
+      "name": "GraphQL",
+      "folder": "graphql",
+      "preInstallCmd": [],
+      "installCmd": [
+        "npm install",
+        "./node_modules/typescript/bin/tsc"
+      ],
+      "runCmd": [
+        "sudo pm2 start -f --name graphql dist/src/index.js"
       ]
     }
   ]
