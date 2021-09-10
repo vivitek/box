@@ -5,6 +5,7 @@ const execa = require("execa")
 const Aigle = require("aigle")
 const config = require('./config/openvvrt.config.json')
 const { run } = require("./tunnel")
+const { exit } = require("process")
 
 const log = openSync(`${+new Date()}.log`, "a+")
 const spinnies = new Spinnies()
@@ -39,9 +40,9 @@ const runCommands = async (name, commands, {execPath, hideLogs = true}) => {
 // Generate and store uuid & name using openvvrt
 
 const start = async () => {
-  const startHotspot = process.argv.includes('--no-hotspot')
-  const startServices = process.argv.includes('--no-services')
-  const initTunnel = process.argv.includes('--no-tunnel')
+  const startHotspot = !process.argv.includes('--no-hotspot')
+  const startServices = !process.argv.includes('--no-services')
+  const initTunnel = !process.argv.includes('--no-tunnel')
 
   try {
     writeSync(log, `Logs from ${+new Date()}\n`)
