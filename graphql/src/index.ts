@@ -14,7 +14,7 @@ let id: string
 let channel: amqp.Channel
 
 /* Utils */
-const getWsClient = function (wsurl: string): SubscriptionClient {
+const getWsClient = function(wsurl: string): SubscriptionClient {
   const client = new SubscriptionClient(wsurl, {
     reconnect: true,
     connectionParams: {
@@ -28,7 +28,7 @@ const getWsClient = function (wsurl: string): SubscriptionClient {
 
 const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: QueryContent) => {
   const link = new WebSocketLink(getWsClient(wsurl))
-  return execute(link, { query, variables })
+  return execute(link, {query, variables})
 }
 
 const sendRequest = async (data: GraphqlRequestContext) => {
@@ -47,19 +47,16 @@ const requestFirewall = async (ban: Ban): Promise<void> => {
   try {
     await axios({
       method: ban.banned ? 'post' : 'delete',
-      url: `${FIREWALL_ENDPOINT}/rule/${ban.banned ? 'ban' : 'unban'}MAC?address=${ban.address}`
+      url: `${FIREWALL_ENDPOINT}/rule/${ban.banned ? 'ban': 'unban'}MAC?address=${ban.address}`
     })
   } catch (error) {
     logger.error(error)
   }
 }
-
-/*  Utils End */
+/* Utils End */
 
 const selfCreate = async (name: string, url: string): Promise<void> => {
-  logger.info("Server url " + GRAPHQL_ENDPOINT)
   try {
-    console.log("creating")
     const res = await sendRequest({
       query: print(CREATE_ROUTER),
       variables: {
@@ -69,11 +66,10 @@ const selfCreate = async (name: string, url: string): Promise<void> => {
         }
       }
     })
-    console.log(res.data)
     id = res.data.data.createRouter._id
     if (id == undefined)
       throw new Error('Router already created')
-  } catch (error) {
+  } catch(error) {
     if (error.response) {
       logger.error('An error occured while creating router')
       logger.error(`Status code: ${error.response.status}`)
@@ -109,7 +105,7 @@ const createBan = async (address: string, banned: boolean): Promise<boolean> => 
         banCreationData: {
           address,
           banned,
-          routerSet: id
+          routerSet : id
         }
       }
     })
@@ -129,7 +125,7 @@ const subscribeBan = (): void => {
   const client = createSubscriptionObservable(
     GRAPHQL_ENDPOINT,
     SUBSCRIBE_BAN,
-    { routerSet: id }
+    {routerSet: id}
   )
   client.subscribe(eventData => {
     requestFirewall(eventData.data.banUpdated)
@@ -144,7 +140,7 @@ const initRabbitMQ = async (): Promise<void> => {
       username: process.env.AMQP_USERNAME,
       password: process.env.AMQP_PASSWORD,
     });
-    
+
     channel = await connection.createChannel();
     await channel.assertQueue("dhcp");
     channel.consume("dhcp", consumerDhcp)
@@ -174,9 +170,17 @@ const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
 }
 
 const consumerPcap = async (qMsg: any): Promise<void> => {
-	const msgData = JSON.parse(qMsg.toString())
-	channel.ack(qMsg)
-	console.log(`received packet => ${msgData}`)
+        const msgData = JSON.parse(qMsg.content.toString())
+
+        console.log(`msgData => ${qMsg.content.toString()}`)
+
+        /*
+        if (await createBan(pacData, false)) {
+                channel.ack(qMsg)
+        } else {
+                channel.nack(qMsg)
+        }
+       */
 }
 
 const main = async (): Promise<void> => {
@@ -204,7 +208,7 @@ interface Ban {
 interface GraphqlRequestContext {
   query: string;
   variables: QueryContent
-};
+  };
 
 interface QueryContent {
   [key: string]: {
