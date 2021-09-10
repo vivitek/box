@@ -20,7 +20,7 @@ const runCommands = async (name, commands, {execPath, hideLogs = true}) => {
       writeSync(log, String(stdout))
       if (!hideLogs)
         console.log(stdout)
-      if (stderr && !stderr.startsWith("\nWARNING") && !stderr.startsWith("npm WARN"))
+      if (stderr && !stderr.startsWith("\nWARNING") && !stderr.startsWith("npm WARN") && !stderr.startsWith("npm notice"))
         throw stderr
       spinnies.succeed(name)
     } catch (err) {
