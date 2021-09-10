@@ -5,7 +5,6 @@ const execa = require("execa")
 const Aigle = require("aigle")
 const config = require('./config/openvvrt.config.json')
 const { run } = require("./tunnel")
-const { exit } = require("process")
 
 const log = openSync(`${+new Date()}.log`, "a+")
 const spinnies = new Spinnies()
