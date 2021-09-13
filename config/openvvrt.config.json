@@ -12,6 +12,7 @@
     "rabbitmq-server",
     "build-essential",
     "libpq-dev",
+    "libpcap-dev",
     "procps",
     "nftables",
     "python3-testresources"

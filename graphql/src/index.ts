@@ -140,7 +140,7 @@ const initRabbitMQ = async (): Promise<void> => {
       username: process.env.AMQP_USERNAME,
       password: process.env.AMQP_PASSWORD,
     });
-
+    
     channel = await connection.createChannel();
     await channel.assertQueue("dhcp");
     channel.consume("dhcp", consumerDhcp)
@@ -170,16 +170,16 @@ const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
 }
 
 const consumerPcap = async (qMsg: any): Promise<void> => {
-        const msgData = JSON.parse(qMsg.content.toString())
+	const msgData = JSON.parse(qMsg.content.toString())
 
-        console.log(`msgData => ${qMsg.content.toString()}`)
+	console.log(`msgData => ${qMsg.content.toString()}`)
 
-        /*
-        if (await createBan(pacData, false)) {
-                channel.ack(qMsg)
-        } else {
-                channel.nack(qMsg)
-        }
+	/*
+	if (await createBan(pacData, false)) {
+		channel.ack(qMsg)
+	} else {
+		channel.nack(qMsg)
+	}
        */
 }
 
