@@ -14,7 +14,7 @@ const initRabbitMQ = async () => {
 			password: "vivitek",
 		});
 		channel = await connection.createChannel();
-			await channel.assertQueue("pcap");
+		await channel.assertQueue("pcap");
 	} catch (error) {
 		exit(1);
 	}
@@ -23,16 +23,6 @@ const initRabbitMQ = async () => {
 const sendToQueue = async (data) => {
 	await channel.sendToQueue("pcap", Buffer.from(JSON.stringify(data)));
 };
-
-// TOOL
-function decode_addr(addr: number[]): string {
-	let res: string = ""
-	addr.forEach(function(element) {
-		res = res.concat(element.toString())
-		res = res.concat(".")
-	})
-	return(res.slice(0, -1))
-}
 
 // PCAP INIT
 const initPcap = async () => {
@@ -45,8 +35,8 @@ const initPcap = async () => {
 		const packet = pcap.decode.packet(raw_packet);
 		const pacData = {
 			"len": packet.pcap_header.len,
-			"saddr": decode_addr(packet.payload.payload.saddr.addr),
-			"daddr": decode_addr(packet.payload.payload.daddr.addr)
+			"saddr": packet.payload.payload.saddr.addr.join('.'),
+			"daddr": packet.payload.payload.daddr.addr.join('.')
 		}
 		sendToQueue(pacData)
 	});
