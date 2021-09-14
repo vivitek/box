@@ -109,6 +109,16 @@
       "runCmd":[
         "sudo systemctl start openvivi.service"
       ]
+    },
+    {
+      "name": "System init",
+      "forlder": ".",
+      "preInstallCmd": [
+        "bash config/initSystemd.sh",
+        "sudo systemctl daemon-reload"
+      ],
+      "installCmd": [],
+      "runCmd": []
     }
   ]
 }

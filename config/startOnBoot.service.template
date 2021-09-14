@@ -1,0 +1,9 @@
+[Unit]
+Description=Restart services on boot
+
+[Service]
+Type=simple
+ExecStart=/bin/bash $PWD/start.sh
+
+[Install]
+WantedBy=multi-user.target
