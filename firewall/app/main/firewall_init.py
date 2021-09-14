@@ -1,5 +1,3 @@
-from . import db
-
 from app.main import redis_client
 from app.main.firewall_manager import FWManager
 
@@ -11,7 +9,7 @@ def init_rules():
         response = PyNFT.ban_ipv4(ip.decode())
     MACArray = redis_client.zrange("macBan", 0, -1)
     for mac in MACArray:
-        response = PyNFT.ban_man(mac.decode())
+        response = PyNFT.ban_mac(mac.decode())
 
 def init_firewall():
     init_rules()
