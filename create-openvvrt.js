@@ -42,12 +42,12 @@ const start = async () => {
 
   try {
     writeSync(log, `Logs from ${+new Date()}\n`)
-
     
+    await execa.command('sudo apt update 2>/dev/null', {execPath, preferLocal: true, path: execPath, cwd: execPath})
+
     console.log(chalk.bold('Installing dependencies'))
     await Aigle.eachSeries(config.dependencies, async (dependency) => {
       spinnies.add(dependency)
-      await runCommands(dependency, [`sudo apt-get -s upgrade`], {execPath: process.cwd()})
       await runCommands(dependency, [`sudo apt install -y ${dependency}`], {execPath: process.cwd()})
     })
 
