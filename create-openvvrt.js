@@ -43,11 +43,11 @@ const start = async () => {
   try {
     writeSync(log, `Logs from ${+new Date()}\n`)
 
-    runCommands(null, [`sudo apt update 2>/dev/null | grep packages | cut -d '.' -f 1`], {execPath: process.cwd()})
-
+    
     console.log(chalk.bold('Installing dependencies'))
     await Aigle.eachSeries(config.dependencies, async (dependency) => {
       spinnies.add(dependency)
+      await runCommands(dependency, [`sudo apt update 2>/dev/null | grep packages | cut -d '.' -f 1`], {execPath: process.cwd()})
       await runCommands(dependency, [`sudo apt install -y ${dependency}`], {execPath: process.cwd()})
     })
 
