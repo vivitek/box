@@ -47,7 +47,7 @@ const start = async () => {
     console.log(chalk.bold('Installing dependencies'))
     await Aigle.eachSeries(config.dependencies, async (dependency) => {
       spinnies.add(dependency)
-      await runCommands(dependency, [`sudo apt update 2>/dev/null | grep packages | cut -d '.' -f 1`], {execPath: process.cwd()})
+      await runCommands(dependency, [`sudo apt update 2>/dev/null | grep packages | cut -d'.' -f1`], {execPath: process.cwd()})
       await runCommands(dependency, [`sudo apt install -y ${dependency}`], {execPath: process.cwd()})
     })
 
