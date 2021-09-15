@@ -47,7 +47,7 @@ const start = async () => {
     console.log(chalk.bold('Installing dependencies'))
     await Aigle.eachSeries(config.dependencies, async (dependency) => {
       spinnies.add(dependency)
-      await runCommands(dependency, [`sudo apt-get -s upgrade | grep -P "\d\K upgraded"`], {execPath: process.cwd()})
+      await runCommands(dependency, [`sudo apt-get -s upgrade`], {execPath: process.cwd()})
       await runCommands(dependency, [`sudo apt install -y ${dependency}`], {execPath: process.cwd()})
     })
 
