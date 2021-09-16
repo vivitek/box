@@ -50,12 +50,6 @@ class NFT_OBJ(OBJ_BASE):
 		field_type = self.__annotations__[field]
 		check_type(field, attribute, field_type)
 
-		# try:
-		# 	check_type(field, attribute, field_type)
-		# except TypeError:
-		# 	types = field_type.__args__ if isinstance(field_type, list) else field_type
-		# 	print(f"TypeError: type of \"{field}\" must be one of ({types})")
-		# 	exit(84)
 
 
 
