@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
+  "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "start-server": "node dist/src/server.js"
   },
   "author": "Arthur LE BRETON",
   "license": "ISC",
   "dependencies": {
+    "@tsed/common": "^6.69.0",
     "@tsed/logger": "^5.13.2",
     "amqplib": "^0.7.0",
     "apollo-link": "^1.2.14",
@@ -17,6 +20,8 @@
     "axios": "^0.21.1",
     "graphql": "^15.5.0",
     "graphql-tag": "^2.11.0",
+    "http": "0.0.1-security",
+    "socket.io": "^4.2.0",
     "source-map-support": "^0.5.19",
     "subscriptions-transport-ws": "^0.9.18",
     "ws": "^7.4.2"

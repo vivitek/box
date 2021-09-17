@@ -5,10 +5,11 @@ import axios from 'axios'
 import { DocumentNode, print } from 'graphql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import * as ws from 'ws'
-import { FIREWALL_ENDPOINT, GRAPHQL_ENDPOINT } from './constant'
-import { CREATE_BAN, GET_BANS, SUBSCRIBE_BAN } from './src/banQueries'
-import { CREATE_ROUTER } from './src/routerQueries'
-import { logger } from './src/logger'
+import { FIREWALL_ENDPOINT, GRAPHQL_ENDPOINT, SOS_ENDPOINT } from './constant.js'
+import { CREATE_BAN, GET_BANS, SUBSCRIBE_BAN } from './src/banQueries.js'
+import { CREATE_ROUTER } from './src/routerQueries.js'
+//import { logger } from './src/logger.js'
+import io from './src/server.js';
 
 let id: string
 let channel: amqp.Channel
@@ -43,14 +44,14 @@ const sendRequest = async (data: GraphqlRequestContext) => {
 }
 
 const requestFirewall = async (ban: Ban): Promise<void> => {
-  logger.info(`New ${ban.banned ? 'ban' : 'unban'} for address ${ban.address}`)
+  //logger.info(`New ${ban.banned ? 'ban' : 'unban'} for address ${ban.address}`)
   try {
     await axios({
       method: ban.banned ? 'post' : 'delete',
       url: `${FIREWALL_ENDPOINT}/rule/${ban.banned ? 'ban': 'unban'}MAC?address=${ban.address}`
     })
   } catch (error) {
-    logger.error(error)
+    //logger.error(error)
   }
 }
 /* Utils End */
@@ -71,10 +72,11 @@ const selfCreate = async (name: string, url: string): Promise<void> => {
       throw new Error('Router already created')
   } catch(error) {
     if (error.response) {
-      logger.error('An error occured while creating router')
-      logger.error(`Status code: ${error.response.status}`)
+      //logger.error('An error occured while creating router')
+      //logger.error(`Status code: ${error.response.status}`)
     } else
-      logger.error(error)
+      console.log(error)
+      //logger.error(error)
   }
 }
 
@@ -89,11 +91,12 @@ const getBans = async (): Promise<void> => {
     res.data.data.getBans.forEach((ban: Ban) => requestFirewall(ban))
   } catch (error) {
     if (error.response) {
-      logger.error('An error occured while retriving bans:')
-      logger.error(`Status code: ${error.response.status}`)
-      logger.error(error.response.data)
+      //logger.error('An error occured while retriving bans:')
+      //logger.error(`Status code: ${error.response.status}`)
+      //logger.error(error.response.data)
     } else
-      logger.error('A mystical error occured during the bans recovery')
+      console.log(error)
+      //logger.error('A mystical error occured during the bans recovery')
   }
 }
 
@@ -112,11 +115,11 @@ const createBan = async (address: string, banned: boolean): Promise<boolean> => 
     return true
   } catch (error) {
     if (error.response) {
-      logger.error(`An error occured while creating ban on address ${address} (${banned}):`)
-      logger.error(`Status code: ${error.response.status}`)
-      logger.error(error.response.data)
+      //logger.error(`An error occured while creating ban on address ${address} (${banned}):`)
+      //logger.error(`Status code: ${error.response.status}`)
+      //logger.error(error.response.data)
     } else
-      logger.error('A mystical error occured during bans creation')
+      //logger.error('A mystical error occured during bans creation')
     return false
   }
 }
@@ -134,7 +137,7 @@ const subscribeBan = (): void => {
 
 const initRabbitMQ = async (): Promise<void> => {
   try {
-    logger.info('Connecting to RabbitMQ...')
+    //logger.info('Connecting to RabbitMQ...')
     const connection = await amqp.connect({
       hostname: process.env.AMQP_HOSTNAME,
       username: process.env.AMQP_USERNAME,
@@ -145,17 +148,19 @@ const initRabbitMQ = async (): Promise<void> => {
     channel.consume("dhcp", consumerDhcp)
   } catch (error) {
     if (error.response) {
-      logger.fatal('An error occured while connecting to RabbitMQ')
-      logger.fatal(`Status code: ${error.response.status}`)
+      //logger.fatal('An error occured while connecting to RabbitMQ')
+      //logger.fatal(`Status code: ${error.response.status}`)
     } else
-      logger.fatal('A mystical error occured during the RabbitMQ initialization ')
+      //logger.fatal('A mystical error occured during the RabbitMQ initialization ')
     process.exit(1);
   }
 };
 
 const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
   const msgData = JSON.parse(qMsg.content.toString())
-  if (await createBan(msgData.mac, false)) {
+  const res = await createBan(msgData.mac, false)
+  io.emit('newAddress', msgData.mac);
+  if (res) {
     channel.ack(qMsg)
   } else {
     channel.nack(qMsg)
@@ -163,15 +168,15 @@ const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
 }
 
 const main = async (): Promise<void> => {
-  logger.info('Service starting...')
+  //logger.info('Service starting...')
   await initRabbitMQ()
-  logger.info('RabbitMQ is running')
+  //logger.info('RabbitMQ is running')
   if (!process.env.VINCIPIT_DEVICE_ID) {
     await selfCreate(process.env.BALENA_DEVICE_NAME_AT_INIT, process.env.BALENA_DEVICE_UUID + '.balena-devices.com')
-    logger.info(`Router ${id} have been created`)
+    //logger.info(`Router ${id} have been created`)
   } else {
     id = process.env.VINCIPIT_DEVICE_ID
-    logger.info(`Router ${id} already created`)
+    //logger.info(`Router ${id} already created`)
   }
   await getBans()
   subscribeBan()

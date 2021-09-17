@@ -1,4 +1,4 @@
-import {Logger} from "@tsed/logger";
+import { Logger } from "@tsed/logger";
 
 const logger = new Logger("GraphQL");
 logger.appenders
