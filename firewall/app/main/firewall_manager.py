@@ -30,8 +30,7 @@ class FWManager(metaclass=Singleton):
 		cmd_array = [ CMD.FLUSH(flush=OBJ.RULESET()) ]
 		self.__setup_ban(cmd_array, bannedIPV4, bannedMAC)
 		for index, cmd in enumerate(cmd_array):
-			res = self.nft.execute(cmd, "init_pynft [" + str(index) + "] => " + cmd.bake())
-			# self.nft.print_cmd_output(res)
+			self.nft.execute(cmd, "init_pynft [" + str(index) + "] => " + cmd.bake())
 
 
 	def __setup_ban(self, cmd_array, bannedIPV4, bannedMAC):
@@ -91,24 +90,24 @@ class FWManager(metaclass=Singleton):
 
 
 	#
-	#	Ban
+	#	Ban Addrs
 	#
 
 	def ban_mac(self, addr:str):
 		cmdObj = CMD.ADD(add=OBJ.ELEMENT(family=ENUM.ADDR_FAMILY.INET, table="BanTable", name="BannedMAC", elem=addr))
-		return self.nft.execute(cmdObj, "ban_mac")
+		return self.nft.execute(cmdObj, "ban_mac: " + addr)
 
 	def unban_mac(self, addr:str):
 		cmdObj = CMD.DELETE(delete=OBJ.ELEMENT(family=ENUM.ADDR_FAMILY.INET, table="BanTable", name="BannedMAC", elem=addr))
-		return self.nft.execute(cmdObj, "unban_mac")
+		return self.nft.execute(cmdObj, "unban_mac: " + addr)
 
 	def ban_ipv4(self, addr:str):
 		cmdObj = CMD.ADD(add=OBJ.ELEMENT(family=ENUM.ADDR_FAMILY.INET, table="BanTable", name="BannedIPv4", elem=addr))
-		return self.nft.execute(cmdObj, "ban_ipv4")
+		return self.nft.execute(cmdObj, "ban_ipv4: " + addr)
 
 	def unban_ipv4(self, addr:str):
 		cmdObj = CMD.DELETE(delete=OBJ.ELEMENT(family=ENUM.ADDR_FAMILY.INET, table="BanTable", name="BannedIPv4", elem=addr))
-		return self.nft.execute(cmdObj, "unban_ipv4")
+		return self.nft.execute(cmdObj, "unban_ipv4: " + addr)
 
 
 

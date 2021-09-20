@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 from pynft.meta import OBJ_BASE
 from typing import Any
 from typeguard import check_type
@@ -11,42 +10,64 @@ class NFT_OBJ(OBJ_BASE):
 	objname : str = ""
 
 
-	def bake(self, other:list=None) -> str:
-		i = 0
+	def bake(self, other:list=None):
 		subres = None
-		tobake = other if other != None else self
+		tobake = other if (other != None) else self
 		res = "[ *head ]" if (other != None) else \
 			  "{ *head }" if (self.objname == "") else \
 			  "{ \"" + self.objname + "\": { *head } }"
 
-		fields = tobake._fields if other == None else tobake
+		fields = tobake if (other != None) else (tobake._fields)
 		for field in fields:
-			attribute = field if other != None else tobake.__getattribute__(field)
+			attribute = field if (other != None) else (tobake.__getattribute__(field))
 
-			if issubclass(type(attribute), NFT_OBJ):
-				subres = attribute.bake() + ", "
-			elif (type(attribute) == list):
-				subres = self.bake(other=attribute) + ", "
-			elif (attribute != None and (tobake != self or tobake._fields[i] != "objname")):
-				subres = "\"" + str(attribute) + "\", "
+			subres = self.__create_subres(attribute, tobake, field)
+			if (isinstance(subres, int)):
+				return self.__error_handling(subres, attribute, other)
 
-			if (tobake == self):
-				self.__check_attr_type(field, attribute)
+			if (other == None and self.__check_attr_type(field, attribute) == 84):
+				return 84
 
 			if (subres != None):
-				res = res[:res.index("*head")] + "\"" + field + "\": " + subres + res[res.index("*head"):] \
-					if tobake == self else \
-					res[:res.index("*head")] + subres + res[res.index("*head"):]
+				res = self.__integrate_subres(res, subres, other, field)
 				subres = None
-
-			i = i + 1
 
 		return self.__cleanup(res)
 
 
+	def __create_subres(self, attribute, tobake, field):
+		if issubclass(type(attribute), NFT_OBJ):
+			return attribute.bake()
+		elif (type(attribute) == list):
+			return self.bake(other=attribute)
+		elif (attribute != None and (tobake != self or field != "objname")):
+			return "\"" + str(attribute) + "\""
+		else:
+			return None
+
+
+	def __integrate_subres(self, res, subres, other, field):
+		head = res.index("*head")
+		if (other != None):
+			return (res[:head] + subres + ", " + res[head:])
+		else:
+			return (res[:head] + "\"" + field + "\": " + subres + ", " + res[head:])
+
+
 	def __check_attr_type(self, field:str, attribute:Any) -> int:
-		field_type = self.__annotations__[field]
-		check_type(field, attribute, field_type)
+		try:
+			field_type = self.__annotations__[field]
+			check_type(field, attribute, field_type)
+		except TypeError as err:
+			print(err)
+			return 84
+		return 0
+
+
+	def __error_handling(self, subres, attribute, other) -> int:
+		if (subres == 84):
+			print(f"--> {attribute}")
+		return -1
 
 
 	def __cleanup(self, input:str) -> str:

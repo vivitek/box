@@ -168,7 +168,7 @@ class LIMIT(RULESET_OBJ):
 	rate			: int
 	per				: TIME_UNIT						= TIME_UNIT.SECOND
 	burst			: int							= 0
-	unit			: LIMIT_UNIT					= "packets"
+	unit			: LIMIT_UNIT					= LIMIT_UNIT.PACKETS
 	inv				: bool							= False
 
 LIMIT_ARRAY = List[LIMIT]
