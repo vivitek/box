@@ -1,0 +1,113 @@
+{
+  "tunnel":{
+    "server": "https://api.openvivi.com",
+    "apiPort": 3000
+  },
+  "dependencies": [
+    "network-manager",
+    "net-tools",
+    "python3-pip",
+    "postgresql",
+    "postgresql-contrib",
+    "rabbitmq-server",
+    "build-essential",
+    "libpq-dev",
+    "procps",
+    "nftables",
+    "python3-testresources"
+  ],
+  "nodeDependencies": [
+    "pm2"
+  ],
+  "hotspot": {
+    "interface": "wlan0",
+    "name": "VIVI",
+    "password": "Viv12o2I!"
+  },
+  "services": [
+    {
+      "name": "RabbitMQ",
+      "folder": ".",
+      "preInstallCmd": [],
+      "installCmd": [
+        "bash config/initRabbitmq.sh"
+      ],
+      "runCmd": []
+    },
+    {
+      "name": "Redis",
+      "folder": ".",
+      "dependencies": [],
+      "preInstallCmd": [],
+      "installCmd": [
+        "sudo apt install -y redis-server"
+      ],
+      "runCmd": [
+        "sudo service redis-server start"
+      ]
+    },
+    {
+      "name": "Firewall",
+      "folder": "firewall",
+      "preInstallCmd": [
+        "bash config/initFirewall.sh",
+        "sudo systemctl daemon-reload"
+      ],
+      "installCmd": [
+        "sudo pip3 install -r requirements.txt"
+      ],
+      "runCmd": [
+        "sudo systemctl daemon-reload",
+        "sudo systemctl enable firewall",
+        "sudo systemctl enable nftables",
+        "sudo systemctl start firewall",
+        "sudo systemctl start nftables"
+      ]
+    },
+    {
+      "name": "DHCP",
+      "folder": "dhcpd",
+      "preInstallCmd": [],
+      "installCmd": [
+        "npm install",
+        "./node_modules/typescript/bin/tsc"
+      ],
+      "runCmd": [
+        "sudo pm2 start -f --name dhcp dist/index.js"
+      ]
+    },
+    {
+      "name": "GraphQL",
+      "folder": "graphql",
+      "preInstallCmd": [],
+      "installCmd": [
+        "npm install",
+        "./node_modules/typescript/bin/tsc"
+      ],
+      "runCmd": [
+        "sudo pm2 start -f --name graphql dist/src/index.js"
+      ]
+    },
+    {
+      "name": "OpenVVRT",
+      "folder": "openvvrt",
+      "preInstallCmd": [],
+      "installCmd": [
+        "npm install",
+        "./node_modules/typescript/bin/tsc"
+      ],
+      "runCmd": [
+        "sudo pm2 start -f --name openvvrt dist/index.js"
+      ]
+    },
+    {
+      "name":"OpenViVi",
+      "folder":".",
+      "preInstallCmd":[],
+      "installCmd":[],
+      "runCmd":[
+        "sudo systemctl start openvivi.service"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenViVi tunnel connection
+After=network.target
+
+[Service]
+EnvironmentFile="/etc/default/openvivi-tunnel"
+ExecStart=/usr/bin/openvivi-tunnel.sh
+Restart=always
+RestartSec=10
+
+
+[Install]
+WantedBy=multi-user.target
