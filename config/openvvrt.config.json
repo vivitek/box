@@ -14,7 +14,7 @@
     "libpq-dev",
     "procps",
     "nftables",
-    "testressources"
+    "python3-testressources"
   ],
   "nodeDependencies": [
     "pm2"
