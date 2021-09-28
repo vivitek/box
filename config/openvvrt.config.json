@@ -13,8 +13,7 @@
     "build-essential",
     "libpq-dev",
     "procps",
-    "nftables",
-    "python3-testresources"
+    "nftables"
   ],
   "nodeDependencies": [
     "pm2"
@@ -43,8 +42,7 @@
         "sudo apt install -y redis-server"
       ],
       "runCmd": [
-        "sudo systemctl enable redis-server",
-        "sudo systemctl start redis-server"
+        "sudo service redis-server start"
       ]
     },
     {
@@ -74,7 +72,7 @@
         "./node_modules/typescript/bin/tsc"
       ],
       "runCmd": [
-        "sudo pm2 start -f --name dhcp dist/main.js"
+        "sudo pm2 start -f --name dhcp dist/index.js"
       ]
     },
     {
@@ -86,7 +84,7 @@
         "./node_modules/typescript/bin/tsc"
       ],
       "runCmd": [
-        "sudo pm2 start -f --name graphql dist/index.js"
+        "sudo pm2 start -f --name graphql dist/src/index.js"
       ]
     },
     {
@@ -109,16 +107,6 @@
       "runCmd":[
         "sudo systemctl start openvivi.service"
       ]
-    },
-    {
-      "name": "System init",
-      "forlder": ".",
-      "preInstallCmd": [
-        "bash config/initSystemd.sh",
-        "sudo systemctl daemon-reload"
-      ],
-      "installCmd": [],
-      "runCmd": []
     }
   ]
 }
