@@ -68,8 +68,7 @@ class FWManager(metaclass=Singleton):
 
 		#	Add rule dropping packets with @BannedIPv4 and @BannedMAC adresses
 		#
-		ref_payload_daddr = EXP.REFERENCE_PAYLOAD(protocol="ip", field="daddr")
-		the_payload = EXP.PAYLOAD(payload=ref_payload_daddr)
+		the_payload = EXP.REFERENCE_PAYLOAD(protocol="ip", field="daddr")
 		the_match = STAT.MATCH(left=the_payload, right="@BannedIPv4", op=ENUM.OPERATOR.EQUAL)
 		cmd_array.append(CMD.ADD(add=OBJ.RULE(
 			family=ban_table.family,
@@ -77,8 +76,7 @@ class FWManager(metaclass=Singleton):
 			chain=ban_chain.name,
 			expr=[the_match, STAT.VERDICT_DROP()]
 		)))
-		ref_payload_daddr = EXP.REFERENCE_PAYLOAD(protocol="ether", field="daddr")
-		the_payload = EXP.PAYLOAD(payload=ref_payload_daddr)
+		the_payload = EXP.REFERENCE_PAYLOAD(protocol="ether", field="daddr")
 		the_match = STAT.MATCH(left=the_payload, right="@BannedMAC", op=ENUM.OPERATOR.EQUAL)
 		cmd_array.append(CMD.ADD(add=OBJ.RULE(
 			family=ban_table.family,
