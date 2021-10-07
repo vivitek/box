@@ -31,66 +31,19 @@ class TestProductionConfig(TestCase):
 	def test_app_is_production(self):
 		self.assertTrue(app.config['DEBUG'] is False)
 
-# class TableTest(TestCase):
-# 	def create_app(self):
-# 		app.config.from_object('app.main.config.TestingConfig')
-# 		return app
+class TestAddrBan(TestCase):
+	def test_ban_ipv4(self):
+		self.assertTrue(True)
 
-# 	def test_successful_create(self):
-# 		response = self.client.post('/table/', data=dict(family='inet', tablename='filter'))
-# 		self.assertEqual(201, response.status_code)
+	def test_ban_mac(self):
+		self.assertTrue(True)
 
-# 	def test_successful_get(self):
-# 		response = self.client.get('/table/')
-# 		self.assertEqual(200, response.status_code)
+class TestBandwidthLimit(TestCase):
+	def test_user_limit(self):
+		self.assertTrue(True)
 
-# class ChainTest(TestCase):
-# 	def create_app(self):
-# 		app.config.from_object('app.main.config.TestingConfig')
-# 		return app
-
-# 	def test_successful_create(self):
-# 		response = self.client.post('/table/', data=dict(family='inet', tablename='filter'))
-# 		self.assertEqual(201, response.status_code)
-# 		response = self.client.post('/chains/', data=dict(
-# 			family='inet',
-# 			tablename='filter',
-# 			chainname='input',
-# 			type='filter',
-# 			hook='input',
-# 			device='null',
-# 			priority='0',
-# 			policy='accept'
-# 		))
-# 		self.assertEqual(201, response.status_code)
-
-# class RuleTest(TestCase):
-# 	def create_app(self):
-# 		app.config.from_object('app.main.config.TestingConfig')
-# 		return app
-
-# 	def test_successful_create(self):
-# 		response = self.client.post('/table/', data=dict(family='inet', tablename='filter'))
-# 		self.assertEqual(201, response.status_code)
-# 		response = self.client.post('/chains/', data=dict(
-# 			family='inet',
-# 			tablename='filter',
-# 			chainname='input',
-# 			type='filter',
-# 			hook='input',
-# 			device='null',
-# 			priority='0',
-# 			policy='accept'
-# 		))
-# 		self.assertEqual(201, response.status_code)
-# 		response = self.client.post('/rule/', data=dict(
-# 			family='inet',
-# 			tablename='filter',
-# 			chainname='input',
-# 			matches='ether saddr 0:0:0:0:0:0',
-# 			statements='drop'
-# 		))
-# 		self.assertEqual(201, response.status_code)
+	def test_service_limit(self):
+		self.assertTrue(True)
 
 if __name__ == "__main__":
 	unittest.main()

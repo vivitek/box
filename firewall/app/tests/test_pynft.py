@@ -10,24 +10,13 @@ from pynft.executor import Executor
 executor = Executor()
 
 
-#
-#	Executor Tests
-#
-
-class TestExecutor(TestCase):
-
-	def something(self):
-		self.assertEqual(1, 1)
-
-
-#
-#	NFT_OBJ Tests
-#
-
 class TestObjects(TestCase):
 
 	def test_type_checking(self):
 		self.assertEqual(1, 1)
-		# try:
-		# test_table = TABLE(family=ADDR_FAMILY.INET)
-		# except TypeError:
+	
+	def test_JSON_generation(self):
+		self.assertEqual(1, 1)
+	
+	def test_CMD_execution(self):
+		self.assertEqual(1, 1)
