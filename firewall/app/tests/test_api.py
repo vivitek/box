@@ -31,19 +31,6 @@ class TestProductionConfig(TestCase):
 	def test_app_is_production(self):
 		self.assertTrue(app.config['DEBUG'] is False)
 
-class TestAddrBan(TestCase):
-	def test_ban_ipv4(self):
-		self.assertTrue(True)
-
-	def test_ban_mac(self):
-		self.assertTrue(True)
-
-class TestBandwidthLimit(TestCase):
-	def test_user_limit(self):
-		self.assertTrue(True)
-
-	def test_service_limit(self):
-		self.assertTrue(True)
 
 if __name__ == "__main__":
 	unittest.main()

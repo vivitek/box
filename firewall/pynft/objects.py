@@ -38,7 +38,7 @@ class CHAIN(RULESET_OBJ):
 	handle			: Union[int, None]				= None
 	type			: Union[CHAIN_TYPE, None]		= None
 	hook			: Union[CHAIN_HOOK, None]		= None
-	prio			: Union[CHAIN_PRIORITY, None]	= None
+	prio			: Union[CHAIN_PRIORITY, None]	= 0
 	dev				: Union[str, None]				= None
 	policy			: Union[CHAIN_POLICY, None]		= None
 

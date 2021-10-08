@@ -4,6 +4,7 @@ from typing import Any
 from typeguard import check_type
 from pynft.meta import OBJ_BASE
 from pynft.exceptions import PyNFTException
+from pynft.enumerations import CHAIN_PRIORITY
 
 
 class NFT_OBJ(OBJ_BASE):
@@ -39,6 +40,8 @@ class NFT_OBJ(OBJ_BASE):
 		elif (type(attribute) == list):
 			return self.bake(other=attribute)
 		elif (attribute != None and (tobake != self or field != "objname")):
+			if issubclass(type(attribute), CHAIN_PRIORITY):
+				return str(attribute)
 			return "\"" + str(attribute) + "\""
 		else:
 			return None
