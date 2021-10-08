@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from pynft.executor				import Executor
-import pynft.enumerations		as ENUM
-import pynft.expressions		as EXP
-import pynft.statements			as STAT
-import pynft.objects			as OBJ
-import pynft.commands			as CMD
+from	pynft.executor			import Executor
+import	pynft.enumerations		as ENUM
+import	pynft.expressions		as EXP
+import	pynft.statements		as STAT
+import	pynft.objects			as OBJ
+import	pynft.commands			as CMD
 
 
 

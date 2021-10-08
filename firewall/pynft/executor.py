@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-import nftables
-import json
-import jsonschema
-from pynft.commands import CMD_OBJ, NFT_OBJ
+import	nftables
+import	json
+import	jsonschema
+from	pynft.commands import CMD_OBJ, NFT_OBJ
+from	pynft.exceptions import PyNFTException
 
 
 
@@ -19,20 +20,27 @@ class Executor():
 		self.nft.set_json_output(True)
 
 	def execute(self, cmd:CMD_OBJ, cmdName:str="cmdName"):
-		baked = cmd.bake()
-		if (baked == None or isinstance(baked, int)):
-			return None
+		baked = ""
+		try:
+			baked = cmd.bake()
+			if (baked == None or isinstance(baked, int)):
+				return None
+		except PyNFTException as err:
+			return self.__format_response(cmdName, (err.rc, err.obj, err.msg))
+
 		cmdStr = "{ \"nftables\" : [ " + baked + " ] }"
 		cmdJSON = json.loads(cmdStr)
+
 		try:
 			self.nft.json_validate(cmdJSON)
 		except jsonschema.exceptions.ValidationError as err:
 			print("WARNING: " + cmdName + " => command has invalid syntax")
 			print(cmdStr + "\n" + err)
 			return None
-		return self.__format_response(self.nft.json_cmd(cmdJSON), cmdName)
+		
+		return self.__format_response(cmdName, self.nft.json_cmd(cmdJSON))
 
-	def __format_response(self, retTuple, cmdName):
+	def __format_response(self, cmdName, retTuple):
 		return {
 			"cmd" : cmdName,
 			"rc" : retTuple[0],

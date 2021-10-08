@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-from pynft.meta import OBJ_BASE
 from typing import Any
 from typeguard import check_type
+from pynft.meta import OBJ_BASE
+from pynft.exceptions import PyNFTException
 
 
 class NFT_OBJ(OBJ_BASE):
@@ -20,13 +21,10 @@ class NFT_OBJ(OBJ_BASE):
 		fields = tobake if (other != None) else (tobake._fields)
 		for field in fields:
 			attribute = field if (other != None) else (tobake.__getattribute__(field))
-
 			subres = self.__create_subres(attribute, tobake, field)
-			if (isinstance(subres, int)):
-				return self.__error_handling(subres, attribute, other)
 
-			if (other == None and self.__check_attr_type(field, attribute) == 84):
-				return 84
+			if (other == None):
+				self.__check_attr_type(field, attribute)
 
 			if (subres != None):
 				res = self.__integrate_subres(res, subres, other, field)
@@ -46,28 +44,21 @@ class NFT_OBJ(OBJ_BASE):
 			return None
 
 
+	def __check_attr_type(self, field:str, attribute:Any) -> int:
+		try:
+			field_type = self.__annotations__[field]
+			check_type(field, attribute, field_type)
+		except TypeError as err:
+			raise PyNFTException(-1, str(self), str(err))
+		return 0
+
+
 	def __integrate_subres(self, res, subres, other, field):
 		head = res.index("*head")
 		if (other != None):
 			return (res[:head] + subres + ", " + res[head:])
 		else:
 			return (res[:head] + "\"" + field + "\": " + subres + ", " + res[head:])
-
-
-	def __check_attr_type(self, field:str, attribute:Any) -> int:
-		try:
-			field_type = self.__annotations__[field]
-			check_type(field, attribute, field_type)
-		except TypeError as err:
-			print(err)
-			return 84
-		return 0
-
-
-	def __error_handling(self, subres, attribute, other) -> int:
-		if (subres == 84):
-			print(f"--> {attribute}")
-		return -1
 
 
 	def __cleanup(self, input:str) -> str:

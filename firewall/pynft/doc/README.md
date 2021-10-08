@@ -24,6 +24,16 @@ NFTables documentation can be found at the end of this file.
 
 > **Executor** is the class that executes CMD_OBJs. It can also pretty print command outputs as well as any NFT_OBJ.
 
+> **Executor.execute()** returns a Dictionary with 4 values:
+```
+{
+	"cmd"		: command name,
+	"rc"		: return code,
+	"output"	: output msg,
+	"error"		: error msg
+}
+```
+
 
 
 

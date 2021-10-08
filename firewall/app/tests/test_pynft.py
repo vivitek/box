@@ -2,21 +2,27 @@
 
 from unittest import TestCase
 
-from pynft.objects import TABLE
-from pynft.enumerations import ADDR_FAMILY
-from pynft.executor import Executor
+from	pynft.executor		import Executor
+import	pynft.enumerations	as ENUM
+import	pynft.objects		as OBJ
+import	pynft.commands		as CMD
 
 
-executor = Executor()
+pynft = Executor()
 
 
 class TestObjects(TestCase):
 
 	def test_type_checking(self):
-		self.assertEqual(1, 1)
-	
+		table_1 = OBJ.TABLE(family="a very illegal string", name="table_1")
+		res = pynft.execute(CMD.ADD(add=table_1), "add_table_1")
+		self.assertEqual(res['rc'], -1)
+
 	def test_JSON_generation(self):
-		self.assertEqual(1, 1)
+		table_1 = OBJ.TABLE(family=ENUM.ADDR_FAMILY.INET, name="table_1")
+		self.assertEqual(table_1.bake(), '{ "table": { "name": "table_1", "family": "inet" } }')
 	
 	def test_CMD_execution(self):
-		self.assertEqual(1, 1)
+		table_1 = OBJ.TABLE(family=ENUM.ADDR_FAMILY.INET, name="table_1")
+		res = pynft.execute(CMD.ADD(add=table_1), "add_table_1")
+		self.assertEqual(res['rc'], 0)
