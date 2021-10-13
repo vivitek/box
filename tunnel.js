@@ -9,14 +9,18 @@ const chalk = require("chalk");
 const { writeSync, copyFileSync, openSync } = require("fs");
 
 const initSsh = async () => {
+  spinnies.add("Creating SSH Key");
   await execa.command(
     `ssh-keygen -t rsa -f ${os.homedir()}/.ssh/id_tunnel -N \'\'`
   );
+  spinnies.succeed("Creating SSH Key");
 };
 
 const getUuid = async () => {
   try {
+    spinnies.add("Getting device UUID");
     const response = await axios.get(`${config.tunnel.server}/uuid`);
+    spinnies.succeed("Getting device UUID");
     return response.data.data.uuid;
   } catch (error) {
     throw `Could not get uuid from server. Error: ${error}`;
@@ -25,18 +29,31 @@ const getUuid = async () => {
 
 //retrieve port from remote server api
 const getPort = async () => {
-  const response = await axios.get(`${config.tunnel.server}/port`);
-  return response.data.data.port;
+  try {
+    spinnies.add("Getting available port");
+
+    const response = await axios.get(`${config.tunnel.server}/port`);
+    spinnies.succeed("Getting available port");
+
+    return response.data.data.port;
+  } catch (error) {
+    spinnies.fail("Getting available port");
+    throw `Could not get port from server. Error ${error}`;
+  }
 };
 
 const sendSshKey = async () => {
+  spinnies.add("Sending SSH Key to server");
+
   const sshKey = await execa.command(`cat ${os.homedir()}/.ssh/id_tunnel.pub`);
   const data = {
     ssh: sshKey.stdout,
   };
   try {
     await axios.post(`${config.tunnel.server}/api/tunnels`, data);
+    spinnies.succeed("Sending SSH Key to server");
   } catch (error) {
+    spinnies.fail("Sending SSH Key to server");
     throw `Could not send ssh key to server. Error: ${error}`;
   }
 };
@@ -59,40 +76,45 @@ const writeEnvFile = async (port, uuid) => {
 };
 
 const copyService = async () => {
-  spinnies.add("Copying service file");
-  copyFileSync(
-    "./config/openvivi.service",
-    "/etc/systemd/system/openvivi.service"
-  );
-  spinnies.succeed("Copying service file");
-  spinnies.add("Copying service script");
-  copyFileSync("./config/openvivi-tunnel.sh", "/usr/bin/openvivi-tunnel.sh");
-  spinnies.succeed("Copying service script");
+  try {
+    spinnies.add("Copying service file");
+    copyFileSync(
+      "./config/openvivi.service",
+      "/etc/systemd/system/openvivi.service"
+    );
+    spinnies.succeed("Copying service file");
+  } catch (error) {
+    throw `Could not copy service file. Error ${error}`;
+  }
+  try {
+    spinnies.add("Copying service-run script");
+    copyFileSync("./config/openvivi-tunnel.sh", "/usr/bin/openvivi-tunnel.sh");
+    spinnies.succeed("Copying service-run script");
+  } catch (error) {
+    spinnies.fail("Copying service-run script");
+    throw `Could not copy service-run script. Error ${error}`;
+  }
 };
 
-const run = async () => {
-  spinnies.add("Getting device UUID");
-  const uuid = await getUuid();
-  spinnies.succeed("Getting device UUID");
-  spinnies.add("Getting available port");
-  const port = await getPort();
-  spinnies.succeed("Getting available port");
-  spinnies.add("Creating SSH Key");
-  await initSsh();
-  spinnies.succeed("Creating SSH Key");
-  spinnies.add("Sending SSH Key to server");
-  await sendSshKey();
-  spinnies.succeed("Sending SSH Key to server");
-  await writeEnvFile(port, uuid);
-  spinnies.succeed("Writing service's env file");
-  await copyService();
-
+const storeInRedis = async (port, uuid) => {
   spinnies.add("Storing PORT and UUID in Redis");
   const client = redis.createClient();
   client.set("uuid", uuid);
   client.set("port", port);
   client.quit();
   spinnies.succeed("Storing PORT and UUID in Redis");
+};
+
+const run = async () => {
+  try {
+    const uuid = await getUuid();
+    const port = await getPort();
+    await initSsh();
+    await sendSshKey();
+    await writeEnvFile(port, uuid);
+    await copyService();
+    await storeInRedis(port, uuid);
+  } catch (error) {}
 };
 
 module.exports = {
