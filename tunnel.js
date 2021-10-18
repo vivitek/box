@@ -6,7 +6,7 @@ const redis = require("redis");
 const spinnies = new Spinnies();
 const os = require("os");
 const chalk = require("chalk");
-const { writeSync, copyFileSync, openSync } = require("fs");
+const { copyFileSync, openSync, writeFileSync, readFileSync } = require("fs");
 
 const initSsh = async () => {
   spinnies.add("Creating SSH Key");
@@ -62,20 +62,20 @@ const sendSshKey = async () => {
 const writeEnvFile = async (port, uuid) => {
   spinnies.add("Writing service's env file");
   try {
-    const envFile = openSync("/etc/default/openvivi-tunnel", "w");
-    writeSync(
-      envFile,
-      `UUID=${uuid}\nVIVIDPORT=${port}\nVIVISPORT=3000\nVIVISSH_USER=tunnel\nVIVISSH_SERVER=${config.tunnel.server}`
+    writeFileSync(
+      "/etc/default/openvivi-tunnel",
+      `VIVIUUID=${uuid}\nVIVIDPORT=${port}\nVIVISPORT=3000\nVIVISSH_USER=tunnel\nVIVISSH_SERVER=${config.tunnel.server}`
     );
-    closeSync(envFile);
+
     spinnies.succeed("Writing service's env file");
   } catch (error) {
     spinnies.fail("Writing service's env file");
+    console.log(error);
     throw `Could not write env file. Error: ${error}`;
   }
 };
 
-const copyService = async () => {
+const copyService = async (port) => {
   try {
     spinnies.add("Copying service file");
     copyFileSync(
@@ -88,7 +88,12 @@ const copyService = async () => {
   }
   try {
     spinnies.add("Copying service-run script");
-    copyFileSync("./config/openvivi-tunnel.sh", "/usr/bin/openvivi-tunnel.sh");
+    var fileData = readFileSync("./config/openvivi-tunnel.sh").toString();
+    fileData = fileData.replace("$VIVISPORT", 3000);
+    fileData = fileData.replace("$VIVIDPORT", port);
+    fileData = fileData.replace("$VIVISSH_USER", "tunnel");
+    fileData = fileData.replace("$VIVISSH_SERVER", "api.openvivi.com");
+    writeFileSync("/usr/bin/openvivi-tunnel.sh", fileData);
     spinnies.succeed("Copying service-run script");
   } catch (error) {
     spinnies.fail("Copying service-run script");
@@ -112,7 +117,7 @@ const run = async () => {
     await initSsh();
     await sendSshKey();
     await writeEnvFile(port, uuid);
-    await copyService();
+    await copyService(port);
     await storeInRedis(port, uuid);
   } catch (error) {}
 };
