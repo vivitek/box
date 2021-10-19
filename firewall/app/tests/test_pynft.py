@@ -1,27 +1,28 @@
-import os
-import json
-import unittest
-from pynft import Executor
+#!/usr/bin/env python3
 
-PyNFT_shell = Executor()
+from unittest import TestCase
 
-#
-#	PyNFT v2_shell tests
-#
+from	pynft.executor		import Executor
+import	pynft.enumerations	as ENUM
+import	pynft.objects		as OBJ
+import	pynft.commands		as CMD
 
-class TestBasicNFTCommands(unittest.TestCase):
-	def listRuleset(self):
-		PyNFT_shell.ListRuleset()
-		self.assertEqual(0, 0)
 
-class TestIPv4Blacklist(unittest.TestCase):
-	def testBanUnban(self):
-		PyNFT_shell.BanIPv4Saddr("vincipit.com")
-		response = os.system("ping -c 1 vincipit.com")
-		self.assertNotEqual(0, response)
-		PyNFT_shell.UnbanIPv4Saddr("vincipit.com")
-		response = os.system("ping -c 1 vincipit.com")
-		self.assertEqual(0, response)
+pynft = Executor()
 
-if __name__ == "__main__":
-    unittest.main()
+
+class TestObjects(TestCase):
+
+	def test_type_checking(self):
+		table_1 = OBJ.TABLE(family="a very illegal string", name="table_1")
+		res = pynft.execute(CMD.ADD(add=table_1), "add_table_1")
+		self.assertEqual(res['rc'], -1)
+
+	def test_JSON_generation(self):
+		table_1 = OBJ.TABLE(family=ENUM.ADDR_FAMILY.INET, name="table_1")
+		self.assertEqual(table_1.bake(), '{ "table": { "name": "table_1", "family": "inet" } }')
+	
+	def test_CMD_execution(self):
+		table_1 = OBJ.TABLE(family=ENUM.ADDR_FAMILY.INET, name="table_1")
+		res = pynft.execute(CMD.ADD(add=table_1), "add_table_1")
+		self.assertEqual(res['rc'], 0)

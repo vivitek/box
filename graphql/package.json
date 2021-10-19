@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.17",
+    "@types/node": "^15.3.0",
     "@types/ws": "^7.4.0"
   }
 }
