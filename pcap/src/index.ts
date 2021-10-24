@@ -25,10 +25,7 @@ const sendToQueue = async (data) => {
 
 // PCAP INIT
 const initPcap = async () => {
-  const pcap_session: pcap.PcapSession = pcap.createSession(
-    "", // default interface (== all interfaces ?)
-    {} // default handle (i think it's meh)
-  );
+  const pcap_session: pcap.PcapSession = pcap.createSession("", {});
 
   pcap_session.on("packet", (raw_packet) => {
     const packet = pcap.decode.packet(raw_packet);
