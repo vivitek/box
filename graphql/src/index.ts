@@ -167,22 +167,20 @@ const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
 }
 
 const consumerPcap = async (qMsg: any): Promise<void> => {
-  channel.ack(qMsg)
-  /*
   const msgData = JSON.parse(qMsg.content.toString())
 
-  // example msgData (data model):
+  /* example msgData :
   {
     len: 60,
     saddr: "10.147.158.3",
     daddr: "14.236.124.4"
   }
+  */
 
   if (await createBan(msgData, false))
     channel.ack(qMsg)
   else
     channel.nack(qMsg)
-  */
 }
 
 const main = async (): Promise<void> => {
