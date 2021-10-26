@@ -152,8 +152,10 @@ const initRabbitMQ = async (): Promise<void> => {
     if (error.response) {
       logger.fatal('An error occured while connecting to RabbitMQ')
       logger.fatal(`Status code: ${error.response.status}`)
-    } else
+    } else {
       logger.fatal('A mystical error occured during the RabbitMQ initialization ')
+      logger.fatal(error)
+    }
     process.exit(1);
   }
 };
@@ -176,11 +178,6 @@ const consumerPcap = async (qMsg: any): Promise<void> => {
     daddr: "14.236.124.4"
   }
   */
-
-  if (await createBan(msgData, false))
-    channel.ack(qMsg)
-  else
-    channel.nack(qMsg)
 }
 
 const main = async (): Promise<void> => {
