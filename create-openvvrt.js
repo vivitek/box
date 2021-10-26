@@ -33,10 +33,7 @@ const runCommands = async (name, commands, {execPath, hideLogs = true}) => {
 
 
 /* TODO */
-// SSH configuration
-// Add a cronjob to pull master every day
 // Start openvvrt api on boot
-// Generate and store uuid & name using openvvrt
 
 const start = async () => {
   const startHotspot = !process.argv.includes('--no-hotspot')
