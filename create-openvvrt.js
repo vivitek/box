@@ -4,7 +4,7 @@ const Spinnies = require("spinnies")
 const execa = require("execa")
 const Aigle = require("aigle")
 const config = require('./config/openvvrt.config.json')
-const { run } = require("./tunnel")
+const { run: tunnelConfigutation } = require("./tunnel")
 const redis = require("redis")
 
 const log = openSync(`${+new Date()}.log`, "a+")
@@ -70,7 +70,7 @@ const start = async () => {
     if (initTunnel) {
       console.log(chalk.bold('Installing OpenViVi Tunnel'))
       spinnies.add("OpenViVi Tunnel")
-      await run()
+      await tunnelConfigutation()
       spinnies.succeed("OpenViVi Tunnel")
     }
 
@@ -91,8 +91,8 @@ const start = async () => {
       for (let i = 0; i < 1024; i++)
         certificat += CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)]
       redisClient.set("certificat", certificat)
-      console.info(`-- CERTIFICAT --\n${certificat}\n -- END CERTIFICAT --`)
       spinnies.succeed("Generating certificat")
+      console.info(`-- CERTIFICAT --\n${certificat}\n -- END CERTIFICAT --`)
     }
 
     redisClient.quit()
