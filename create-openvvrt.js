@@ -5,6 +5,7 @@ const execa = require("execa")
 const Aigle = require("aigle")
 const config = require('./config/openvvrt.config.json')
 const { run } = require("./tunnel")
+const redis = require("redis")
 
 const log = openSync(`${+new Date()}.log`, "a+")
 const spinnies = new Spinnies()
@@ -32,16 +33,15 @@ const runCommands = async (name, commands, {execPath, hideLogs = true}) => {
 }
 
 
-/* TODO */
-// Start openvvrt api on boot
-
 const start = async () => {
   const startHotspot = !process.argv.includes('--no-hotspot')
   const startServices = !process.argv.includes('--no-services')
   const initTunnel = !process.argv.includes('--no-tunnel')
+  const genCertificat = !process.argv.includes('--no-certificat')
 
   try {
     writeSync(log, `Logs from ${+new Date()}\n`)
+    const redisClient = redis.createClient()
 
     console.log(chalk.bold('Installing dependencies'))
     await Aigle.eachSeries(config.dependencies, async (dependency) => {
@@ -84,6 +84,18 @@ const start = async () => {
       spinnies.succeed('Hotspot')
     }
 
+    if (genCertificat) {
+      spinnies.add("Generating certificat")
+      const CHARACTERS = "1234567890azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN+=-8~#|;:%*$&"
+      let certificat = "";
+      for (let i = 0; i < 1024; i++)
+        certificat += CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)]
+      redisClient.set("certificat", certificat)
+      console.info(`-- CERTIFICAT --\n${certificat}\n -- END CERTIFICAT --`)
+      spinnies.succeed("Generating certificat")
+    }
+
+    redisClient.quit()
     console.log(chalk.bold("All done !"))
   } catch (err) {
     console.log(chalk.red('Critical error occured.'))
