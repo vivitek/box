@@ -6,6 +6,7 @@ const Aigle = require("aigle")
 const config = require('./config/openvvrt.config.json')
 const { run: tunnelConfigutation } = require("./tunnel")
 const redis = require("redis")
+const name = require('namez')
 
 const log = openSync(`${+new Date()}.log`, "a+")
 const spinnies = new Spinnies()
@@ -87,12 +88,17 @@ const start = async () => {
     if (genCertificat) {
       spinnies.add("Generating certificat")
       const CHARACTERS = "1234567890azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN+=-8~#|;:%*$&"
+      const name = namez({format: 'title', separator: '-'})
       let certificat = "";
       for (let i = 0; i < 1024; i++)
         certificat += CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)]
+
+
+      redisClient.set("name", name)
       redisClient.set("certificat", certificat)
       spinnies.succeed("Generating certificat")
       console.info(`-- CERTIFICAT --\n${certificat}\n -- END CERTIFICAT --`)
+      console.info(`Box name: ${name}`)
     }
 
     redisClient.quit()
