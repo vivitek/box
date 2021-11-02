@@ -10,8 +10,9 @@ const { copyFileSync, openSync, writeFileSync, readFileSync } = require("fs");
 
 const initSsh = async () => {
   spinnies.add("Creating SSH Key");
-  await execa.command(
-    `ssh-keygen -t rsa -f ${os.homedir()}/.ssh/id_tunnel -N \'\'`
+  const data = await execa.command(
+    `ssh-keygen -t rsa -f ${os.homedir()}/.ssh/id_tunnel -q `,
+    { input: "\n" }
   );
   spinnies.succeed("Creating SSH Key");
 };
@@ -116,9 +117,9 @@ const run = async () => {
     const port = await getPort();
     await initSsh();
     await sendSshKey();
+    await storeInRedis(port, uuid);
     await writeEnvFile(port, uuid);
     await copyService(port);
-    await storeInRedis(port, uuid);
   } catch (error) {}
 };
 
