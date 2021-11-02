@@ -5,8 +5,14 @@ const Spinnies = require("spinnies");
 const redis = require("redis");
 const spinnies = new Spinnies();
 const os = require("os");
-const chalk = require("chalk");
-const { copyFileSync, openSync, writeFileSync, readFileSync } = require("fs");
+const {
+  copyFileSync,
+  openSync,
+  writeFileSync,
+  readFileSync,
+  appendFileSync,
+  existsSync,
+} = require("fs");
 
 const initSsh = async () => {
   spinnies.add("Creating SSH Key");
@@ -15,6 +21,26 @@ const initSsh = async () => {
     { input: "\n" }
   );
   spinnies.succeed("Creating SSH Key");
+};
+
+const addSshToConfig = async () => {
+  spinnies.add("Adding OpenViVi config to ssh-agent");
+  try {
+    if (!existsSync(`${os.homedir()}/.ssh/config`)) {
+      await execa(`touch ${os.homedir()}/.ssh/config`);
+    }
+    appendFileSync(
+      `${os.homedir()}/.ssh/config`,
+      "Host openvivi \n\
+      \tHostname api.openvivi.com \n\
+      \tIdentityFile ~/.ssh/id_tunnel\n\
+    "
+    );
+    spinnies.succeed("Adding OpenViVi config to ssh-agent");
+  } catch (error) {
+    spinnies.fail("Adding OpenViVi config to ssh-agent");
+    throw `Could not set ssh config file. Error: ${error}`;
+  }
 };
 
 const getUuid = async () => {
@@ -117,6 +143,7 @@ const run = async () => {
     const port = await getPort();
     await initSsh();
     await sendSshKey();
+    await addSshToConfig();
     await storeInRedis(port, uuid);
     await writeEnvFile(port, uuid);
     await copyService(port);
