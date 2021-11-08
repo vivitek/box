@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 EnvironmentFile="/etc/default/openvivi-tunnel"
-ExecStart=/usr/bin/openvivi-tunnel.sh
+ExecStart=bash $PWD/config/openvivi-tunnel.sh
 Restart=always
 RestartSec=10
 
