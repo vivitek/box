@@ -1,8 +1,7 @@
 from flask import Blueprint, request, abort
 from flask_api import status
 from pynft import Executor
-from app.main.model.ip import IPBan
-from app.main import db
+from app.main import redis_client
 from app.main.utils.custom_exception import CustomException
 import app.main.utils.validate_form as validateForm
 
@@ -19,9 +18,7 @@ def banIP():
         response = PyNFT.BanIPv4Addr(address)
         if (response['error']):
             raise Exception(response['error'])
-        ruleDB = IPBan (address = address)
-        db.session.add(ruleDB)
-        db.session.commit()
+        redis_client.zadd('ipBan', {address: 0})
         return response, status.HTTP_200_OK
     except CustomException as e:
         return(e.reason, e.code)
@@ -36,8 +33,7 @@ def unbanIp():
         response = PyNFT.UnbanIPv4Addr(address)
         if (response['error']):
             raise Exception(response['error'])
-        IPBan.query.filter_by(address=address).delete()
-        db.session.commit()
+        redis_client.zrem('ipBan', address)
         return response, status.HTTP_200_OK
     except CustomException as e:
         return(e.reason, e.code)

@@ -1,8 +1,7 @@
 from flask import Blueprint, request, abort
 from flask_api import status
 from pynft import Executor
-from app.main.model.mac import MacBan
-from app.main import db
+from app.main import redis_client
 from app.main.utils.custom_exception import CustomException
 import app.main.utils.validate_form as validateForm
 
@@ -19,9 +18,7 @@ def banMac():
         response = PyNFT.BanMACAddr(address, None)
         if (response['error']):
             raise Exception(response['error'])
-        ruleDB = MacBan (address = address)
-        db.session.add(ruleDB)
-        db.session.commit()
+        redis_client.zadd('macBan', {address: 0})
         return response, status.HTTP_200_OK
     except CustomException as e:
         return(e.reason, e.code)
@@ -36,8 +33,7 @@ def unbanMac():
         response = PyNFT.UnbanMACAddr(address)
         if (response['error']):
             raise Exception(response['error'])
-        MacBan.query.filter_by(address=address).delete()
-        db.session.commit()
+        redis_client.zrem('macBan', address)
         return response, status.HTTP_200_OK
     except CustomException as e:
         return(e.reason, e.code)

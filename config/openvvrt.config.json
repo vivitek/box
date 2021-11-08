@@ -85,7 +85,7 @@
         "./node_modules/typescript/bin/tsc"
       ],
       "runCmd": [
-        "sudo pm2 start -f --name graphql dist/src/index.js"
+        "sudo NODE_ENV=production pm2 start -f --name graphql dist/src/index.js"
       ]
     },
     {
@@ -98,15 +98,6 @@
       ],
       "runCmd": [
         "sudo pm2 start -f --name openvvrt dist/index.js"
-      ]
-    },
-    {
-      "name":"OpenViVi",
-      "folder":".",
-      "preInstallCmd":[],
-      "installCmd":[],
-      "runCmd":[
-        "sudo systemctl start openvivi.service"
       ]
     }
   ]

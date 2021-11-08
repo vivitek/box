@@ -1,23 +1,16 @@
-from . import db
-
-from app.main.model.ip import IPBan
-from app.main.model.mac import MacBan
+from app.main import redis_client
 
 from pynft import Executor
 
 PyNFT = Executor()
 
 def init_rules():
-    IPArray = IPBan.query.all()
+    IPArray = redis_client.zrange("ipBan", 0, -1)
     for ip in IPArray:
-        response = PyNFT.BanIPv4Addr(IPBan.query.get(str(ip)).address)
-        db.session.add(ip)
-        db.session.commit()
-    MACArray = MacBan.query.all()
+        response = PyNFT.BanIPv4Addr(ip.decode())
+    MACArray = redis_client.zrange("macBan", 0, -1)
     for mac in MACArray:
-        response = PyNFT.BanMACAddr(MacBan.query.get(str(mac)).address)
-        db.session.add(mac)
-        db.session.commit()
+        response = PyNFT.BanMACAddr(mac.decode())
 
 def init_firewall():
     PyNFT.init_pynft("", "")

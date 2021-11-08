@@ -9,25 +9,27 @@ import { FIREWALL_ENDPOINT, GRAPHQL_ENDPOINT } from '../constant'
 import { CREATE_BAN, GET_BANS, SUBSCRIBE_BAN } from './banQueries'
 import { CREATE_ROUTER } from './routerQueries'
 import { logger } from './logger'
+import * as redis from "redis-client-async"
 
 let id: string
 let channel: amqp.Channel
+const redisClient = redis.createClient(6379, 'localhost')
 
 /* Utils */
-const getWsClient = function(wsurl: string): SubscriptionClient {
+const getWsClient = function(wsurl: string, certificat: string): SubscriptionClient {
   const client = new SubscriptionClient(wsurl, {
     reconnect: true,
     connectionParams: {
       headers: {
-        authorization: process.env.VINCIPIT_BEARER_TOKEN
+        authorization: `Bearer ${certificat}`
       }
     }
   }, ws)
   return client
 }
 
-const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: QueryContent) => {
-  const link = new WebSocketLink(getWsClient(wsurl))
+const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: QueryContent, certificat: string) => {
+  const link = new WebSocketLink(getWsClient(wsurl, certificat))
   return execute(link, {query, variables})
 }
 
@@ -55,7 +57,7 @@ const requestFirewall = async (ban: Ban): Promise<void> => {
 }
 /* Utils End */
 
-const selfCreate = async (name: string, url: string): Promise<void> => {
+const selfCreate = async (name: string, url: string, certificat: string): Promise<void> => {
   try {
     const res = await sendRequest({
       query: print(CREATE_ROUTER),
@@ -66,6 +68,7 @@ const selfCreate = async (name: string, url: string): Promise<void> => {
         }
       }
     })
+    console.log(JSON.stringify(res.data))
     id = res.data.data.createRouter._id
     if (id == undefined)
       throw new Error('Router already created')
@@ -73,6 +76,7 @@ const selfCreate = async (name: string, url: string): Promise<void> => {
     if (error.response) {
       logger.error('An error occured while creating router')
       logger.error(`Status code: ${error.response.status}`)
+      logger.error(error.response)
     } else
       logger.error(error)
   }
@@ -121,11 +125,12 @@ const createBan = async (address: string, banned: boolean): Promise<boolean> => 
   }
 }
 
-const subscribeBan = (): void => {
+const subscribeBan = (certificat: string): void => {
   const client = createSubscriptionObservable(
     GRAPHQL_ENDPOINT,
     SUBSCRIBE_BAN,
-    {routerSet: id}
+    {routerSet: id},
+    certificat
   )
   client.subscribe(eventData => {
     requestFirewall(eventData.data.banUpdated)
@@ -136,9 +141,9 @@ const initRabbitMQ = async (): Promise<void> => {
   try {
     logger.info('Connecting to RabbitMQ...')
     const connection = await amqp.connect({
-      hostname: process.env.AMQP_HOSTNAME,
-      username: process.env.AMQP_USERNAME,
-      password: process.env.AMQP_PASSWORD,
+      hostname: "localhost",
+      username: "vivi",
+      password: "vivitek",
     });
     channel = await connection.createChannel();
     await channel.assertQueue("dhcp");
@@ -162,19 +167,27 @@ const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
   }
 }
 
-const main = async (): Promise<void> => {
-  logger.info('Service starting...')
-  await initRabbitMQ()
-  logger.info('RabbitMQ is running')
-  if (!process.env.VINCIPIT_DEVICE_ID) {
-    await selfCreate(process.env.BALENA_DEVICE_NAME_AT_INIT, process.env.BALENA_DEVICE_UUID + '.balena-devices.com')
-    logger.info(`Router ${id} have been created`)
-  } else {
-    id = process.env.VINCIPIT_DEVICE_ID
-    logger.info(`Router ${id} already created`)
+const main = async () => {
+  try {
+    console.log(GRAPHQL_ENDPOINT)
+    logger.info('Service starting...')
+
+    const uuid = await redisClient.getAsync('uuid')
+    const name = await redisClient.getAsync('name')
+    const certificat = await redisClient.getAsync('certificat')
+
+    if (!uuid || !name || !certificat)
+      throw `Missing required info\nuuid: ${uuid}\nname: ${name}\ncertficat: ${certificat}`
+
+    await initRabbitMQ()
+    logger.info('RabbitMQ is running')
+
+    await selfCreate(name, `${uuid}.openvivi.com`, certificat)
+    await getBans()
+    subscribeBan(certificat)
+  } catch(err) {
+    throw err
   }
-  await getBans()
-  subscribeBan()
 }
 
 main()
