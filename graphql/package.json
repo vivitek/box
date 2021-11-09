@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc"
   },
-  "author": "Arthur LE BRETON",
+  "author": "Vivitek",
   "license": "ISC",
   "dependencies": {
     "@tsed/logger": "^5.13.2",
@@ -19,7 +19,7 @@
     "graphql-tag": "^2.11.0",
     "redis-client-async": "^1.0.9",
     "source-map-support": "^0.5.19",
-    "subscriptions-transport-ws": "^0.9.18",
+    "subscriptions-transport-ws": "^0.9.19",
     "typescript": "^4.2.3",
     "ws": "^7.4.2"
   },

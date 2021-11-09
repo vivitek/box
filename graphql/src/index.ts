@@ -5,7 +5,7 @@ import axios from 'axios'
 import { DocumentNode, print } from 'graphql'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 import * as ws from 'ws'
-import { FIREWALL_ENDPOINT, GRAPHQL_ENDPOINT } from '../constant'
+import { FIREWALL_ENDPOINT, GRAPHQL_ENDPOINT, GRAPHQL_WEBSOCKET } from '../constant'
 import { CREATE_BAN, GET_BANS, SUBSCRIBE_BAN } from './banQueries'
 import { CREATE_ROUTER } from './routerQueries'
 import { logger } from './logger'
@@ -16,7 +16,7 @@ let channel: amqp.Channel
 const redisClient = redis.createClient(6379, 'localhost')
 
 /* Utils */
-const getWsClient = function(wsurl: string, certificat: string): SubscriptionClient {
+const getWsClient = (wsurl: string, certificat: string): SubscriptionClient => {
   const client = new SubscriptionClient(wsurl, {
     reconnect: true,
     connectionParams: {
@@ -127,7 +127,7 @@ const createBan = async (address: string, banned: boolean): Promise<boolean> => 
 
 const subscribeBan = (certificat: string): void => {
   const client = createSubscriptionObservable(
-    GRAPHQL_ENDPOINT,
+    GRAPHQL_WEBSOCKET,
     SUBSCRIBE_BAN,
     {routerSet: id},
     certificat
@@ -179,10 +179,12 @@ const main = async () => {
     if (!uuid || !name || !certificat)
       throw `Missing required info\nuuid: ${uuid}\nname: ${name}\ncertficat: ${certificat}`
 
+    await selfCreate(name, `${uuid}.openvivi.com`, certificat)
+      logger.info(`Box has beeen created\nuuid: ${uuid}\nname: ${name}\ncertficat: ${certificat}`)
+
     await initRabbitMQ()
     logger.info('RabbitMQ is running')
 
-    await selfCreate(name, `${uuid}.openvivi.com`, certificat)
     await getBans()
     subscribeBan(certificat)
   } catch(err) {
