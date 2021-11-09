@@ -22,7 +22,13 @@ const instance = axios.create({
   }),
 });
 const keygen = require("ssh-keygen");
-const { openSync, writeFileSync, appendFileSync, existsSync } = require("fs");
+const {
+  openSync,
+  writeFileSync,
+  appendFileSync,
+  existsSync,
+  readFileSync,
+} = require("fs");
 
 const initSsh = async () => {
   spinnies.add("Creating SSH Key");
@@ -126,7 +132,7 @@ const writeEnvFile = async (port, uuid) => {
   }
 };
 
-const copyService = async (port) => {
+const copyService = async () => {
   try {
     spinnies.add("Copying service file");
     const { stderr } = await execa.command(
@@ -181,6 +187,23 @@ const startService = async () => {
   }
 };
 
+const createServiceScript = async (port) => {
+  spinnies.add("Creating service script");
+  try {
+    const data = readFileSync("./config/openvivi-tunnel.template.sh", "utf8");
+    const service = data
+      .replace("$VIVIDPORT", port)
+      .replace("$VIVISPORT", 3000)
+      .replace("$VIVISSH_USER", "tunnel")
+      .replace("$VIVISSH_SERVER", config.tunnel.server.replace("https://", ""));
+    writeFileSync("./config/openvivi-tunnel.sh", service);
+    spinnies.succeed("Creating service script");
+  } catch (error) {
+    spinnies.fail("Creating service script");
+    throw `Could not create service script: ${error}`;
+  }
+};
+
 const run = async () => {
   try {
     const uuid = await getUuid();
@@ -192,8 +215,9 @@ const run = async () => {
     await addSshToConfig();
     await storeInRedis(port, uuid);
     await createServerEntry(port, uuid);
-    await writeEnvFile(port, uuid);
-    await copyService(port);
+    //await writeEnvFile(port, uuid);
+    await createServiceScript(port);
+    await copyService();
     await startService();
   } catch (error) {
     console.log(error);
