@@ -66,16 +66,6 @@ const start = async () => {
       spinnies.succeed("OpenViVi Tunnel")
     }
 
-    if (startHotspot) {
-      spinnies.add('Hotspot', { color: "white", succeedColor: "white" })
-      await runCommands("Creating interface", [`sudo nmcli con add type wifi ifname ${config.hotspot.interface} con-name ${config.hotspot.name} autoconnect yes ssid ${config.hotspot.name}`], { execPath: process.cwd() })
-      await runCommands("Configuring interface", [`sudo nmcli con modify ${config.hotspot.name} 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared`], { execPath: process.cwd() })
-      await runCommands("Configuring encryption protcol", [`sudo nmcli con modify ${config.hotspot.name} wifi-sec.key-mgmt wpa-psk`], { execPath: process.cwd() })
-      await runCommands("Setting password", [`sudo nmcli con modify ${config.hotspot.name} wifi-sec.psk ${config.hotspot.password}`], { execPath: process.cwd() })
-      await runCommands("Bringing up hotspot", [`sudo nmcli con up ${config.hotspot.name}`], { execPath: process.cwd() })
-      spinnies.succeed('Hotspot')
-    }
-
     if (genCertificat) {
       spinnies.add("Generating certificat")
       const CHARACTERS = "1234567890azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN+=-8~#|;:%*$&"
@@ -103,6 +93,16 @@ const start = async () => {
         await runCommands("Start service", service.runCmd, { execPath: path })
       spinnies.succeed(service.name)
     })
+
+    if (startHotspot) {
+      spinnies.add('Hotspot', { color: "white", succeedColor: "white" })
+      await runCommands("Creating interface", [`sudo nmcli con add type wifi ifname ${config.hotspot.interface} con-name ${config.hotspot.name} autoconnect yes ssid ${config.hotspot.name}`], { execPath: process.cwd() })
+      await runCommands("Configuring interface", [`sudo nmcli con modify ${config.hotspot.name} 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared`], { execPath: process.cwd() })
+      await runCommands("Configuring encryption protcol", [`sudo nmcli con modify ${config.hotspot.name} wifi-sec.key-mgmt wpa-psk`], { execPath: process.cwd() })
+      await runCommands("Setting password", [`sudo nmcli con modify ${config.hotspot.name} wifi-sec.psk ${config.hotspot.password}`], { execPath: process.cwd() })
+      await runCommands("Bringing up hotspot", [`sudo nmcli con up ${config.hotspot.name}`], { execPath: process.cwd() })
+      spinnies.succeed('Hotspot')
+    }
 
     redisClient.quit()
     console.log(chalk.bold("All done !"))

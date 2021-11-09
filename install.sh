@@ -1,5 +1,6 @@
 #!/bin/bash
 
+rabbitmqadmin delete queue name=dhcp
 sudo rm /root/.pm2/logs/graphql-*.log
 sudo pm2 flush > /dev/null
 sudo pm2 delete all > /dev/null
