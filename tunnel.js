@@ -156,9 +156,12 @@ const createServerEntry = async (port, uuid) => {
     });
     spinnies.succeed("Creating record on server");
   } catch (error) {
-    console.log(error);
-    spinnies.fail("Creating record on server");
-    throw `Could not create server config: ${error}`;
+    if (error.isAxiosError && error.code === "ECONNRESET") {
+      spinnies.succeed("Creating record on server");
+    } else {
+      spinnies.fail("Creating record on server");
+      throw `Could not create server config: ${error}`;
+    }
   }
 };
 
