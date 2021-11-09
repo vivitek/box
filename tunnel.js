@@ -112,7 +112,7 @@ const writeEnvFile = async (port, uuid) => {
   try {
     writeFileSync(
       "/tmp/openvivi-tunnel",
-      `VIVIUUID=${uuid}\nVIVIDPORT=${port}\nVIVISPORT=3000\nVIVISSH_USER=tunnel\nVIVISSH_SERVER=${config.tunnel.server.replace(
+      `VIVISSHPATH=${os.homedir()}/.ssh\nVIVIUUID=${uuid}\nVIVIDPORT=${port}\nVIVISPORT=3000\nVIVISSH_USER=tunnel\nVIVISSH_SERVER=${config.tunnel.server.replace(
         "https://",
         ""
       )}`
