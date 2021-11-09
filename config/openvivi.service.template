@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 EnvironmentFile="/etc/default/openvivi-tunnel"
-ExecStartPre=ssh-add $VIVISSHPATH/id_tunnel
+ExecStartPre=ssh-add /home/ubuntu/.ssh/id_tunnel
 ExecStart=bash $PWD/config/openvivi-tunnel.sh
 Restart=always
 RestartSec=10
