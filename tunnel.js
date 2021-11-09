@@ -112,7 +112,10 @@ const writeEnvFile = async (port, uuid) => {
   try {
     writeFileSync(
       "/tmp/openvivi-tunnel",
-      `VIVIUUID=${uuid}\nVIVIDPORT=${port}\nVIVISPORT=3000\nVIVISSH_USER=tunnel\nVIVISSH_SERVER=${config.tunnel.server}`
+      `VIVIUUID=${uuid}\nVIVIDPORT=${port}\nVIVISPORT=3000\nVIVISSH_USER=tunnel\nVIVISSH_SERVER=${config.tunnel.server.replace(
+        "https://",
+        ""
+      )}`
     );
     await execa.command("bash ./config/initTunnelEnv.sh");
     spinnies.succeed("Writing service's env file");
@@ -165,6 +168,19 @@ const createServerEntry = async (port, uuid) => {
   }
 };
 
+const startService = async () => {
+  spinnies.add("Starting Openvivi tunnel service");
+  try {
+    await execa.command("sudo systemctl daemon-reload");
+    await execa.command("sudo systemctl enable openvivi");
+    await execa.command("sudo systemctl start openvivi");
+    spinnies.succeed("Starting Openvivi tunnel service");
+  } catch (error) {
+    spinnies.fail("Starting Openvivi tunnel service");
+    throw `Could not start service: ${error}`;
+  }
+};
+
 const run = async () => {
   try {
     const uuid = await getUuid();
@@ -178,6 +194,7 @@ const run = async () => {
     await createServerEntry(port, uuid);
     await writeEnvFile(port, uuid);
     await copyService(port);
+    await startService();
   } catch (error) {
     console.log(error);
   }
