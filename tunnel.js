@@ -196,7 +196,7 @@ const createServiceScript = async (port) => {
       .replace("$VIVISPORT", 3000)
       .replace("$VIVISSH_USER", "tunnel")
       .replace("$VIVISSH_SERVER", config.tunnel.server.replace("https://", ""));
-    writeFileSync("./config/openvivi-tunnel.sh", service);
+    writeFileSync("./config/openvivi-tunnel.sh", service, {});
     spinnies.succeed("Creating service script");
   } catch (error) {
     spinnies.fail("Creating service script");
