@@ -221,6 +221,7 @@ const run = async () => {
     await startService();
   } catch (error) {
     console.log(error);
+    throw err;
   }
 };
 

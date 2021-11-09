@@ -39,12 +39,10 @@ const start = async () => {
   const startServices = !process.argv.includes('--no-services')
   const initTunnel = !process.argv.includes('--no-tunnel')
   const genCertificat = !process.argv.includes('--no-certificat')
-  const skipInstall = process.argv.includes('skip-install')
+  const skipInstall = !process.argv.includes('--skip-install')
 
   try {
     writeSync(log, `Logs from ${+new Date()}\n`)
-    const redisClient = redis.createClient()
-
     if (skipInstall) {
       console.log(chalk.bold('Installing dependencies'))
       await Aigle.eachSeries(config.dependencies, async (dependency) => {
@@ -54,10 +52,12 @@ const start = async () => {
       console.log(chalk.bold('Installing node global packages'))
       await Aigle.eachSeries(config.nodeDependencies, async (dependency) => {
         spinnies.add(dependency)
-        await runCommands(dependency, [`sudo npm i -g ${dependency}`], { execPath: process.cwd() })
+        await runCommands(dependency, [`npm i -g ${dependency}`], { execPath: process.cwd() })
       })
 
     }
+  
+    const redisClient = redis.createClient()
 
     if (initTunnel) {
       console.log(chalk.bold('Installing OpenViVi Tunnel'))
