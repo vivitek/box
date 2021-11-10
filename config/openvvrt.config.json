@@ -14,7 +14,10 @@
     "libpq-dev",
     "procps",
     "nftables",
-    "python3-testresources"
+    "python3-testresources",
+    "redis-tools",
+    "redis-server",
+    "nodejs"
   ],
   "nodeDependencies": [
     "pm2"

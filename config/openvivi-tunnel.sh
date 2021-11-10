@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-
-/usr/bin/ssh -N -T -R 43077:localhost:3000 tunnel@api.openvivi.com
+eval $(ssh-agent -s)
+ssh-add /home/ubuntu/.ssh/id_tunnel
+/usr/bin/ssh -o StrictHostKeyChecking=accept-new -N -T -R 38651:localhost:3000 tunnel@api.openvivi.com

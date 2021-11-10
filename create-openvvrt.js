@@ -21,7 +21,12 @@ const runCommands = async (name, commands, { execPath, hideLogs = true }) => {
       writeSync(log, String(stdout))
       if (!hideLogs)
         console.log(stdout)
-      if (stderr && !stderr.startsWith("\nWARNING") && !stderr.startsWith("npm WARN") && !stderr.startsWith("npm notice"))
+      if (stderr &&
+          !stderr.startsWith("\nWARNING") &&
+          !stderr.startsWith("npm WARN") &&
+          !stderr.startsWith("npm notice") &&
+          !stderr.startsWith('Created symlink')
+        )
         throw stderr
       spinnies.succeed(name)
     } catch (err) {
@@ -47,14 +52,13 @@ const start = async () => {
       console.log(chalk.bold('Installing dependencies'))
       await Aigle.eachSeries(config.dependencies, async (dependency) => {
         spinnies.add(dependency)
-        await runCommands(dependency, [`sudo apt install -y ${dependency}`], { execPath: process.cwd() })
+        await runCommands(dependency, [`sudo DEBIAN_FRONTEND=noninteractive  apt install -y -q ${dependency}`], { execPath: process.cwd() })
       })
       console.log(chalk.bold('Installing node global packages'))
       await Aigle.eachSeries(config.nodeDependencies, async (dependency) => {
         spinnies.add(dependency)
-        await runCommands(dependency, [`npm i -g ${dependency}`], { execPath: process.cwd() })
+        await runCommands(dependency, [`sudo npm i -g ${dependency}`], { execPath: process.cwd() })
       })
-
     }
   
     const redisClient = redis.createClient()
@@ -73,7 +77,6 @@ const start = async () => {
       let certificat = "";
       for (let i = 0; i < 1024; i++)
         certificat += CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)]
-
 
       redisClient.set("name", name)
       redisClient.set("certificat", certificat)
@@ -105,6 +108,7 @@ const start = async () => {
     }
 
     redisClient.quit()
+
     console.log(chalk.bold("All done !"))
   } catch (err) {
     console.log(chalk.red('Critical error occured.'))
