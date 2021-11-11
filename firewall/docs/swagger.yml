@@ -125,6 +125,38 @@ paths:
         '500':
           description: firewall can't ban the MAC address
   
+  /mac/limit:
+    post:
+      summary: Limit mac address.
+      description: Endpoint to limit bandwidth to MAC address.
+      tags:
+        - MAC
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                limit:
+                  type: string
+              example:
+                address: '14:59:C0:CA:87:61'
+                limit: '10'
+      responses:
+        '200':
+          description: MAC limited
+          content:
+            application/json:
+              schema: 
+                type: string
+        '400':
+          description: address is not valid or isn't specified
+        '500':
+          description: firewall can't limit the MAC address
+  
   /mac/unban:
     delete:
       summary: Unban MAC address
@@ -161,4 +193,4 @@ paths:
         '400':
           description: address is not valid or isn't specified
         '500':
-          descirption: firewall can't unban the MAC address
+          description: firewall can't unban the MAC address
