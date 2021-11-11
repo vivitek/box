@@ -148,10 +148,10 @@ const main = async () => {
 
     const rmqp = await initRabbitMQ()
     $log.debug("Creating RabbitMQ")
-    channel = rmqp.createChannel()
+    channel = await rmqp.createChannel()
 
     $log.debug("Checking dhcp queue")
-    rmqp.assertQueue("dhcp")
+    channel.assertQueue("dhcp")
     $log.debug("Consuming dhcp queue")
     channel.consume("dhcp", (msg) => consumeDHCP(msg))
 
