@@ -88,7 +88,7 @@
         "./node_modules/typescript/bin/tsc"
       ],
       "runCmd": [
-        "sudo NODE_ENV=production pm2 start -f --name graphql dist/src/index.js"
+        "sudo NODE_ENV=production pm2 start -f --name graphql dist/index.js"
       ]
     },
     {
