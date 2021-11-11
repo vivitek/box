@@ -30,7 +30,7 @@ const initRabbitMQ = async () => {
   }
 }
 
-const consumeDHCP = async (msg) => {
+const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
   const msgData = JSON.parse(msg.content.toString())
   createBan(msgData.address, false)
 }
