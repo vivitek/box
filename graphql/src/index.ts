@@ -2,13 +2,15 @@ import * as redis from "redis-client-async"
 import { exit } from "process"
 import { $log } from "@tsed/logger";
 import *  as amqp from "amqplib"
-import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT } from "./constants";
+import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
 import ApolloClient, { gql } from "apollo-boost";
 import 'cross-fetch/polyfill';
 
+
 $log.name = "GraphQL"
 const client = new ApolloClient({
-  uri: GRAPHQL_ENDPOINT
+  uri: GRAPHQL_ENDPOINT,
+  fetch: require("isomorphic-fetch").default
 });
 let channel: amqp.Channel
 
@@ -32,11 +34,12 @@ const initRabbitMQ = async () => {
 
 const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
   const msgData = JSON.parse(msg.content.toString())
-  createBan(msgData.address, false)
+  createBan(msgData.mac, false)
+  channel.ack(msg)
 }
 
-// const consumePCap = async (msg) => {
-// }
+const consumePCap = async (msg) => {
+}
 
 const createBox = async (name: string, url: string, certificat: string) => {
   try {
@@ -50,8 +53,7 @@ const createBox = async (name: string, url: string, certificat: string) => {
       variables: {
         createRouterData: {
           url,
-          name,
-          certificat
+          name
         }
       }
     })
@@ -59,9 +61,6 @@ const createBox = async (name: string, url: string, certificat: string) => {
   } catch (err) {
     throw err
   }
-
-
-
 }
 
 const createBan = async (mac: string, banned: boolean) => {
@@ -97,7 +96,6 @@ const retrieveBans = async (id: string) => {
             banned
           }
         }
-
       `,
       variables: {
         id
@@ -110,12 +108,12 @@ const retrieveBans = async (id: string) => {
 }
 
 const subscribeBan = (id: string) => {
-  client.subscribe({
+  return client.subscribe({
     query: gql`
       subscription($routerSet: String!) {
-        banCreated(routerSet: $routerSet) {
-          _id
+        banUpdated(routerSet: $routerSet) {
           address
+          banned
         }
       }
     `,
@@ -139,16 +137,16 @@ const main = async () => {
     const uuid = await redis.getAsync('uuid')
     const certificat = await redis.getAsync('certificat')
 
-    $log.debug(`name :${name}`)
-    $log.debug(`uuid :${uuid}`)
+    $log.debug(`name: ${name}`)
+    $log.debug(`uuid: ${uuid}`)
     $log.debug(`certificat: ${certificat}`)
 
     if (!name || !uuid || !certificat)
       throw `Missing required variable.`
 
-    const rmqp = await initRabbitMQ()
+    const rbmp = await initRabbitMQ()
     $log.debug("Creating RabbitMQ")
-    channel = await rmqp.createChannel()
+    channel = await rbmp.createChannel()
 
     $log.debug("Checking dhcp queue")
     channel.assertQueue("dhcp")
@@ -156,7 +154,7 @@ const main = async () => {
     channel.consume("dhcp", (msg) => consumeDHCP(msg))
 
     // $log.debug("Checking pcap queue")
-    // rmqp.assertQueue("pcap")
+    // channel.assertQueue("pcap")
     // $log.debug("Consuming pcap")
     // channel.consume("pcap", consumePCap)
 
@@ -167,10 +165,20 @@ const main = async () => {
 
     $log.debug("Retrieving bans")
     const bans = await retrieveBans(boxId)
+    $log.debug(bans)
     bans.forEach((ban: Ban) => {
-      const {address, banned} = ban
+      const { address, banned } = ban
       requestFirewall(address, banned)
     });
+
+    // $log.debug("Subscribing to ban update")
+    // subscribeBan(boxId).subscribe({
+      // next: data => console.log(`received data: ${JSON.stringify(data, null, 2)}`),
+      // error: error => console.log(`received error ${error}`),
+      // complete: () => console.log(`complete`),
+    // })
+
+    client.stop()
   } catch (error) {
     $log.error(error)
     exit(1)
