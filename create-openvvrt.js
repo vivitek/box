@@ -50,6 +50,9 @@ const start = async () => {
     writeSync(log, `Logs from ${+new Date()}\n`)
     if (skipInstall) {
       console.log(chalk.bold('Installing dependencies'))
+
+      await runCommands("dpkg configuration", ["sudo dpkg --configure -a"], {execPath: process.cwd()})
+
       await Aigle.eachSeries(config.dependencies, async (dependency) => {
         spinnies.add(dependency)
         await runCommands(dependency, [`sudo DEBIAN_FRONTEND=noninteractive  apt install -y -q ${dependency}`], { execPath: process.cwd() })
@@ -60,7 +63,7 @@ const start = async () => {
         await runCommands(dependency, [`sudo npm i -g ${dependency}`], { execPath: process.cwd() })
       })
     }
-  
+
     const redisClient = redis.createClient()
 
     if (initTunnel) {
