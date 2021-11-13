@@ -34,8 +34,12 @@ const initRabbitMQ = async () => {
 
 const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
   const msgData = JSON.parse(msg.content.toString())
-  createBan(msgData.mac, false)
-  channel.ack(msg)
+  const res = createBan(msgData.mac, false)
+
+  if (res)
+    channel.ack(msg)
+  else
+    channel.nack(msg)
 }
 
 const consumePCap = async (msg) => {
@@ -80,6 +84,7 @@ const createBan = async (mac: string, banned: boolean) => {
         }
       }
     })
+    return true
   } catch (err) {
     throw err
   }
@@ -136,6 +141,7 @@ const main = async () => {
     const name = await redis.getAsync('name')
     const uuid = await redis.getAsync('uuid')
     const certificat = await redis.getAsync('certificat')
+    const id = await redis.getAsync('id')
 
     $log.debug(`name: ${name}`)
     $log.debug(`uuid: ${uuid}`)
@@ -158,10 +164,18 @@ const main = async () => {
     // $log.debug("Consuming pcap")
     // channel.consume("pcap", consumePCap)
 
-    $log.debug("Creating box on server")
-    const boxId = await createBox(name, `${uuid}.openvivi.com`, certificat)
-    $log.debug(`Created box on server.`)
-    $log.debug(`ID = ${boxId}`);
+    let boxId: string;
+
+    if (id) {
+      $log.debug("Id retrieved from Redis")
+      boxId = id
+    } else {
+      $log.debug("Creating box on server")
+      boxId = await createBox(name, `${uuid}.openvivi.com`, certificat)
+      redis.setAsync('id', boxId)
+      $log.debug(`Created box on server.`)
+    }
+    $log.debug(`ID = ${boxId}`)
 
     $log.debug("Retrieving bans")
     const bans = await retrieveBans(boxId)
