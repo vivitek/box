@@ -23,7 +23,6 @@ const createSubscriptionObservable = (wsurl: string, query, variables) => {
   return execute(link, { query: query, variables: variables });
 };
 
-
 $log.name = "GraphQL"
 const client = new ApolloClient({
   uri: GRAPHQL_ENDPOINT,
@@ -31,6 +30,7 @@ const client = new ApolloClient({
 });
 let channel: amqp.Channel
 let boxId: string;
+let transmittedServices: string[] = []
 
 const initRedisClient = async () => {
   $log.debug("Connecting to Redis");
@@ -60,10 +60,13 @@ const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
     channel.nack(msg)
 }
 
-const consumePCap = async (msg) => {
-  const msgData = JSON.parse(msg.content.toString())
+const consumePCap = async (msg: amqp.ConsumeMessage) => {
+  const msgData: Service = JSON.parse(msg.content.toString())
+  if (!transmittedServices.includes(msgData.daddr)) {
+    console.log(msgData)
+    transmittedServices.push(msgData.daddr)
+  }
   channel.ack(msg)
-  console.log(msgData)
 }
 
 const createBox = async (name: string, url: string, certificat: string) => {
@@ -199,4 +202,10 @@ main()
 interface Ban {
   address: string;
   banned: boolean;
+}
+
+interface Service {
+  len: number;
+  saddr: string;
+  daddr: string;
 }
