@@ -13,6 +13,7 @@ const client = new ApolloClient({
   fetch: require("isomorphic-fetch").default
 });
 let channel: amqp.Channel
+let boxId: string;
 
 const initRedisClient = async () => {
   $log.debug("Connecting to Redis");
@@ -71,14 +72,15 @@ const createBan = async (mac: string, banned: boolean) => {
   try {
     await client.mutate({
       mutation: gql`
-        mutation createBan($createBanData: BanCreationInput!) {
-          createBan(createBanData: $createBanData) {
+        mutation createBan($banCreationData: BanCreation!) {
+          createBan(banCreationData: $banCreationData) {
             _id
           }
         }
       `,
       variables: {
-        createBanData: {
+        banCreationData: {
+          routerSet: boxId,
           address: mac,
           banned
         }
@@ -86,7 +88,7 @@ const createBan = async (mac: string, banned: boolean) => {
     })
     return true
   } catch (err) {
-    throw err
+    throw JSON.stringify(err)
   }
 }
 
@@ -153,19 +155,7 @@ const main = async () => {
     const rbmp = await initRabbitMQ()
     $log.debug("Creating RabbitMQ")
     channel = await rbmp.createChannel()
-
-    $log.debug("Checking dhcp queue")
-    channel.assertQueue("dhcp")
-    $log.debug("Consuming dhcp queue")
-    channel.consume("dhcp", (msg) => consumeDHCP(msg))
-
-    // $log.debug("Checking pcap queue")
-    // channel.assertQueue("pcap")
-    // $log.debug("Consuming pcap")
-    // channel.consume("pcap", consumePCap)
-
-    let boxId: string;
-
+  
     if (id) {
       $log.debug("Id retrieved from Redis")
       boxId = id
@@ -184,6 +174,16 @@ const main = async () => {
       const { address, banned } = ban
       requestFirewall(address, banned)
     });
+    
+    $log.debug("Checking dhcp queue")
+    channel.assertQueue("dhcp")
+    $log.debug("Consuming dhcp queue")
+    channel.consume("dhcp", (msg) => consumeDHCP(msg))
+
+    // $log.debug("Checking pcap queue")
+    // channel.assertQueue("pcap")
+    // $log.debug("Consuming pcap")
+    // channel.consume("pcap", consumePCap)
 
     // $log.debug("Subscribing to ban update")
     // subscribeBan(boxId).subscribe({

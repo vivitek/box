@@ -9,3 +9,4 @@ nmcli con delete VIVI > /dev/null
 redis-cli FLUSHALL
 rm -f *.log
 node create-openvvrt.js --skip-install
+sudo systemctl restart openvivi
