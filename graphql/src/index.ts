@@ -92,7 +92,7 @@ const createBan = async (mac: string, banned: boolean) => {
   }
 }
 
-const retrieveBans = async (id: string) => {
+const retrieveBans = async () => {
   try {
     const res = await client.query({
       query: gql`
@@ -105,7 +105,7 @@ const retrieveBans = async (id: string) => {
         }
       `,
       variables: {
-        id
+        id: boxId
       }
     })
     return res.data.getBans
@@ -114,7 +114,7 @@ const retrieveBans = async (id: string) => {
   }
 }
 
-const subscribeBan = (id: string) => {
+const subscribeBan = () => {
   return client.subscribe({
     query: gql`
       subscription($routerSet: String!) {
@@ -125,7 +125,7 @@ const subscribeBan = (id: string) => {
       }
     `,
     variables: {
-      routerSet: id
+      routerSet: boxId
     }
   })
 }
@@ -168,7 +168,7 @@ const main = async () => {
     $log.debug(`ID = ${boxId}`)
 
     $log.debug("Retrieving bans")
-    const bans = await retrieveBans(boxId)
+    const bans = await retrieveBans()
     $log.debug(bans)
     bans.forEach((ban: Ban) => {
       const { address, banned } = ban
@@ -185,12 +185,12 @@ const main = async () => {
     // $log.debug("Consuming pcap")
     // channel.consume("pcap", consumePCap)
 
-    // $log.debug("Subscribing to ban update")
-    // subscribeBan(boxId).subscribe({
-      // next: data => console.log(`received data: ${JSON.stringify(data, null, 2)}`),
-      // error: error => console.log(`received error ${error}`),
-      // complete: () => console.log(`complete`),
-    // })
+    $log.debug("Subscribing to ban update")
+    subscribeBan().subscribe({
+      next: data => console.log(`received data: ${JSON.stringify(data, null, 2)}`),
+      error: error => console.log(`received error ${error}`),
+      complete: () => console.log(`complete`),
+    })
 
     client.stop()
   } catch (error) {
