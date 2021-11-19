@@ -2,13 +2,14 @@ import * as redis from "redis-client-async"
 import { exit } from "process"
 import { $log } from "@tsed/logger";
 import *  as amqp from "amqplib"
-import ApolloClient, { gql } from "apollo-boost";
+import ApolloClient from "apollo-boost";
 import { execute } from 'apollo-link';
 import { WebSocketLink } from 'apollo-link-ws';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import ws from 'ws';
 import 'cross-fetch/polyfill';
 import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
+import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, GET_BANS } from "./gql";
 
 const getWsClient = function (wsurl: string) {
   const client = new SubscriptionClient(
@@ -60,17 +61,14 @@ const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
 }
 
 const consumePCap = async (msg) => {
+  const msgData = JSON.parse(msg.content.toString())
+  console.log(msgData)
 }
 
 const createBox = async (name: string, url: string, certificat: string) => {
   try {
     const res = await client.mutate({
-      mutation: gql`
-        mutation createRouter($createRouterData: RouterCreationInput!) {
-          createRouter(createRouterData: $createRouterData) {
-            _id
-          }
-        }`,
+      mutation: CREATE_BOX,
       variables: {
         createRouterData: {
           url,
@@ -87,13 +85,7 @@ const createBox = async (name: string, url: string, certificat: string) => {
 const createBan = async (mac: string, banned: boolean) => {
   try {
     await client.mutate({
-      mutation: gql`
-        mutation createBan($banCreationData: BanCreation!) {
-          createBan(banCreationData: $banCreationData) {
-            _id
-          }
-        }
-      `,
+      mutation: CREATE_BAN,
       variables: {
         banCreationData: {
           routerSet: boxId,
@@ -111,15 +103,7 @@ const createBan = async (mac: string, banned: boolean) => {
 const retrieveBans = async () => {
   try {
     const res = await client.query({
-      query: gql`
-        query($id: String!) {
-          getBans(id: $id) {
-            _id
-            address
-            banned
-          }
-        }
-      `,
+      query: GET_BANS,
       variables: {
         id: boxId
       }
@@ -131,9 +115,11 @@ const retrieveBans = async () => {
 }
 
 const requestFirewall = (mac: string, banned: boolean) => {
+  // TODO: send info to firewall
   $log.info(`${mac} should ${banned ? "not" : ""} be banned`)
 }
 
+// TODO bind to pcap queue and info to server
 const main = async () => {
   try {
     $log.debug("Initializing GraphQL")
@@ -180,25 +166,17 @@ const main = async () => {
     $log.debug("Consuming dhcp queue")
     channel.consume("dhcp", (msg) => consumeDHCP(msg))
 
-    // $log.debug("Checking pcap queue")
-    // channel.assertQueue("pcap")
-    // $log.debug("Consuming pcap")
-    // channel.consume("pcap", consumePCap)
+    $log.debug("Checking pcap queue")
+    channel.assertQueue("pcap")
+    $log.debug("Consuming pcap")
+    channel.consume("pcap", consumePCap)
 
     $log.debug("Subscribing to ban update")
     const subscriptionClient = createSubscriptionObservable(
       GRAPHQL_WS,
-      gql`
-        subscription($routerSet: String!) {
-          banUpdated(routerSet: $routerSet) {
-            address
-            banned
-          }
-        }
-      `,
+      BAN_UPDATED,
       { routerSet: boxId }
     );
-    console.log(subscriptionClient)
     subscriptionClient.subscribe({
       next: data => {
         const ban: Ban = data.data.banUpdated
