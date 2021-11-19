@@ -7,6 +7,7 @@ import { execute } from 'apollo-link';
 import { WebSocketLink } from 'apollo-link-ws';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import ws from 'ws';
+import dns from "dns";
 import 'cross-fetch/polyfill';
 import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
 import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, GET_BANS } from "./gql";
@@ -31,6 +32,7 @@ const client = new ApolloClient({
 let channel: amqp.Channel
 let boxId: string;
 let transmittedServices: string[] = []
+let redisClient
 
 const initRedisClient = async () => {
   $log.debug("Connecting to Redis");
@@ -62,10 +64,14 @@ const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
 
 const consumePCap = async (msg: amqp.ConsumeMessage) => {
   const msgData: Service = JSON.parse(msg.content.toString())
-  if (!transmittedServices.includes(msgData.daddr)) {
-    console.log(msgData)
-    transmittedServices.push(msgData.daddr)
+  if (transmittedServices.includes(msgData.daddr)) {
+    channel.ack(msg)
+    return
   }
+  const domains = await dns.promises.reverse(msgData.daddr)
+  transmittedServices.push(msgData.daddr)
+  console.log(msgData)
+  console.log(domains)
   channel.ack(msg)
 }
 
@@ -127,13 +133,14 @@ const requestFirewall = (mac: string, banned: boolean) => {
 const main = async () => {
   try {
     $log.debug("Initializing GraphQL")
-    const redis = await initRedisClient();
+    redisClient = await initRedisClient();
     $log.debug("Redis connected")
 
-    const name = await redis.getAsync('name')
-    const uuid = await redis.getAsync('uuid')
-    const certificat = await redis.getAsync('certificat')
-    const id = await redis.getAsync('id')
+    const name = await redisClient.getAsync('name')
+    const uuid = await redisClient.getAsync('uuid')
+    const certificat = await redisClient.getAsync('certificat')
+    const id = await redisClient.getAsync('id')
+    const servicesBkp = await redisClient.getAsync('transmittedServices')
 
     $log.debug(`name: ${name}`)
     $log.debug(`uuid: ${uuid}`)
@@ -152,10 +159,13 @@ const main = async () => {
     } else {
       $log.debug("Creating box on server")
       boxId = await createBox(name, `${uuid}.openvivi.com`, certificat)
-      redis.setAsync('id', boxId)
+      redisClient.setAsync('id', boxId)
       $log.debug(`Created box on server.`)
     }
     $log.debug(`ID = ${boxId}`)
+
+    if (servicesBkp)
+      transmittedServices = JSON.parse(servicesBkp)
 
     $log.debug("Retrieving bans")
     const bans = await retrieveBans()
@@ -192,6 +202,7 @@ const main = async () => {
     });
     client.stop()
   } catch (error) {
+    redisClient.setAsync('transmittedServices', JSON.stringify(transmittedServices))
     $log.error(error)
     exit(1)
   }
