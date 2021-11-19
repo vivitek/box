@@ -80,6 +80,18 @@
       ]
     },
     {
+      "name": "PCap",
+      "folder": "pcap",
+      "preInstallCmd": [],
+      "installCmd": [
+        "npm install",
+        "./node_modules/typescript/bin/tsc"
+      ],
+      "runCmd": [
+        "sudo pm2 start -f --name pcap dist/index.js"
+      ]
+    },
+    {
       "name": "GraphQL",
       "folder": "graphql",
       "preInstallCmd": [],
