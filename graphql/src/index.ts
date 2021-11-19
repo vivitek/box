@@ -2,9 +2,25 @@ import * as redis from "redis-client-async"
 import { exit } from "process"
 import { $log } from "@tsed/logger";
 import *  as amqp from "amqplib"
-import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
 import ApolloClient, { gql } from "apollo-boost";
+import { execute } from 'apollo-link';
+import { WebSocketLink } from 'apollo-link-ws';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
+import ws from 'ws';
 import 'cross-fetch/polyfill';
+import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
+
+const getWsClient = function (wsurl: string) {
+  const client = new SubscriptionClient(
+    wsurl, { reconnect: true }, ws
+  );
+  return client;
+};
+
+const createSubscriptionObservable = (wsurl: string, query, variables) => {
+  const link = new WebSocketLink(getWsClient(wsurl));
+  return execute(link, { query: query, variables: variables });
+};
 
 
 $log.name = "GraphQL"
@@ -114,22 +130,6 @@ const retrieveBans = async () => {
   }
 }
 
-const subscribeBan = () => {
-  return client.subscribe({
-    query: gql`
-      subscription($routerSet: String!) {
-        banUpdated(routerSet: $routerSet) {
-          address
-          banned
-        }
-      }
-    `,
-    variables: {
-      routerSet: boxId
-    }
-  })
-}
-
 const requestFirewall = (mac: string, banned: boolean) => {
   $log.info(`${mac} should ${banned ? "not" : ""} be banned`)
 }
@@ -155,7 +155,7 @@ const main = async () => {
     const rbmp = await initRabbitMQ()
     $log.debug("Creating RabbitMQ")
     channel = await rbmp.createChannel()
-  
+
     if (id) {
       $log.debug("Id retrieved from Redis")
       boxId = id
@@ -174,7 +174,7 @@ const main = async () => {
       const { address, banned } = ban
       requestFirewall(address, banned)
     });
-    
+
     $log.debug("Checking dhcp queue")
     channel.assertQueue("dhcp")
     $log.debug("Consuming dhcp queue")
@@ -186,12 +186,28 @@ const main = async () => {
     // channel.consume("pcap", consumePCap)
 
     $log.debug("Subscribing to ban update")
-    subscribeBan().subscribe({
-      next: data => console.log(`received data: ${JSON.stringify(data, null, 2)}`),
-      error: error => console.log(`received error ${error}`),
-      complete: () => console.log(`complete`),
-    })
-
+    const subscriptionClient = createSubscriptionObservable(
+      GRAPHQL_WS,
+      gql`
+        subscription($routerSet: String!) {
+          banUpdated(routerSet: $routerSet) {
+            address
+            banned
+          }
+        }
+      `,
+      { routerSet: boxId }
+    );
+    console.log(subscriptionClient)
+    subscriptionClient.subscribe({
+      next: data => {
+        const ban: Ban = data.data.banUpdated
+        requestFirewall(ban.address, ban.banned)
+      },
+      error: error => {
+        $log.error(`Receive error: ${error}`)
+      }
+    });
     client.stop()
   } catch (error) {
     $log.error(error)

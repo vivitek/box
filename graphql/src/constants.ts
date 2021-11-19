@@ -4,7 +4,7 @@ const API_URL = process.env.NODE_ENV && process.env.NODE_ENV !== "development"
 
 
 const GRAPHQL_ENDPOINT = `${API_URL}/graphql`
-const GRAPHQL_WS = API_URL.replace('http', 'ws')
+const GRAPHQL_WS = GRAPHQL_ENDPOINT.replace('http', 'ws')
 
 const FIREWALL_URL = "http://localhost:5000"
 
