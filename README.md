@@ -3,6 +3,8 @@
 ## Prerequisites
 ```
 ubuntu server 20.04
+node@12.22.6
+npm@6.14.15
 ```
 
 ## Configuration

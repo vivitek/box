@@ -1,5 +1,5 @@
 {
-  "tunnel":{
+  "tunnel": {
     "server": "https://api.openvivi.com",
     "apiPort": 3000
   },
@@ -80,7 +80,7 @@
       ]
     },
     {
-      "name": "PCap",
+      "name": "PCAP",
       "folder": "pcap",
       "preInstallCmd": [],
       "installCmd": [
