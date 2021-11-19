@@ -53,13 +53,10 @@ const requestFirewall = async (ban: Ban): Promise<void> => {
     logger.error(error)
   }
 }
-
-/*  Utils End */
+/* Utils End */
 
 const selfCreate = async (name: string, url: string): Promise<void> => {
-  logger.info("Server url " + GRAPHQL_ENDPOINT)
   try {
-    console.log("creating")
     const res = await sendRequest({
       query: print(CREATE_ROUTER),
       variables: {
@@ -69,7 +66,6 @@ const selfCreate = async (name: string, url: string): Promise<void> => {
         }
       }
     })
-    console.log(res.data)
     id = res.data.data.createRouter._id
     if (id == undefined)
       throw new Error('Router already created')
@@ -144,27 +140,44 @@ const initRabbitMQ = async (): Promise<void> => {
       username: process.env.AMQP_USERNAME,
       password: process.env.AMQP_PASSWORD,
     });
+
     channel = await connection.createChannel();
     await channel.assertQueue("dhcp");
     channel.consume("dhcp", consumerDhcp)
+
+    await channel.assertQueue("pcap");
+    channel.consume("pcap", consumerPcap)
+
   } catch (error) {
     if (error.response) {
       logger.fatal('An error occured while connecting to RabbitMQ')
       logger.fatal(`Status code: ${error.response.status}`)
-    } else
+    } else {
       logger.fatal('A mystical error occured during the RabbitMQ initialization ')
-    logger.fatal(error)
+      logger.fatal(error)
+    }
     process.exit(1);
   }
 };
 
 const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
   const msgData = JSON.parse(qMsg.content.toString())
-  if (await createBan(msgData.mac, false)) {
+  if (await createBan(msgData.mac, false))
     channel.ack(qMsg)
-  } else {
+  else
     channel.nack(qMsg)
+}
+
+const consumerPcap = async (qMsg: any): Promise<void> => {
+  const msgData = JSON.parse(qMsg.content.toString())
+
+  /* example msgData :
+  {
+    len: 60,
+    saddr: "10.147.158.3",
+    daddr: "14.236.124.4"
   }
+  */
 }
 
 const main = async (): Promise<void> => {

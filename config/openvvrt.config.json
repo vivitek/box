@@ -1,5 +1,5 @@
 {
-  "tunnel":{
+  "tunnel": {
     "server": "https://api.openvivi.com",
     "apiPort": 3000
   },
@@ -12,6 +12,7 @@
     "rabbitmq-server",
     "build-essential",
     "libpq-dev",
+    "libpcap-dev",
     "procps",
     "nftables",
     "python3-testresources"
@@ -77,6 +78,18 @@
       ]
     },
     {
+      "name": "PCAP",
+      "folder": "pcap",
+      "preInstallCmd": [],
+      "installCmd": [
+        "npm install",
+        "./node_modules/typescript/bin/tsc"
+      ],
+      "runCmd": [
+        "sudo pm2 start -f --name pcap dist/index.js"
+      ]
+    },
+    {
       "name": "GraphQL",
       "folder": "graphql",
       "preInstallCmd": [],
@@ -85,7 +98,7 @@
         "./node_modules/typescript/bin/tsc"
       ],
       "runCmd": [
-        "sudo pm2 start -f --name graphql dist/src/index.js"
+        "sudo pm2 start -f --name graphql dist/index.js"
       ]
     },
     {
@@ -101,11 +114,11 @@
       ]
     },
     {
-      "name":"OpenViVi",
-      "folder":".",
-      "preInstallCmd":[],
-      "installCmd":[],
-      "runCmd":[
+      "name": "OpenViVi",
+      "folder": ".",
+      "preInstallCmd": [],
+      "installCmd": [],
+      "runCmd": [
         "sudo systemctl start openvivi.service"
       ]
     }
