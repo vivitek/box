@@ -1,6 +1,7 @@
 import * as pcap from "pcap";
 import { exit } from "process";
 import * as amqplib from "amqplib";
+const config = require("../../config/openvvrt.config.json")
 
 let channel: amqplib.Channel;
 
@@ -25,7 +26,7 @@ const sendToQueue = async (data) => {
 
 // PCAP INIT
 const initPcap = async () => {
-  const pcap_session: pcap.PcapSession = pcap.createSession("", {});
+  const pcap_session: pcap.PcapSession = pcap.createSession(config.hotspot.interface, {});
 
   pcap_session.on("packet", (raw_packet) => {
     const packet = pcap.decode.packet(raw_packet);
