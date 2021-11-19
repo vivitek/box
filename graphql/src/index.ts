@@ -62,6 +62,7 @@ const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
 
 const consumePCap = async (msg) => {
   const msgData = JSON.parse(msg.content.toString())
+  channel.ack(msg)
   console.log(msgData)
 }
 
