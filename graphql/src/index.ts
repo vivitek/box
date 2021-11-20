@@ -32,7 +32,8 @@ const client = new ApolloClient({
 let channel: amqp.Channel
 let boxId: string;
 let transmittedServices: string[] = []
-let redisClient
+let usedIps: string[] = []
+let redisClient: redis.RedisClientAsync
 
 const initRedisClient = async () => {
   $log.debug("Connecting to Redis");
@@ -56,23 +57,34 @@ const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
   const msgData = JSON.parse(msg.content.toString())
   const res = createBan(msgData.mac, false)
 
-  if (res)
+  if (res) {
     channel.ack(msg)
-  else
+    usedIps.push(msgData.ip)
+  } else
     channel.nack(msg)
 }
 
 const consumePCap = async (msg: amqp.ConsumeMessage) => {
   const msgData: Service = JSON.parse(msg.content.toString())
-  if (transmittedServices.includes(msgData.daddr)) {
+  if (
+    transmittedServices.includes(msgData.daddr) ||
+    usedIps.includes(msgData.daddr) ||
+    msgData.daddr.startsWith('255.') ||
+    msgData.daddr.startsWith('0.')
+  ) {
     channel.ack(msg)
     return
   }
-  const domains = await dns.promises.reverse(msgData.daddr)
-  transmittedServices.push(msgData.daddr)
-  console.log(msgData)
-  console.log(domains)
-  channel.ack(msg)
+  try {
+    const domains = await dns.promises.reverse(msgData.daddr)
+    transmittedServices.push(msgData.daddr)
+    console.log(msgData)
+    console.log(domains)
+    // TODO request server here
+  } catch {
+    $log.error(`Cannot resolve ${msgData.daddr} ${msgData.saddr}`)
+    channel.ack(msg)
+  }
 }
 
 const createBox = async (name: string, url: string, certificat: string) => {
@@ -129,7 +141,6 @@ const requestFirewall = (mac: string, banned: boolean) => {
   $log.info(`${mac} should ${banned ? "not" : ""} be banned`)
 }
 
-// TODO bind to pcap queue and info to server
 const main = async () => {
   try {
     $log.debug("Initializing GraphQL")
