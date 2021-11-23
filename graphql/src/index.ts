@@ -10,7 +10,7 @@ import ws from 'ws';
 import dns from "dns";
 import 'cross-fetch/polyfill';
 import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
-import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, GET_BANS } from "./gql";
+import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, CREATE_SERVICE, GET_BANS, SERVICE_UPDATED } from "./gql";
 
 const getWsClient = function (wsurl: string) {
   const client = new SubscriptionClient(
@@ -64,29 +64,6 @@ const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
     channel.nack(msg)
 }
 
-const consumePCap = async (msg: amqp.ConsumeMessage) => {
-  const msgData: Service = JSON.parse(msg.content.toString())
-  if (
-    transmittedServices.includes(msgData.daddr) ||
-    usedIps.includes(msgData.daddr) ||
-    msgData.daddr.startsWith('255.') ||
-    msgData.daddr.startsWith('0.')
-  ) {
-    channel.ack(msg)
-    return
-  }
-  try {
-    const domains = await dns.promises.reverse(msgData.daddr)
-    transmittedServices.push(msgData.daddr)
-    console.log(msgData)
-    console.log(domains)
-    // TODO request server here
-  } catch {
-    $log.error(`Cannot resolve ${msgData.daddr} ${msgData.saddr}`)
-    channel.ack(msg)
-  }
-}
-
 const createBox = async (name: string, url: string, certificat: string) => {
   try {
     const res = await client.mutate({
@@ -94,13 +71,15 @@ const createBox = async (name: string, url: string, certificat: string) => {
       variables: {
         createRouterData: {
           url,
-          name
+          name,
+          certificat
         }
       }
     })
-    return res.data.createRouter._id
+    console.log(res.data)
+    return res.data.createRouter.router._id
   } catch (err) {
-    throw err
+    throw JSON.stringify(err)
   }
 }
 
@@ -136,9 +115,54 @@ const retrieveBans = async () => {
   }
 }
 
-const requestFirewall = (mac: string, banned: boolean) => {
-  // TODO: send info to firewall
-  $log.info(`${mac} should ${banned ? "not" : ""} be banned`)
+const consumePCap = async (msg: amqp.ConsumeMessage) => {
+  const msgData: Service = JSON.parse(msg.content.toString())
+  if (
+    transmittedServices.includes(msgData.daddr) ||
+    usedIps.includes(msgData.daddr) ||
+    msgData.daddr.startsWith('255.') ||
+    msgData.daddr.startsWith('0.')
+  ) {
+    channel.ack(msg)
+    return
+  }
+  try {
+    const domains = await dns.promises.reverse(msgData.daddr)
+    transmittedServices.push(msgData.daddr)
+    createService(msgData.daddr, domains[0], false)
+  } catch {
+    $log.error(`Cannot resolve ${msgData.daddr} ${msgData.saddr}`)
+    channel.ack(msg)
+  }
+}
+
+const createService = async (ip: string, domain: string, banned: boolean) => {
+  try {
+    await client.mutate({
+      mutation: CREATE_SERVICE,
+      variables: {
+        serviceCreationData: {
+          name: domain,
+          bandwidth: 10000.0,
+          ips: [ip],
+          tags: [],
+          router: boxId,
+          banned
+        }
+      }
+    })
+    return true
+  } catch (err) {
+    throw JSON.stringify(err)
+  }
+}
+
+const requestFirewallService = (domain: string, banned: boolean) => {
+  $log.info(`Domain ${domain} should ${banned ? "not" : ""} be banned`)
+}
+
+const requestFirewallMac = (mac: string, banned: boolean) => {
+  $log.info(`Mac ${mac} should ${banned ? "not" : ""} be banned`)
 }
 
 const main = async () => {
@@ -183,7 +207,7 @@ const main = async () => {
     $log.debug(bans)
     bans.forEach((ban: Ban) => {
       const { address, banned } = ban
-      requestFirewall(address, banned)
+      requestFirewallMac(address, banned)
     });
 
     $log.debug("Checking dhcp queue")
@@ -191,26 +215,44 @@ const main = async () => {
     $log.debug("Consuming dhcp queue")
     channel.consume("dhcp", (msg) => consumeDHCP(msg))
 
-    $log.debug("Checking pcap queue")
-    channel.assertQueue("pcap")
-    $log.debug("Consuming pcap")
-    channel.consume("pcap", consumePCap)
+    // $log.debug("Checking pcap queue")
+    // channel.assertQueue("pcap")
+    // $log.debug("Consuming pcap")
+    // channel.consume("pcap", consumePCap)
 
     $log.debug("Subscribing to ban update")
-    const subscriptionClient = createSubscriptionObservable(
+    const banSubscription = createSubscriptionObservable(
       GRAPHQL_WS,
       BAN_UPDATED,
       { routerSet: boxId }
     );
-    subscriptionClient.subscribe({
+    banSubscription.subscribe({
       next: data => {
         const ban: Ban = data.data.banUpdated
-        requestFirewall(ban.address, ban.banned)
+        requestFirewallMac(ban.address, ban.banned)
       },
       error: error => {
         $log.error(`Receive error: ${error}`)
       }
     });
+
+    // $log.debug("Subscribing to service update")
+    // const serviceSubscription = createSubscriptionObservable(
+      // GRAPHQL_WS,
+      // SERVICE_UPDATED,
+      // { routerId: boxId }
+    // );
+    // serviceSubscription.subscribe({
+      // next: data => {
+        // console.log(data)
+        // const service = data.data.serviceUpdated
+        // requestFirewallService(service.name, service.banned)
+      // },
+      // error: error => {
+        // $log.error(`Receive error: ${error}`)
+      // }
+    // });
+
     client.stop()
   } catch (error) {
     redisClient.setAsync('transmittedServices', JSON.stringify(transmittedServices))

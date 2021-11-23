@@ -10,6 +10,16 @@ export const BAN_UPDATED =
     }
   `
 
+export const SERVICE_UPDATED =
+  gql`
+    subscription($routerSet: String!) {
+      serviceUpdated(routerSet: $routerSet) {
+        name
+        banned
+      }
+    }
+`
+
 export const GET_BANS =
   gql`
       query($id: String!) {
@@ -34,6 +44,17 @@ export const CREATE_BOX =
   gql`
     mutation createRouter($createRouterData: RouterCreationInput!) {
       createRouter(createRouterData: $createRouterData) {
+        router {
+          _id
+        }
+      }
+    }
+  `
+
+export const CREATE_SERVICE =
+  gql`
+    mutation createService($serviceCreationData: ServiceCreationInput!) {
+      createService(serviceCreationData: $serviceCreationData) {
         _id
       }
     }
