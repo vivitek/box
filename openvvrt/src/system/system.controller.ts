@@ -5,6 +5,16 @@ import { SystemService } from './system.service';
 export class SystemController {
   constructor(private service: SystemService) {}
 
+@Get('/')
+  async getStats() {
+    return {
+      cpu: await this.getCpuStat(),
+      ram: this.getRamStat(),
+      storage: await this.getStorageStat(),
+      uptime: this.uptime()
+    }
+  }
+
   @Get('/cpu')
   getCpuStat() {
     return this.service.cpu();
