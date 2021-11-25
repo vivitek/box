@@ -12,6 +12,8 @@ import 'cross-fetch/polyfill';
 import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
 import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, CREATE_SERVICE, GET_BANS, SERVICE_UPDATED } from "./gql";
 
+import * as fs from "fs"
+
 const getWsClient = function (wsurl: string) {
   const client = new SubscriptionClient(
     wsurl, { reconnect: true }, ws
@@ -32,6 +34,7 @@ const client = new ApolloClient({
 let channel: amqp.Channel
 let boxId: string;
 let usedIps: string[] = []
+let unresolvableIps: string[] = []
 let redisClient: redis.RedisClientAsync
 
 const initRedisClient = async () => {
@@ -118,6 +121,7 @@ const consumePCap = async (msg: amqp.ConsumeMessage) => {
   const msgData: Service = JSON.parse(msg.content.toString())
   if (
     usedIps.includes(msgData.daddr) ||
+    unresolvableIps.includes(msgData.daddr) ||
     msgData.daddr.startsWith('255.') ||
     msgData.daddr.startsWith('0.')
   ) {
@@ -126,9 +130,11 @@ const consumePCap = async (msg: amqp.ConsumeMessage) => {
   }
   try {
     const domains = await dns.promises.reverse(msgData.daddr)
-    createService(msgData.daddr, domains[0], false)
+    fs.writeFileSync('domains.txt', JSON.stringify(domains) + " ")
+    // createService(msgData.daddr, domains[0], false)
   } catch {
-    $log.error(`Cannot resolve ${msgData.daddr} ${msgData.saddr}`)
+    $log.error(`Cannot resolve ${msgData.daddr} for ${msgData.saddr}`)
+    unresolvableIps.push(msgData.daddr)
     channel.ack(msg)
   }
 }
