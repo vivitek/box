@@ -117,7 +117,7 @@ const retrieveBans = async () => {
 const consumePCap = async (msg: amqp.ConsumeMessage) => {
   const msgData: Service = JSON.parse(msg.content.toString())
   if (
-    usedIps.includes(msgData.saddr) ||
+    usedIps.includes(msgData.daddr) ||
     msgData.daddr.startsWith('255.') ||
     msgData.daddr.startsWith('0.')
   ) {
