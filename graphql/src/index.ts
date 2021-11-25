@@ -130,14 +130,16 @@ const consumePCap = async (msg: amqp.ConsumeMessage) => {
   }
   try {
     const domains = await dns.promises.reverse(msgData.daddr)
-    fs.writeFileSync('domains.txt', JSON.stringify(domains) + " ")
+    fs.writeFileSync('domains.txt', JSON.stringify(domains) + " ", {mode: "a+"})
     // createService(msgData.daddr, domains[0], false)
-  } catch {
+  } catch(err) {
+    $log.error(err)
     $log.error(`Cannot resolve ${msgData.daddr} for ${msgData.saddr}`)
     unresolvableIps.push(msgData.daddr)
-    channel.ack(msg)
   }
+  channel.ack(msg)
 }
+
 
 const createService = async (ip: string, domain: string, banned: boolean) => {
   try {
