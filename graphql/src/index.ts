@@ -120,7 +120,7 @@ const retrieveBans = async () => {
 }
 
 const consumePCap = async (msg: amqp.ConsumeMessage) => {
-await pcapMutex.runExclusive(async () => {
+  const release = await pcapMutex.acquire();
   const msgData: Service = JSON.parse(msg.content.toString())
   if (
     usedIps.includes(msgData.daddr) ||
@@ -129,6 +129,7 @@ await pcapMutex.runExclusive(async () => {
     msgData.daddr.startsWith('0.')
   ) {
     channel.ack(msg)
+    release()
     return
   }
   try {
@@ -139,7 +140,7 @@ await pcapMutex.runExclusive(async () => {
     unresolvableIps.push(msgData.daddr)
   }
   channel.ack(msg)
-})
+  release()
 }
 
 
