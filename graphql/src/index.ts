@@ -31,7 +31,6 @@ const client = new ApolloClient({
 });
 let channel: amqp.Channel
 let boxId: string;
-let transmittedServices: string[] = []
 let usedIps: string[] = []
 let redisClient: redis.RedisClientAsync
 
@@ -118,8 +117,7 @@ const retrieveBans = async () => {
 const consumePCap = async (msg: amqp.ConsumeMessage) => {
   const msgData: Service = JSON.parse(msg.content.toString())
   if (
-    transmittedServices.includes(msgData.daddr) ||
-    usedIps.includes(msgData.daddr) ||
+    usedIps.includes(msgData.saddr) ||
     msgData.daddr.startsWith('255.') ||
     msgData.daddr.startsWith('0.')
   ) {
@@ -128,7 +126,6 @@ const consumePCap = async (msg: amqp.ConsumeMessage) => {
   }
   try {
     const domains = await dns.promises.reverse(msgData.daddr)
-    transmittedServices.push(msgData.daddr)
     createService(msgData.daddr, domains[0], false)
   } catch {
     $log.error(`Cannot resolve ${msgData.daddr} ${msgData.saddr}`)
@@ -199,9 +196,6 @@ const main = async () => {
     }
     $log.debug(`ID = ${boxId}`)
 
-    if (servicesBkp)
-      transmittedServices = JSON.parse(servicesBkp)
-
     $log.debug("Retrieving bans")
     const bans = await retrieveBans()
     $log.debug(bans)
@@ -215,10 +209,10 @@ const main = async () => {
     $log.debug("Consuming dhcp queue")
     channel.consume("dhcp", (msg) => consumeDHCP(msg))
 
-    // $log.debug("Checking pcap queue")
-    // channel.assertQueue("pcap")
-    // $log.debug("Consuming pcap")
-    // channel.consume("pcap", consumePCap)
+    $log.debug("Checking pcap queue")
+    channel.assertQueue("pcap")
+    $log.debug("Consuming pcap")
+    channel.consume("pcap", consumePCap)
 
     $log.debug("Subscribing to ban update")
     const banSubscription = createSubscriptionObservable(
@@ -255,7 +249,6 @@ const main = async () => {
 
     client.stop()
   } catch (error) {
-    redisClient.setAsync('transmittedServices', JSON.stringify(transmittedServices))
     $log.error(error)
     exit(1)
   }
