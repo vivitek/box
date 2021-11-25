@@ -11,8 +11,10 @@ import dns from "dns";
 import 'cross-fetch/polyfill';
 import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
 import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, CREATE_SERVICE, GET_BANS, SERVICE_UPDATED } from "./gql";
+import {Mutex, MutexInterface, Semaphore, SemaphoreInterface, withTimeout} from 'async-mutex';
 
-import * as fs from "fs"
+const pcapMutex = new Mutex();
+
 
 const getWsClient = function (wsurl: string) {
   const client = new SubscriptionClient(
@@ -118,6 +120,7 @@ const retrieveBans = async () => {
 }
 
 const consumePCap = async (msg: amqp.ConsumeMessage) => {
+await pcapMutex.runExclusive(async () => {
   const msgData: Service = JSON.parse(msg.content.toString())
   if (
     usedIps.includes(msgData.daddr) ||
@@ -130,14 +133,13 @@ const consumePCap = async (msg: amqp.ConsumeMessage) => {
   }
   try {
     const domains = await dns.promises.reverse(msgData.daddr)
-    fs.writeFileSync('domains.txt', JSON.stringify(domains) + " ", {mode: "a+"})
-    // createService(msgData.daddr, domains[0], false)
-  } catch(err) {
-    $log.error(err)
+    createService(msgData.daddr, domains[0], false)
+  } catch {
     $log.error(`Cannot resolve ${msgData.daddr} for ${msgData.saddr}`)
     unresolvableIps.push(msgData.daddr)
   }
   channel.ack(msg)
+})
 }
 
 
