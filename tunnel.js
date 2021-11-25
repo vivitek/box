@@ -159,7 +159,7 @@ const storeInRedis = async (port, uuid) => {
 const createServerEntry = async (port, uuid) => {
   spinnies.add("Creating record on server");
   try {
-    await instance.post(`/create`, {
+    await instance.post(`/create?dev=true`, {
       id: uuid,
       port,
     });
