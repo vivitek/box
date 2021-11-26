@@ -1,6 +1,6 @@
 import os
 
-database_url = os.getenv('DATABASE_URL')
+database_url = 'redis://localhost:6379'
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 

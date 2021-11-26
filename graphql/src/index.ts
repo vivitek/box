@@ -11,7 +11,8 @@ import dns from "dns";
 import 'cross-fetch/polyfill';
 import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
 import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, CREATE_SERVICE, GET_BANS, SERVICE_UPDATED } from "./gql";
-import {Mutex, MutexInterface, Semaphore, SemaphoreInterface, withTimeout} from 'async-mutex';
+import { Mutex, MutexInterface, Semaphore, SemaphoreInterface, withTimeout } from 'async-mutex';
+import axios from 'axios';
 
 const pcapMutex = new Mutex();
 
@@ -59,7 +60,7 @@ const initRabbitMQ = async () => {
 
 const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
   const msgData = JSON.parse(msg.content.toString())
-  const res = createBan(msgData.mac, false)
+  const res = createBan(msgData.mac, "La plante verte", false)
 
   if (res) {
     channel.ack(msg)
@@ -87,7 +88,7 @@ const createBox = async (name: string, url: string, certificat: string) => {
   }
 }
 
-const createBan = async (mac: string, banned: boolean) => {
+const createBan = async (mac: string, displayName: string, banned: boolean) => {
   try {
     await client.mutate({
       mutation: CREATE_BAN,
@@ -95,6 +96,7 @@ const createBan = async (mac: string, banned: boolean) => {
         banCreationData: {
           routerSet: boxId,
           address: mac,
+          displayName,
           banned
         }
       }
@@ -166,11 +168,25 @@ const createService = async (ip: string, domain: string, banned: boolean) => {
 }
 
 const requestFirewallService = (domain: string, banned: boolean) => {
-  $log.info(`Domain ${domain} should ${banned ? "not" : ""} be banned`)
+  $log.info(`Domain ${domain} should ${banned ? "" : "not"} be banned`)
 }
 
-const requestFirewallMac = (mac: string, banned: boolean) => {
-  $log.info(`Mac ${mac} should ${banned ? "not" : ""} be banned`)
+const requestFirewallMac = async (mac: string, banned: boolean) => {
+  $log.info(`Mac ${mac} should ${banned ? "" : "not "} be banned`)
+
+  const getUrl = () => {
+    const suffix = banned ? '/ban' : '/unban';
+    return `http://localhost:5000/mac${suffix}`;
+  }
+
+  try {
+    await axios.post(getUrl(),
+      {
+        address: mac
+      });
+  } catch (err) {
+    $log.error(err);
+  }
 }
 
 const main = async () => {
@@ -243,19 +259,19 @@ const main = async () => {
 
     // $log.debug("Subscribing to service update")
     // const serviceSubscription = createSubscriptionObservable(
-      // GRAPHQL_WS,
-      // SERVICE_UPDATED,
-      // { routerId: boxId }
+    // GRAPHQL_WS,
+    // SERVICE_UPDATED,
+    // { routerId: boxId }
     // );
     // serviceSubscription.subscribe({
-      // next: data => {
-        // console.log(data)
-        // const service = data.data.serviceUpdated
-        // requestFirewallService(service.name, service.banned)
-      // },
-      // error: error => {
-        // $log.error(`Receive error: ${error}`)
-      // }
+    // next: data => {
+    // console.log(data)
+    // const service = data.data.serviceUpdated
+    // requestFirewallService(service.name, service.banned)
+    // },
+    // error: error => {
+    // $log.error(`Receive error: ${error}`)
+    // }
     // });
 
     client.stop()

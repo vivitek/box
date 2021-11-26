@@ -13,9 +13,10 @@ PyNFT = FWManager()
 @bp.route('/ban', methods=['POST'])
 def banMac():
     try:
-        address = request.form.get('address');
+        body = request.get_json()
+        address = body.get('address')
         validateForm.validateForm(address, MAC_FORMAT)
-        response = PyNFT.ban_mac(address, None)
+        response = PyNFT.ban_mac(address)
         if (response['error']):
             raise Exception(response['error'])
         redis_client.zadd('macBan', {address: 0})
@@ -25,10 +26,11 @@ def banMac():
     except Exception as e:
         return (str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@bp.route('/unban', methods=['DELETE'])
+@bp.route('/unban', methods=['POST'])
 def unbanMac():
     try:
-        address = request.form.get('address')
+        body = request.get_json()
+        address = body.get('address')
         validateForm.validateForm(address, MAC_FORMAT)
         response = PyNFT.unban_mac(address)
         if (response['error']):

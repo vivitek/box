@@ -25,7 +25,7 @@ def banIP():
     except Exception as e:
         return (str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@bp.route('/unban', methods=['DELETE'])
+@bp.route('/unban', methods=['POST'])
 def unbanIp():
     try:
         address = request.form.get('address')
