@@ -15,6 +15,7 @@ import { Mutex } from 'async-mutex';
 import axios from 'axios';
 const execa = require("execa")
 
+
 const pcapMutex = new Mutex();
 
 const getWsClient = function (wsurl: string) {
@@ -93,8 +94,8 @@ const createBox = async (name: string, url: string, certificat: string) => {
 
 const getHostnameByIpAddress = async(addr: string) => {
 
-  const {stdout: hostOut} = await execa.command(`host ${addr}`);
-  console.log(hostOut.split(" "));
+  const {stdout} = await execa.command(`host ${addr}`);
+  console.log(stdout.split(" "));
   
   return "Rémy la plante"
 }
