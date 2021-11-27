@@ -97,7 +97,7 @@ const createBox = async (name: string, url: string, certificat: string) => {
 
 const getBrandByMacAddress = async (addr: string) => {
   const d = brandByMac.find(brand =>
-    brand.startsWith(addr.toUpperCase().split(":").join('-'))
+    brand.startsWith(addr.toUpperCase().substr(0, 8).split(":").join('-'))
   )
 console.log(d)
  return d.split(',')[1] || "Unknown"
