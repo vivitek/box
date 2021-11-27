@@ -10,11 +10,17 @@ PyNFT = FWManager()
 
 IP_FORMAT = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
 
+
+def bandWidth():
+    # applique le truc la
+
 @bp.route('/ban', methods=['POST'])
 def banIP():
     try:
         body = request.get_json()
         address = body.get('address')
+        # bandwith
+        # setBandwith()
         validateForm.validateForm(address, IP_FORMAT)
         response = PyNFT.ban_ipv4(address)
         if (response['error']):
