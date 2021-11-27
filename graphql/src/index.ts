@@ -13,8 +13,7 @@ import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS }
 import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, CREATE_SERVICE, GET_BANS, SERVICE_UPDATED } from "./gql";
 import { Mutex } from 'async-mutex';
 import axios from 'axios';
-const execa = require("execa")
-
+import { exec } from "child_process";
 
 const pcapMutex = new Mutex();
 
@@ -94,8 +93,13 @@ const createBox = async (name: string, url: string, certificat: string) => {
 
 const getHostnameByIpAddress = async(addr: string) => {
 
-  const {stdout} = await execa.command(`host ${addr}`);
-  console.log(stdout.split(" "));
+  const res: {stdout: string, stderr:string} = await new Promise((resolve, reject) => {
+    exec(`host ${addr}`, (error, stdout, stderr) => {
+      if (error) return reject(error)
+      return resolve({stdout, stderr});
+    })
+  });
+  console.log(res.stdout.split(" "));
   
   return "Rémy la plante"
 }
