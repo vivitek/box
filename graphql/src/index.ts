@@ -11,11 +11,11 @@ import dns from "dns";
 import 'cross-fetch/polyfill';
 import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
 import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, CREATE_SERVICE, GET_BANS, SERVICE_UPDATED } from "./gql";
-import { Mutex, MutexInterface, Semaphore, SemaphoreInterface, withTimeout } from 'async-mutex';
+import { Mutex } from 'async-mutex';
+import * as execa from 'execa';
 import axios from 'axios';
 
 const pcapMutex = new Mutex();
-
 
 const getWsClient = function (wsurl: string) {
   const client = new SubscriptionClient(
@@ -60,7 +60,9 @@ const initRabbitMQ = async () => {
 
 const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
   const msgData = JSON.parse(msg.content.toString())
-  const res = createBan(msgData.mac, "La plante verte", false)
+  const hostname = await getHostnameByIpAddress(msgData.ip)
+
+  const res = createBan(msgData.mac, hostname, false)
 
   if (res) {
     channel.ack(msg)
@@ -87,6 +89,16 @@ const createBox = async (name: string, url: string, certificat: string) => {
     throw JSON.stringify(err)
   }
 }
+
+
+const getHostnameByIpAddress = async(addr: string) => {
+
+  const {stdout: hostOut} = await execa.command(`host ${addr}`);
+  console.log(hostOut.split(" "));
+  
+  return "Rémy la plante"
+}
+
 
 const createBan = async (mac: string, displayName: string, banned: boolean) => {
   try {
