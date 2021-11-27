@@ -99,7 +99,7 @@ const getBrandByMacAddress = async (addr: string) => {
   const d = brandByMac.find(brand =>
     brand.startsWith(addr.toUpperCase().split(":").join('-'))
   )
-
+console.log(d)
  return d.split(',')[1] || "Unknown"
 
 }
