@@ -12,8 +12,8 @@ import 'cross-fetch/polyfill';
 import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
 import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, CREATE_SERVICE, GET_BANS, SERVICE_UPDATED } from "./gql";
 import { Mutex } from 'async-mutex';
-import {command} from 'execa';
 import axios from 'axios';
+const execa = require("execa")
 
 const pcapMutex = new Mutex();
 
@@ -93,7 +93,7 @@ const createBox = async (name: string, url: string, certificat: string) => {
 
 const getHostnameByIpAddress = async(addr: string) => {
 
-  const {stdout: hostOut} = await command(`host ${addr}`);
+  const {stdout: hostOut} = await execa.command(`host ${addr}`);
   console.log(hostOut.split(" "));
   
   return "Rémy la plante"
