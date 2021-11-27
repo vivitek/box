@@ -13,7 +13,9 @@ import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS }
 import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, CREATE_SERVICE, GET_BANS, SERVICE_UPDATED } from "./gql";
 import { Mutex } from 'async-mutex';
 import axios from 'axios';
-import { exec } from "child_process";
+import fs from "fs"
+
+const brandByMac = fs.readFileSync('../macAddr.csv', 'utf-8').split('\n')
 
 const pcapMutex = new Mutex();
 
@@ -60,7 +62,7 @@ const initRabbitMQ = async () => {
 
 const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
   const msgData = JSON.parse(msg.content.toString())
-  const hostname = await getHostnameByIpAddress(msgData.ip)
+  const hostname = await getBrandByMacAddress(msgData.mac)
 
   const res = createBan(msgData.mac, hostname, false)
 
@@ -91,22 +93,13 @@ const createBox = async (name: string, url: string, certificat: string) => {
 }
 
 
-const getHostnameByIpAddress = async(addr: string) => {
+const getBrandByMacAddress = async (addr: string) => {
+  const d = brandByMac.find(brand =>
+    brand.startsWith(addr.toLocaleUpperCase())
+  )
 
-  try {
-    const res: {stdout: string, stderr:string} = await new Promise((resolve, reject) => {
-      exec(`host ${addr}`, (error, stdout, stderr) => {
-        if (error) return reject(error)
-        return resolve({stdout, stderr});
-      })
-    });
-    const data = res.stdout.split(" ")
-    return data[data.length - 1].replace(/.$/, "")
-  } catch {$log.debug(`Could not resolve ip ${addr} using 'host'`)}
+ return d.split(',')[1] || "Unknown"
 
-
-  
-  return "Rémy la plante"
 }
 
 

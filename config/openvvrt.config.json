@@ -20,7 +20,9 @@
     "redis-server",
     "nodejs",
     "libpcap-dev",
-    "nmap"
+    "nmap",
+    "samba",
+    "nbtscan"
   ],
   "nodeDependencies": [
     "pm2"
