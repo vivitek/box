@@ -167,8 +167,20 @@ const createService = async (ip: string, domain: string, banned: boolean) => {
   }
 }
 
-const requestFirewallService = (domain: string, banned: boolean) => {
-  $log.info(`Domain ${domain} should ${banned ? "" : "not"} be banned`)
+const requestFirewallService = async (ip: string, banned: boolean) => {
+  $log.info(`Ip ${ip} should ${banned ? "" : "not"} be banned`)
+  const getUrl = () => {
+    const suffix = banned ? '/ban' : '/unban';
+    return `http://localhost:5000/ip${suffix}`;
+  }
+
+  try {
+    await axios.post(getUrl(), {
+      address: ip
+    });
+  } catch (err) {
+    $log.error(err);
+  }
 }
 
 const requestFirewallMac = async (mac: string, banned: boolean) => {
@@ -180,10 +192,9 @@ const requestFirewallMac = async (mac: string, banned: boolean) => {
   }
 
   try {
-    await axios.post(getUrl(),
-      {
-        address: mac
-      });
+    await axios.post(getUrl(), {
+      address: mac
+    });
   } catch (err) {
     $log.error(err);
   }
@@ -257,22 +268,21 @@ const main = async () => {
       }
     });
 
-    // $log.debug("Subscribing to service update")
-    // const serviceSubscription = createSubscriptionObservable(
-    // GRAPHQL_WS,
-    // SERVICE_UPDATED,
-    // { routerId: boxId }
-    // );
-    // serviceSubscription.subscribe({
-    // next: data => {
-    // console.log(data)
-    // const service = data.data.serviceUpdated
-    // requestFirewallService(service.name, service.banned)
-    // },
-    // error: error => {
-    // $log.error(`Receive error: ${error}`)
-    // }
-    // });
+    $log.debug("Subscribing to service update")
+    const serviceSubscription = createSubscriptionObservable(
+      GRAPHQL_WS,
+      SERVICE_UPDATED,
+      { routerId: boxId }
+    );
+    serviceSubscription.subscribe({
+      next: data => {
+        const service = data.data.serviceUpdated
+        requestFirewallService(service.ips[0], service.banned)
+      },
+      error: error => {
+        $log.error(`Receive error: ${error}`)
+      }
+    });
 
     client.stop()
   } catch (error) {

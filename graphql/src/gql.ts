@@ -12,10 +12,11 @@ export const BAN_UPDATED =
 
 export const SERVICE_UPDATED =
   gql`
-    subscription($routerSet: String!) {
-      serviceUpdated(routerSet: $routerSet) {
+    subscription($routerId: String!) {
+      serviceUpdated(routerId: $routerId) {
         name
         banned
+        ips
       }
     }
 `

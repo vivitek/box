@@ -13,7 +13,8 @@ IP_FORMAT = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4
 @bp.route('/ban', methods=['POST'])
 def banIP():
     try:
-        address = request.form.get('address')
+        body = request.get_json()
+        address = body.get('address')
         validateForm.validateForm(address, IP_FORMAT)
         response = PyNFT.ban_ipv4(address)
         if (response['error']):
@@ -28,7 +29,8 @@ def banIP():
 @bp.route('/unban', methods=['POST'])
 def unbanIp():
     try:
-        address = request.form.get('address')
+        body = request.get_json()
+        address = body.get('address')
         validateForm.validateForm(address, IP_FORMAT)
         response = PyNFT.unban_ipv4(address)
         if (response['error']):
