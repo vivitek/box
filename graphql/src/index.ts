@@ -93,13 +93,18 @@ const createBox = async (name: string, url: string, certificat: string) => {
 
 const getHostnameByIpAddress = async(addr: string) => {
 
-  const res: {stdout: string, stderr:string} = await new Promise((resolve, reject) => {
-    exec(`host ${addr}`, (error, stdout, stderr) => {
-      if (error) return reject(error)
-      return resolve({stdout, stderr});
-    })
-  });
-  console.log(res.stdout.split(" "));
+  try {
+    const res: {stdout: string, stderr:string} = await new Promise((resolve, reject) => {
+      exec(`host ${addr}`, (error, stdout, stderr) => {
+        if (error) return reject(error)
+        return resolve({stdout, stderr});
+      })
+    });
+    const data = res.stdout.split(" ")
+    return data[data.length - 1].replace(/.$/, "")
+  } catch {$log.debug(`Could not resolve ip ${addr} using 'host'`)}
+
+
   
   return "Rémy la plante"
 }

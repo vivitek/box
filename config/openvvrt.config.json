@@ -19,7 +19,8 @@
     "redis-tools",
     "redis-server",
     "nodejs",
-    "libpcap-dev"
+    "libpcap-dev",
+    "nmap"
   ],
   "nodeDependencies": [
     "pm2"
