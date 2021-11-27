@@ -13,9 +13,15 @@ import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS }
 import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, CREATE_SERVICE, GET_BANS, SERVICE_UPDATED } from "./gql";
 import { Mutex } from 'async-mutex';
 import axios from 'axios';
+import {resolve} from "path";
 import fs from "fs"
 
-const brandByMac = fs.readFileSync('../macAddr.csv', 'utf-8').split('\n')
+const brandByMac = fs.readFileSync(resolve(__dirname, "..", "macAddr.csv"), 'utf-8').split('\n')
+
+
+// merci je viens de voir l'erreur <3
+
+
 
 const pcapMutex = new Mutex();
 
