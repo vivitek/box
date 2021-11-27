@@ -19,10 +19,6 @@ import fs from "fs"
 const brandByMac = fs.readFileSync(resolve(__dirname, "..", "macAddr.csv"), 'utf-8').split('\n')
 
 
-// merci je viens de voir l'erreur <3
-
-
-
 const pcapMutex = new Mutex();
 
 const getWsClient = function (wsurl: string) {
@@ -101,7 +97,7 @@ const createBox = async (name: string, url: string, certificat: string) => {
 
 const getBrandByMacAddress = async (addr: string) => {
   const d = brandByMac.find(brand =>
-    brand.startsWith(addr.toLocaleUpperCase())
+    brand.startsWith(addr.toLocaleUpperCase().replaceAll(":", "-"))
   )
 
  return d.split(',')[1] || "Unknown"
