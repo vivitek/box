@@ -1,10 +1,6 @@
 import { Controller, Get, Post, Param, Query, Sse, MessageEvent } from '@nestjs/common';
-import { interval, Observable } from 'rxjs';
 import { ServicesService } from './services.service';
-import fs from 'fs';
-import * as TailingReadableStream from 'tailing-stream';
-import { fromReadStream } from "@nitedani/rxjs-stream";
-import { map, delay, tap } from "rxjs/operators";
+import * as fs from 'fs';
 
 @Controller('/services')
 export class ServicesController {
@@ -43,20 +39,20 @@ export class ServicesController {
   logs() {
     return {
       graphql: {
-        out: fs.readFileSync('/root/.pm2/logs/graphql-out.log'),
-        err: fs.readFileSync('/root/.pm2/logs/graphql-err.log'),
+        out: fs.readFileSync('/root/.pm2/logs/graphql-out.log', {encoding: "utf8"}).split('\n'),
+        err: fs.readFileSync('/root/.pm2/logs/graphql-error.log', {encoding: "utf8"}).split('\n'),
       },
       pcap: {
-        out: fs.readFileSync('/root/.pm2/logs/pcap-out.log'),
-        err: fs.readFileSync('/root/.pm2/logs/pcap-err.log'),
+        out: fs.readFileSync('/root/.pm2/logs/pcap-out.log', {encoding: "utf8"}).split('\n'),
+        err: fs.readFileSync('/root/.pm2/logs/pcap-error.log', {encoding: "utf8"}).split('\n'),
       },
       dhcp: {
-        out: fs.readFileSync('/root/.pm2/logs/dhcp-out.log'),
-        err: fs.readFileSync('/root/.pm2/logs/dhcp-err.log'),
+        out: fs.readFileSync('/root/.pm2/logs/dhcp-out.log', {encoding: "utf8"}).split('\n'),
+        err: fs.readFileSync('/root/.pm2/logs/dhcp-error.log', {encoding: "utf8"}).split('\n'),
       },
       openvvrt: {
-        out: fs.readFileSync('/root/.pm2/logs/openvvrt-out.log'),
-        err: fs.readFileSync('/root/.pm2/logs/openvvrt-err.log'),
+        out: fs.readFileSync('/root/.pm2/logs/openvvrt-out.log', {encoding: "utf8"}).split('\n'),
+        err: fs.readFileSync('/root/.pm2/logs/openvvrt-error.log', {encoding: "utf8"}).split('\n'),
       },
     }
 
