@@ -102,7 +102,7 @@ const getBrandByMacAddress = async (addr: string) => {
 console.log(d)
 if (d)
  return d.split(',')[1]
-return "Somethin else"
+return "Unknown"
 
 }
 
