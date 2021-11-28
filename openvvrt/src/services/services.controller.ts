@@ -40,39 +40,26 @@ export class ServicesController {
   }
 
   @Get('/logs')
-  logs(@Query('service') service: string, @Query('lines') lines = '32') {
-    return this.service.logs(service, lines);
+  logs() {
+    return {
+      graphql: {
+        out: fs.readFileSync('/root/.pm2/logs/graphql-out.log'),
+        err: fs.readFileSync('/root/.pm2/logs/graphql-err.log'),
+      },
+      pcap: {
+        out: fs.readFileSync('/root/.pm2/logs/pcap-out.log'),
+        err: fs.readFileSync('/root/.pm2/logs/pcap-err.log'),
+      },
+      dhcp: {
+        out: fs.readFileSync('/root/.pm2/logs/dhcp-out.log'),
+        err: fs.readFileSync('/root/.pm2/logs/dhcp-err.log'),
+      },
+      openvvrt: {
+        out: fs.readFileSync('/root/.pm2/logs/openvvrt-out.log'),
+        err: fs.readFileSync('/root/.pm2/logs/openvvrt-err.log'),
+      },
+    }
+
   }
 
-  @Sse('/sse')
-  sse(@Query('service') service: string): Observable<MessageEvent> {
-    const path = `/root/.pm2/logs/graphql-out.log`
-    const stream = TailingReadableStream.createReadStream(path, {timeout: 0});
-    return fromReadStream<string>(stream).pipe(
-      tap(() => {
-        console.log("Processing chunk...");
-      }),
-      map((data: string) => ({data} as MessageEvent)),
-      delay(1000)
-    )
-  }
 }
-
-// {
-  // graphql: {
-    // out: "",
-    // err: ""
-  // }
-  // pcap: {
-    // out: "",
-    // err: ""
-  // }
-  // dhcp: {
-    // out: "",
-    // err: ""
-  // }
-  // openvvrt: {
-    // out: "",
-    // err: ""
-  // }
-// }
