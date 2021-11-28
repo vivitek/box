@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, Query, Sse } from '@nestjs/common';
+import { interval, Observable } from 'rxjs';
 import { ServicesService } from './services.service';
+import fs from "fs"
 
 @Controller('/services')
 export class ServicesController {
-  constructor(private service: ServicesService) {}
+  constructor(private service: ServicesService) { }
   @Get('/')
   getAll() {
     return this.service.getAll();
@@ -38,4 +40,31 @@ export class ServicesController {
   logs(@Query('service') service: string, @Query('lines') lines = '32') {
     return this.service.logs(service, lines);
   }
+
+  @Sse('/sse')
+  sse(@Query('service') service: string): Observable<MessageEvent> {
+    const path = `/root/.pm2/logs/${service}-out.log`
+
+    return interval(5000).pipe(() => null);
+
+  }
 }
+
+// {
+  // graphql: {
+    // out: "",
+    // err: ""
+  // }
+  // pcap: {
+    // out: "",
+    // err: ""
+  // }
+  // dhcp: {
+    // out: "",
+    // err: ""
+  // }
+  // openvvrt: {
+    // out: "",
+    // err: ""
+  // }
+// }
