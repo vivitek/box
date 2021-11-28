@@ -2,7 +2,7 @@ import { Controller, Get, Post, Param, Query, Sse, MessageEvent } from '@nestjs/
 import { interval, Observable } from 'rxjs';
 import { ServicesService } from './services.service';
 import fs from 'fs';
-import * as TailingReadableStream from 'tailing-stream');
+import * as TailingReadableStream from 'tailing-stream';
 import { fromReadStream } from "@nitedani/rxjs-stream";
 import { map, delay, tap } from "rxjs/operators";
 
