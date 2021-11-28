@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Param, Query, Sse } from '@nestjs/common';
+import { Controller, Get, Post, Param, Query, Sse, MessageEvent } from '@nestjs/common';
 import { interval, Observable } from 'rxjs';
 import { ServicesService } from './services.service';
-import fs from "fs"
+import fs from 'fs';
+import * as TailingReadableStream from 'tailing-stream');
+import { fromReadStream } from "@nitedani/rxjs-stream";
+import { map, delay, tap } from "rxjs/operators";
 
 @Controller('/services')
 export class ServicesController {
@@ -43,10 +46,15 @@ export class ServicesController {
 
   @Sse('/sse')
   sse(@Query('service') service: string): Observable<MessageEvent> {
-    const path = `/root/.pm2/logs/${service}-out.log`
-
-    return interval(5000).pipe(() => null);
-
+    const path = `/root/.pm2/logs/graphql-out.log`
+    const stream = TailingReadableStream.createReadStream(path, {timeout: 0});
+    return fromReadStream<string>(stream).pipe(
+      tap(() => {
+        console.log("Processing chunk...");
+      }),
+      map((data: string) => ({data} as MessageEvent)),
+      delay(1000)
+    )
   }
 }
 
