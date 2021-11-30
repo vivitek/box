@@ -4,46 +4,60 @@ from app.main import redis_client
 from app.main.firewall_manager import FWManager
 from app.main.utils.custom_exception import CustomException
 import app.main.utils.validate_form as validateForm
+from app.main.bandwidth.limiter import Limiter
 
 bp = Blueprint('ip', __name__, url_prefix='/ip')
 PyNFT = FWManager()
+limiter = Limiter()
 
-IP_FORMAT = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
 
+def manage_bandwidth(address, rate):
+    try:
+        limit_rank = redis_client.zrank('limitIP', address)
+        limit_number = redis_client.zcard('limitIP')
 
-def bandWidth():
-    # applique le truc la
+        if limit_rank is None:
+            redis_client.zadd('limitMac', {address: int(limit_number)})
+            limiter.limit(address, rate, int(limit_number) + 1)
+        else:
+            limiter.replace(address, limit_rank + 1, rate)
+    except CustomException as e:
+        return e.reason, e.code
+    except Exception as e:
+        return str(e), status.HTTP_500_INTERNAL_SERVER_ERROR
+
 
 @bp.route('/ban', methods=['POST'])
-def banIP():
+def ban_ip():
     try:
         body = request.get_json()
         address = body.get('address')
-        # bandwith
-        # setBandwith()
-        validateForm.validateForm(address, IP_FORMAT)
+        limit = body.get('limit')
+        manage_bandwidth(address, limit)
         response = PyNFT.ban_ipv4(address)
-        if (response['error']):
+        if response['error']:
             raise Exception(response['error'])
         redis_client.zadd('ipBan', {address: 0})
         return response, status.HTTP_200_OK
     except CustomException as e:
-        return(e.reason, e.code)
+        return e.reason, e.code
     except Exception as e:
-        return (str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return str(e), status.HTTP_500_INTERNAL_SERVER_ERROR
+
 
 @bp.route('/unban', methods=['POST'])
-def unbanIp():
+def unban_ip():
     try:
         body = request.get_json()
         address = body.get('address')
-        validateForm.validateForm(address, IP_FORMAT)
+        limit = body.get('limit')
+        manage_bandwidth(address, limit)
         response = PyNFT.unban_ipv4(address)
-        if (response['error']):
+        if response['error']:
             raise Exception(response['error'])
         redis_client.zrem('ipBan', address)
         return response, status.HTTP_200_OK
     except CustomException as e:
-        return(e.reason, e.code)
+        return e.reason, e.code
     except Exception as e:
-        return (str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return str(e), status.HTTP_500_INTERNAL_SERVER_ERROR

@@ -20,6 +20,7 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
+    REDIS_URL = database_url
 
 config_by_name = dict(
     dev=DevelopmentConfig,
