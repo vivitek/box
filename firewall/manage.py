@@ -42,7 +42,7 @@ manager.add_command('db', MigrateCommand)
 @manager.command
 def run():
     firewall_init.init_firewall()
-    app.run()
+    app.run(host="0.0.0.0")
 
 @manager.command
 def test():

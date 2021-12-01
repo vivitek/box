@@ -3,7 +3,7 @@ Description=Firewall
 After=multi-user.target
 
 [Service]
-WorkingDirectory=$PWD/firewall
+WorkingDirectory=/home/ubuntu/box/firewall
 ExecStart=sudo /usr/local/bin/gunicorn --bind=0.0.0.0:5000 wsgi:app
 
 [Install]
