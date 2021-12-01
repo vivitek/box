@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-
-/usr/bin/ssh -N -T -R $VIVIDPORT:localhost:$VIVISPORT $VIVISSH_USER@$VIVISSH_SERVER
+eval $(ssh-agent -s)
+ssh-add /home/ubuntu/.ssh/id_tunnel
+/usr/bin/ssh -o StrictHostKeyChecking=accept-new -N -T -R 44673:localhost:3000 tunnel@api.openvivi.com

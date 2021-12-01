@@ -38,16 +38,25 @@ class FWManager(metaclass=Singleton):
 		#	Add BanTable and BanChain
 		#
 		ban_table = OBJ.TABLE(family=ENUM.ADDR_FAMILY.INET, name="BanTable")
-		ban_chain = OBJ.CHAIN(
+		ban_ip_chain = OBJ.CHAIN(
 			family=ban_table.family,
 			table=ban_table.name,
-			name="BanChain",
+			name="BanIpChain",
 			type=ENUM.CHAIN_TYPE.FILTER,
-			hook=ENUM.CHAIN_HOOK.OUTPUT,
+			hook=ENUM.CHAIN_HOOK.FORWARD,
+			prio=ENUM.CHAIN_PRIORITY.NF_IP_PRI_FILTER,
+			policy=ENUM.CHAIN_POLICY.ACCEPT)
+		ban_mac_chain = OBJ.CHAIN(
+			family=ban_table.family,
+			table=ban_table.name,
+			name="BanMacChain",
+			type=ENUM.CHAIN_TYPE.FILTER,
+			hook=ENUM.CHAIN_HOOK.INPUT,
 			prio=ENUM.CHAIN_PRIORITY.NF_IP_PRI_FILTER,
 			policy=ENUM.CHAIN_POLICY.ACCEPT)
 		cmd_array.append(CMD.ADD(add=ban_table))
-		cmd_array.append(CMD.ADD(add=ban_chain))
+		cmd_array.append(CMD.ADD(add=ban_ip_chain))
+		cmd_array.append(CMD.ADD(add=ban_mac_chain))
 
 		#	Add BannedIPv4 and BannedMAC sets
 		#
@@ -73,15 +82,15 @@ class FWManager(metaclass=Singleton):
 		cmd_array.append(CMD.ADD(add=OBJ.RULE(
 			family=ban_table.family,
 			table=ban_table.name,
-			chain=ban_chain.name,
+			chain=ban_ip_chain.name,
 			expr=[the_match, STAT.VERDICT_DROP()]
 		)))
-		the_payload = EXP.REFERENCE_PAYLOAD(protocol="ether", field="daddr")
+		the_payload = EXP.REFERENCE_PAYLOAD(protocol="ether", field="saddr")
 		the_match = STAT.MATCH(left=the_payload, right="@BannedMAC", op=ENUM.OPERATOR.EQUAL)
 		cmd_array.append(CMD.ADD(add=OBJ.RULE(
 			family=ban_table.family,
 			table=ban_table.name,
-			chain=ban_chain.name,
+			chain=ban_mac_chain.name,
 			expr=[the_match, STAT.VERDICT_DROP()]
 		)))
 

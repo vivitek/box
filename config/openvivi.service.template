@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenViVi tunnel connection
+After=network.target
+
+[Service]
+User=ubuntu
+ExecStartPre=bash $PWD/config/prepare-openvivi-tunnel.sh
+ExecStart=bash $PWD/config/openvivi-tunnel.sh
+Restart=always
+RestartSec=10
+
+
+[Install]
+WantedBy=multi-user.target

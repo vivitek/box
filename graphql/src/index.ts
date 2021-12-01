@@ -1,198 +1,313 @@
-import * as amqp from 'amqplib'
-import { execute } from 'apollo-link'
-import { WebSocketLink } from 'apollo-link-ws'
-import axios from 'axios'
-import { DocumentNode, print } from 'graphql'
-import { SubscriptionClient } from 'subscriptions-transport-ws'
-import * as ws from 'ws'
-import { FIREWALL_ENDPOINT, GRAPHQL_ENDPOINT } from '../constant'
-import { CREATE_BAN, GET_BANS, SUBSCRIBE_BAN } from './banQueries'
-import { CREATE_ROUTER } from './routerQueries'
-import { logger } from './logger'
+import * as redis from "redis-client-async"
+import { exit } from "process"
+import { $log } from "@tsed/logger";
+import *  as amqp from "amqplib"
+import ApolloClient from "apollo-boost";
+import { execute } from 'apollo-link';
+import { WebSocketLink } from 'apollo-link-ws';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
+import ws from 'ws';
+import dns from "dns";
+import 'cross-fetch/polyfill';
+import { AMQP_HOST, AMQP_PASSWORD, AMQP_USERNAME, GRAPHQL_ENDPOINT, GRAPHQL_WS } from "./constants";
+import { BAN_UPDATED, CREATE_BAN, CREATE_BOX, CREATE_SERVICE, GET_BANS, SERVICE_UPDATED } from "./gql";
+import { Mutex } from 'async-mutex';
+import axios from 'axios';
+import {resolve} from "path";
+import fs from "fs"
 
-let id: string
+const brandByMac = fs.readFileSync(resolve(__dirname, "..", "macAddr.csv"), 'utf-8').split('\n')
+
+
+const pcapMutex = new Mutex();
+
+const getWsClient = function (wsurl: string) {
+  const client = new SubscriptionClient(
+    wsurl, { reconnect: true }, ws
+  );
+  return client;
+};
+
+const createSubscriptionObservable = (wsurl: string, query, variables) => {
+  const link = new WebSocketLink(getWsClient(wsurl));
+  return execute(link, { query: query, variables: variables });
+};
+
+$log.name = "GraphQL"
+const client = new ApolloClient({
+  uri: GRAPHQL_ENDPOINT,
+  fetch: require("isomorphic-fetch").default
+});
 let channel: amqp.Channel
+let boxId: string;
+let usedIps: string[] = []
+let unresolvableIps: string[] = []
+let redisClient: redis.RedisClientAsync
 
-/* Utils */
-const getWsClient = function (wsurl: string): SubscriptionClient {
-  const client = new SubscriptionClient(wsurl, {
-    reconnect: true,
-    connectionParams: {
-      headers: {
-        authorization: process.env.VINCIPIT_BEARER_TOKEN
-      }
-    }
-  }, ws)
-  return client
+const initRedisClient = async () => {
+  $log.debug("Connecting to Redis");
+  return redis.createClient(6379, "localhost");
 }
 
-const createSubscriptionObservable = (wsurl: string, query: DocumentNode, variables: QueryContent) => {
-  const link = new WebSocketLink(getWsClient(wsurl))
-  return execute(link, { query, variables })
-}
-
-const sendRequest = async (data: GraphqlRequestContext) => {
-  return await axios({
-    url: GRAPHQL_ENDPOINT,
-    method: 'post',
-    headers: {
-      authorization: process.env.VINCIPIT_BEARER_TOKEN || ''
-    },
-    data: data,
-  })
-}
-
-const requestFirewall = async (ban: Ban): Promise<void> => {
-  logger.info(`New ${ban.banned ? 'ban' : 'unban'} for address ${ban.address}`)
+const initRabbitMQ = async () => {
+  $log.debug("Connecting to RabbitMQ")
   try {
-    await axios({
-      method: ban.banned ? 'post' : 'delete',
-      url: `${FIREWALL_ENDPOINT}/rule/${ban.banned ? 'ban' : 'unban'}MAC?address=${ban.address}`
+    return await amqp.connect({
+      hostname: AMQP_HOST,
+      username: AMQP_USERNAME,
+      password: AMQP_PASSWORD,
     })
-  } catch (error) {
-    logger.error(error)
+  } catch (err) {
+    throw err
   }
 }
-/* Utils End */
 
-const selfCreate = async (name: string, url: string): Promise<void> => {
+const consumeDHCP = async (msg: amqp.ConsumeMessage) => {
+  const msgData = JSON.parse(msg.content.toString())
+  const hostname = await getBrandByMacAddress(msgData.mac)
+
+  const res = createBan(msgData.mac, hostname, false)
+
+  if (res) {
+    channel.ack(msg)
+    usedIps.push(msgData.ip)
+  } else
+    channel.nack(msg)
+}
+
+const createBox = async (name: string, url: string, certificat: string) => {
   try {
-    const res = await sendRequest({
-      query: print(CREATE_ROUTER),
+    const res = await client.mutate({
+      mutation: CREATE_BOX,
       variables: {
         createRouterData: {
+          url,
           name,
-          url
+          certificat
         }
       }
     })
-    id = res.data.data.createRouter._id
-    if (id == undefined)
-      throw new Error('Router already created')
-  } catch (error) {
-    if (error.response) {
-      logger.error('An error occured while creating router')
-      logger.error(`Status code: ${error.response.status}`)
-    } else
-      logger.error(error)
+    console.log(res.data)
+    return res.data.createRouter.router._id
+  } catch (err) {
+    throw JSON.stringify(err)
   }
 }
 
-const getBans = async (): Promise<void> => {
-  try {
-    const res = await sendRequest({
-      query: print(GET_BANS),
-      variables: {
-        id
-      }
-    })
-    res.data.data.getBans.forEach((ban: Ban) => requestFirewall(ban))
-  } catch (error) {
-    if (error.response) {
-      logger.error('An error occured while retriving bans:')
-      logger.error(`Status code: ${error.response.status}`)
-      logger.error(error.response.data)
-    } else
-      logger.error('A mystical error occured during the bans recovery')
-  }
+
+const getBrandByMacAddress = async (addr: string) => {
+  const d = brandByMac.find(brand =>
+    brand.startsWith(addr.toUpperCase().substr(0, 8).split(":").join('-'))
+  )
+console.log(d)
+if (d)
+ return d.split(',')[1]
+return "Unknown"
+
 }
 
-const createBan = async (address: string, banned: boolean): Promise<boolean> => {
+
+const createBan = async (mac: string, displayName: string, banned: boolean) => {
   try {
-    await sendRequest({
-      query: print(CREATE_BAN),
+    await client.mutate({
+      mutation: CREATE_BAN,
       variables: {
         banCreationData: {
-          address,
-          banned,
-          routerSet: id
+          routerSet: boxId,
+          address: mac,
+          displayName,
+          banned
         }
       }
     })
     return true
-  } catch (error) {
-    if (error.response) {
-      logger.error(`An error occured while creating ban on address ${address} (${banned}):`)
-      logger.error(`Status code: ${error.response.status}`)
-      logger.error(error.response.data)
-    } else
-      logger.error('A mystical error occured during bans creation')
-    return false
+  } catch (err) {
+    throw JSON.stringify(err)
   }
 }
 
-const subscribeBan = (): void => {
-  const client = createSubscriptionObservable(
-    GRAPHQL_ENDPOINT,
-    SUBSCRIBE_BAN,
-    { routerSet: id }
-  )
-  client.subscribe(eventData => {
-    requestFirewall(eventData.data.banUpdated)
-  })
+const retrieveBans = async () => {
+  try {
+    const res = await client.query({
+      query: GET_BANS,
+      variables: {
+        id: boxId
+      }
+    })
+    return res.data.getBans
+  } catch (err) {
+    throw err
+  }
 }
 
-const initRabbitMQ = async (): Promise<void> => {
+const consumePCap = async (msg: amqp.ConsumeMessage) => {
+  const release = await pcapMutex.acquire();
+  const msgData: Service = JSON.parse(msg.content.toString())
+  if (
+    usedIps.includes(msgData.daddr) ||
+    unresolvableIps.includes(msgData.daddr) ||
+    msgData.daddr.startsWith('255.') ||
+    msgData.daddr.startsWith('0.')
+  ) {
+    channel.ack(msg)
+    release()
+    return
+  }
   try {
-    logger.info('Connecting to RabbitMQ...')
-    const connection = await amqp.connect({
-      hostname: process.env.AMQP_HOSTNAME,
-      username: process.env.AMQP_USERNAME,
-      password: process.env.AMQP_PASSWORD,
+    const domains = await dns.promises.reverse(msgData.daddr)
+    createService(msgData.daddr, domains[0], false)
+  } catch {
+    $log.error(`Cannot resolve ${msgData.daddr} for ${msgData.saddr}`)
+    unresolvableIps.push(msgData.daddr)
+  }
+  channel.ack(msg)
+  release()
+}
+
+
+const createService = async (ip: string, domain: string, banned: boolean) => {
+  try {
+    await client.mutate({
+      mutation: CREATE_SERVICE,
+      variables: {
+        serviceCreationData: {
+          name: domain,
+          bandwidth: 10000.0,
+          ips: [ip],
+          tags: [],
+          router: boxId,
+          banned
+        }
+      }
+    })
+    return true
+  } catch (err) {
+    throw JSON.stringify(err)
+  }
+}
+
+const requestFirewallService = async (ip: string, banned: boolean) => {
+  $log.info(`Ip ${ip} should ${banned ? "" : "not"} be banned`)
+  const getUrl = () => {
+    const suffix = banned ? '/ban' : '/unban';
+    return `http://localhost:5000/ip${suffix}`;
+  }
+
+  try {
+    await axios.post(getUrl(), {
+      address: ip
+    });
+  } catch (err) {
+    $log.error(err);
+  }
+}
+
+const requestFirewallMac = async (mac: string, banned: boolean) => {
+  $log.info(`Mac ${mac} should ${banned ? "" : "not "} be banned`)
+
+  const getUrl = () => {
+    const suffix = banned ? '/ban' : '/unban';
+    return `http://localhost:5000/mac${suffix}`;
+  }
+
+  try {
+    await axios.post(getUrl(), {
+      address: mac
+    });
+  } catch (err) {
+    $log.error(err);
+  }
+}
+
+const main = async () => {
+  try {
+    $log.debug("Initializing GraphQL")
+    redisClient = await initRedisClient();
+    $log.debug("Redis connected")
+
+    const name = await redisClient.getAsync('name')
+    const uuid = await redisClient.getAsync('uuid')
+    const certificat = await redisClient.getAsync('certificat')
+    const id = await redisClient.getAsync('id')
+    const servicesBkp = await redisClient.getAsync('transmittedServices')
+
+    $log.debug(`name: ${name}`)
+    $log.debug(`uuid: ${uuid}`)
+    $log.debug(`certificat: ${certificat}`)
+
+    if (!name || !uuid || !certificat)
+      throw `Missing required variable.`
+
+    const rbmp = await initRabbitMQ()
+    $log.debug("Creating RabbitMQ")
+    channel = await rbmp.createChannel()
+
+    if (id) {
+      $log.debug("Id retrieved from Redis")
+      boxId = id
+    } else {
+      $log.debug("Creating box on server")
+      boxId = await createBox(name, `${uuid}.openvivi.com`, certificat)
+      redisClient.setAsync('id', boxId)
+      $log.debug(`Created box on server.`)
+    }
+    $log.debug(`ID = ${boxId}`)
+
+    $log.debug("Retrieving bans")
+    const bans = await retrieveBans()
+    $log.debug(bans)
+    bans.forEach((ban: Ban) => {
+      const { address, banned } = ban
+      requestFirewallMac(address, banned)
     });
 
-    channel = await connection.createChannel();
-    await channel.assertQueue("dhcp");
-    channel.consume("dhcp", consumerDhcp)
+    $log.debug("Checking dhcp queue")
+    channel.assertQueue("dhcp")
+    $log.debug("Consuming dhcp queue")
+    channel.consume("dhcp", (msg) => consumeDHCP(msg))
 
-    await channel.assertQueue("pcap");
-    channel.consume("pcap", consumerPcap)
+    $log.debug("Checking pcap queue")
+    channel.assertQueue("pcap")
+    $log.debug("Consuming pcap")
+    channel.consume("pcap", consumePCap)
 
+    $log.debug("Subscribing to ban update")
+    const banSubscription = createSubscriptionObservable(
+      GRAPHQL_WS,
+      BAN_UPDATED,
+      { routerSet: boxId }
+    );
+    banSubscription.subscribe({
+      next: data => {
+        const ban: Ban = data.data.banUpdated
+        requestFirewallMac(ban.address, ban.banned)
+      },
+      error: error => {
+        $log.error(`Receive error: ${error}`)
+      }
+    });
+
+    $log.debug("Subscribing to service update")
+    const serviceSubscription = createSubscriptionObservable(
+      GRAPHQL_WS,
+      SERVICE_UPDATED,
+      { routerId: boxId }
+    );
+    serviceSubscription.subscribe({
+      next: data => {
+        const service = data.data.serviceUpdated
+        requestFirewallService(service.ips[0], service.banned)
+      },
+      error: error => {
+        $log.error(`Receive error: ${error}`)
+      }
+    });
+
+    client.stop()
   } catch (error) {
-    if (error.response) {
-      logger.fatal('An error occured while connecting to RabbitMQ')
-      logger.fatal(`Status code: ${error.response.status}`)
-    } else {
-      logger.fatal('A mystical error occured during the RabbitMQ initialization ')
-      logger.fatal(error)
-    }
-    process.exit(1);
+    $log.error(error)
+    exit(1)
   }
-};
-
-const consumerDhcp = async (qMsg: amqp.ConsumeMessage): Promise<void> => {
-  const msgData = JSON.parse(qMsg.content.toString())
-  if (await createBan(msgData.mac, false))
-    channel.ack(qMsg)
-  else
-    channel.nack(qMsg)
-}
-
-const consumerPcap = async (qMsg: any): Promise<void> => {
-  const msgData = JSON.parse(qMsg.content.toString())
-
-  /* example msgData :
-  {
-    len: 60,
-    saddr: "10.147.158.3",
-    daddr: "14.236.124.4"
-  }
-  */
-}
-
-const main = async (): Promise<void> => {
-  logger.info('Service starting...')
-  await initRabbitMQ()
-  logger.info('RabbitMQ is running')
-  if (!process.env.VINCIPIT_DEVICE_ID) {
-    await selfCreate(process.env.BALENA_DEVICE_NAME_AT_INIT, process.env.BALENA_DEVICE_UUID + '.balena-devices.com')
-    logger.info(`Router ${id} have been created`)
-  } else {
-    id = process.env.VINCIPIT_DEVICE_ID
-    logger.info(`Router ${id} already created`)
-  }
-  await getBans()
-  subscribeBan()
 }
 
 main()
@@ -200,15 +315,10 @@ main()
 interface Ban {
   address: string;
   banned: boolean;
-};
+}
 
-interface GraphqlRequestContext {
-  query: string;
-  variables: QueryContent
-};
-
-interface QueryContent {
-  [key: string]: {
-    [key: string]: string | number | boolean
-  } | string | number | boolean
-};
+interface Service {
+  len: number;
+  saddr: string;
+  daddr: string;
+}

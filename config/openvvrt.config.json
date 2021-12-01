@@ -12,10 +12,17 @@
     "rabbitmq-server",
     "build-essential",
     "libpq-dev",
-    "libpcap-dev",
     "procps",
     "nftables",
-    "python3-testresources"
+    "python3-nftables",
+    "python3-testresources",
+    "redis-tools",
+    "redis-server",
+    "nodejs",
+    "libpcap-dev",
+    "nmap",
+    "samba",
+    "nbtscan"
   ],
   "nodeDependencies": [
     "pm2"
@@ -98,7 +105,7 @@
         "./node_modules/typescript/bin/tsc"
       ],
       "runCmd": [
-        "sudo pm2 start -f --name graphql dist/index.js"
+        "sudo NODE_ENV=production pm2 start -f --name graphql dist/index.js"
       ]
     },
     {
@@ -111,15 +118,6 @@
       ],
       "runCmd": [
         "sudo pm2 start -f --name openvvrt dist/index.js"
-      ]
-    },
-    {
-      "name": "OpenViVi",
-      "folder": ".",
-      "preInstallCmd": [],
-      "installCmd": [],
-      "runCmd": [
-        "sudo systemctl start openvivi.service"
       ]
     }
   ]
