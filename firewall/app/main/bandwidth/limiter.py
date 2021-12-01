@@ -15,13 +15,13 @@ class Limiter:
         subprocess.call(command, shell=True)
 
     def init_tc(self):
-        self.execute('{} qdisc del dev {} root'.format(BIN_TC, interface))
-        self.execute('{} qdisc add dev {} root handle 1:0 cbq avpkt 1000 bandwidth 10000mbit'.format(BIN_TC, interface))
+        self.execute('{} qdisc del dev {} root handle 1:0 htb'.format(BIN_TC, interface))
+        self.execute('{} qdisc add dev {} root handle 1:0 htb'.format(BIN_TC, interface))
 
     def limit(self, host, rate, host_id):
-        self.execute('{} class add dev {} parent 1:0 classid 1:{} cbq rate {}mbit allot 1500 prio {} bounded isolated'.format(BIN_TC, interface, host_id, rate, host_id))
+        self.execute('{} class add dev {} parent 1:0 classid 1:{} htb rate {r}mbit'.format(BIN_TC, interface, host_id, r=rate))
         self.execute('{} filter add dev {} parent 1:0 protocol ip prio {id} handle {id} fw flowid 1:{id}'.format(BIN_TC, interface, id=host_id))
-        self.execute('iptables -t mangle -A PREROUTING -d {} -j MARK --set-mark {}'.format(host, host_id))
+        self.execute('{} -t mangle -A PREROUTING -d {} -j MARK --set-mark {}'.format(BIN_IPTABLES, host, host_id))
 
     def unlimit(self, host, host_id):
         self.execute('{} filter del dev {} parent 1:0 prio {}'.format(BIN_TC, interface, host_id))

@@ -15,8 +15,9 @@ def manage_bandwidth(address, rate):
         limit_rank = redis_client.zrank('limitIP', address)
         limit_number = redis_client.zcard('limitIP')
 
+        print(limit_rank)
         if limit_rank is None:
-            redis_client.zadd('limitMac', {address: int(limit_number)})
+            redis_client.zadd('limitIP', {address: int(limit_number)})
             limiter.limit(address, rate, int(limit_number) + 1)
         else:
             limiter.replace(address, limit_rank + 1, rate)
