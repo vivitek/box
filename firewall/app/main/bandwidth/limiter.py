@@ -6,7 +6,7 @@ import os
 DEVNULL = open(os.devnull, 'w')
 
 
-interface = 'wlp58s0'
+interface = 'wlan0'
 
 
 class Limiter:
