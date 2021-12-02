@@ -17,6 +17,7 @@ export const SERVICE_UPDATED =
         name
         banned
         ips
+        bandwidth
       }
     }
 `

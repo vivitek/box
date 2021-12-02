@@ -179,7 +179,7 @@ const createService = async (ip: string, domain: string, banned: boolean) => {
   }
 }
 
-const requestFirewallService = async (ip: string, banned: boolean) => {
+const requestFirewallService = async (ip: string, banned: boolean, limit: string) => {
   $log.info(`Ip ${ip} should ${banned ? "" : "not"} be banned`)
   const getUrl = () => {
     const suffix = banned ? '/ban' : '/unban';
@@ -188,7 +188,8 @@ const requestFirewallService = async (ip: string, banned: boolean) => {
 
   try {
     await axios.post(getUrl(), {
-      address: ip
+      address: ip,
+      limit
     });
   } catch (err) {
     $log.error(err);
@@ -199,13 +200,14 @@ const requestFirewallMac = async (mac: string, banned: boolean) => {
   $log.info(`Mac ${mac} should ${banned ? "" : "not "} be banned`)
 
   const getUrl = () => {
-    const suffix = banned ? '/ban' : '/unban';
-    return `http://localhost:5000/mac${suffix}`;
+    return `http://localhost:5000/mac`;
   }
 
   try {
     await axios.post(getUrl(), {
-      address: mac
+      address: mac,
+      banned,
+      limit: "10000"
     });
   } catch (err) {
     $log.error(err);
@@ -289,7 +291,7 @@ const main = async () => {
     serviceSubscription.subscribe({
       next: data => {
         const service = data.data.serviceUpdated
-        requestFirewallService(service.ips[0], service.banned)
+        requestFirewallService(service.ips[0], service.banned, service.bandwidth)
       },
       error: error => {
         $log.error(`Receive error: ${error}`)
